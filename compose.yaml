@@ -8,16 +8,44 @@ services:
     ports:
       - "8000:8000"
 
-  mongodb:
-    image: mongo:8.0
+  mongo:
+    image: mongo:latest
+    container_name: mongo_db
     environment:
-      - MONGODB_INITDB_DATABASE=${MONGODB_DB:-pizzox}
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-root}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-admin}
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: pizza_db
     volumes:
-      - mongodb_data:/data/db:rw
+      - mongo_data:/data/db
     ports:
       - "27017:27017"
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo_express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongo:27017/
+    ports:
+      - "8081:8081"
+
+  mongo-setup:
+    image: mongo:latest
+    container_name: mongo_setup
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: pizza_db
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    command: >
+      bash -c "until mongo --host mongo --eval 'print(\"waiting for mongo...\")' &>/dev/null; do
+        sleep 1;
+      done;
+      mongo --host mongo -u admin -p admin --authenticationDatabase admin pizza_db /docker-entrypoint-initdb.d/mongo-init.js"
 
   redis:
     image: redis:7.4
@@ -28,5 +56,5 @@ services:
       - "6379:6379"
 
 volumes:
-  mongodb_data:
+  mongo_data:
   redis_data:
