@@ -29,6 +29,7 @@ pizza:
     label: "Size"
   no_pizzas: "No pizzas found"
   create_new: "Create New"
-actions: "Actions"
-show: "Show"
-edit: "Edit"
+actions:
+  back_to_list: 'Back to Pizza List'
+show: 'Show'
+edit: 'Edit'

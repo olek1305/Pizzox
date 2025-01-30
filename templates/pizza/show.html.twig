@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'pizza.name.label'|trans }} - {{ pizza.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">{{ 'pizza.name.label'|trans }}: {{ pizza.name }}</h1>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <table class="w-full text-left">
+                <tbody>
+                <tr>
+                    <th class="px-6 py-3">{{ 'pizza.id'|trans }}</th>
+                    <td class="px-6 py-3">{{ pizza.id }}</td>
+                </tr>
+                <tr>
+                    <th class="px-6 py-3">{{ 'pizza.name.label'|trans }}</th>
+                    <td class="px-6 py-3">{{ pizza.name }}</td>
+                </tr>
+                <tr>
+                    <th class="px-6 py-3">{{ 'pizza.price.label'|trans }}</th>
+                    <td class="px-6 py-3">{{ pizza.price }} zł</td>
+                </tr>
+                <tr>
+                    <th class="px-6 py-3">{{ 'pizza.size.label'|trans }}</th>
+                    <td class="px-6 py-3">{{ pizza.size }}</td>
+                </tr>
+                <tr>
+                    <th class="px-6 py-3">{{ 'form.pizza.ingredients.label'|trans }}</th>
+                    <td class="px-6 py-3">{{ pizza.ingredients|join(', ') }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 space-x-4">
+            <a href="{{ path('pizza_index') }}"
+               class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">{{ 'actions.back_to_list'|trans }}</a>
+            <a href="{{ path('pizza_edit', {'id': pizza.id}) }}"
+               class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">{{ 'edit'|trans }}</a>
+        </div>
+    </div>
+{% endblock %}

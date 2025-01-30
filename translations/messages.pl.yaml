@@ -29,6 +29,7 @@ pizza:
     label: "Rozmiar"
   no_pizzas: "Brak pizz"
   create_new: "Dodaj nową"
-actions: "Akcje"
-show: "Pokaż"
-edit: "Edytuj"
+actions:
+  back_to_list: 'Wróć do Listy Pizz'
+show: 'Pokaż'
+edit: 'Edytuj'
