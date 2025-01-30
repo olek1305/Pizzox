@@ -1,0 +1,34 @@
+form:
+  pizza:
+    name:
+      label: 'Nazwa pizzy'
+      placeholder: 'Wprowadź nazwę pizzy'
+      not_blank: 'Nazwa pizzy nie może być pusta.'
+    price:
+      label: 'Cena'
+      placeholder: 'Wprowadź cenę'
+      not_blank: 'Cena nie może być pusta.'
+      positive: 'Cena musi być liczbą dodatnią.'
+    size:
+      label: 'Rozmiar'
+      placeholder: 'Wprowadź rozmiar pizzy'
+      not_blank: 'Rozmiar pizzy nie może być pusty.'
+    ingredients:
+      label: 'Składnik'
+      placeholder: 'Dodaj składnik'
+      not_blank: 'Składnik nie może być pusty.'
+
+pizza:
+  list_title: "Lista Pizzy"
+  id: "ID"
+  name:
+    label: "Nazwa Pizzy"
+  price:
+    label: "Cena"
+  size:
+    label: "Rozmiar"
+  no_pizzas: "Brak pizz"
+  create_new: "Dodaj nową"
+actions: "Akcje"
+show: "Pokaż"
+edit: "Edytuj"

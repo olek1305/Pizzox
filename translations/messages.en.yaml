@@ -1,0 +1,34 @@
+form:
+  pizza:
+    name:
+      label: 'Pizza name'
+      placeholder: 'Enter pizza name'
+      not_blank: 'Pizza name cannot be blank.'
+    price:
+      label: 'Price'
+      placeholder: 'Enter price'
+      not_blank: 'Price cannot be blank.'
+      positive: 'Price must be a positive number.'
+    size:
+      label: 'Size'
+      placeholder: 'Enter pizza size'
+      not_blank: 'Pizza size cannot be blank.'
+    ingredients:
+      label: 'Ingredient'
+      placeholder: 'Add ingredient'
+      not_blank: 'Ingredient cannot be blank.'
+
+pizza:
+  list_title: "Pizza List"
+  id: "ID"
+  name:
+    label: "Pizza Name"
+  price:
+    label: "Price"
+  size:
+    label: "Size"
+  no_pizzas: "No pizzas found"
+  create_new: "Create New"
+actions: "Actions"
+show: "Show"
+edit: "Edit"

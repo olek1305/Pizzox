@@ -22,5 +22,14 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Repository\PizzaRepository:
+        arguments:
+            $dm: '@doctrine_mongodb.odm.default_document_manager'
+
+    # Listener language to switch
+    App\EventListener\LocaleListener:
+        tags:
+            - { name: kernel.event_subscriber }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

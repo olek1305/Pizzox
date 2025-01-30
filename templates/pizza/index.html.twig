@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'pizza.list_title'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl font-bold">{{ 'pizza.list_title'|trans }}</h1>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-6 py-3">{{ 'pizza.id'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.name.label'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.price.label'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.size.label'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pizza in pizzas %}
+                    <tr class="border-b hover:bg-gray-100">
+                        <td class="px-6 py-4">{{ pizza.id }}</td>
+                        <td class="px-6 py-4">{{ pizza.name }}</td>
+                        <td class="px-6 py-4">{{ pizza.price }} zł</td>
+                        <td class="px-6 py-4">{{ pizza.size }}</td>
+                        <td class="px-6 py-4">
+                            <a href="{{ path('pizza_show', {'id': pizza.id}) }}"
+                               class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
+                            |
+                            <a href="{{ path('pizza_edit', {'id': pizza.id}) }}"
+                               class="text-green-500 hover:underline">{{ 'edit'|trans }}</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center">{{ 'pizza.no_pizzas'|trans }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <a href="{{ path('pizza_create') }}"
+               class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">{{ 'pizza.create_new'|trans }}</a>
+        </div>
+    </div>
+{% endblock %}
