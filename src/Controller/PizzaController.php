@@ -23,11 +23,18 @@ final class PizzaController extends AbstractController
     private PizzaRepository $pizzaRepository;
 
     /**
-     * @param PizzaRepository $pizzaRepository
+     * @var LoggerInterface
      */
-    public function __construct(PizzaRepository $pizzaRepository)
+    private LoggerInterface $logger;
+
+    /**
+     * @param PizzaRepository $pizzaRepository
+     * @param LoggerInterface $logger
+     */
+    public function __construct(PizzaRepository $pizzaRepository, LoggerInterface $logger)
     {
         $this->pizzaRepository = $pizzaRepository;
+        $this->logger = $logger;
     }
 
     /**
