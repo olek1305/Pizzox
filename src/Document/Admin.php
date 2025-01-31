@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use DateTime;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[MongoDB\Document(collection: 'admin')]
 class Admin implements UserInterface, PasswordAuthenticatedUserInterface
@@ -16,9 +17,13 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $id = null;
 
     #[MongoDB\Field(type: 'string')]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private string $email;
 
     #[MongoDB\Field(type: 'string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8)]
     private string $password;
 
     #[MongoDB\Field(type: 'collection')]
