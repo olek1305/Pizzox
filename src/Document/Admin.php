@@ -6,9 +6,11 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use DateTime;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-#[MongoDB\Document(collection: 'admins')]
-class Admin
+#[MongoDB\Document(collection: 'admin')]
+class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[MongoDB\Id]
     private ?string $id = null;
@@ -18,6 +20,9 @@ class Admin
 
     #[MongoDB\Field(type: 'string')]
     private string $password;
+
+    #[MongoDB\Field(type: 'collection')]
+    private array $roles = [];
 
     #[MongoDB\Field(type: 'date')]
     private DateTime $createdAt;
@@ -72,5 +77,29 @@ class Admin
     {
         $this->updatedAt = $updatedAt;
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_ADMIN';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials(): void
+    {
+
     }
 }

@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
 final class PizzaController extends AbstractController
@@ -41,7 +42,7 @@ final class PizzaController extends AbstractController
      * @return Response
      * @throws MongoDBException
      */
-    #[Route('/', name: 'pizza_index', methods: ['GET'])]
+    #[Route('/pizza', name: 'pizza_index', methods: ['GET'])]
     public function index(): Response
     {
         $pizzas = $this->pizzaRepository->findAllOrderedByName();
@@ -57,7 +58,8 @@ final class PizzaController extends AbstractController
      * @throws MongoDBException
      * @throws Throwable
      */
-    #[Route('/create', name: 'pizza_create', methods: ['GET', 'POST'])]
+    #[Route('/pizza/create', name: 'pizza_create', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request): Response
     {
         $pizza = new Pizza();
@@ -82,7 +84,7 @@ final class PizzaController extends AbstractController
      * @throws LockException
      * @throws MappingException
      */
-    #[Route('/{id}', name: 'pizza_show', methods: ['GET'])]
+    #[Route('/pizza/{id}', name: 'pizza_show', methods: ['GET'])]
     public function show(string $id): Response
     {
         $pizza = $this->pizzaRepository->findById($id);
@@ -106,7 +108,8 @@ final class PizzaController extends AbstractController
      * @throws MongoDBException
      * @throws Throwable
      */
-    #[Route('/{id}/edit', name: 'pizza_edit', methods: ['GET', 'POST'])]
+    #[Route('/pizza/{id}/edit', name: 'pizza_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, string $id): Response
     {
         $pizza = $this->pizzaRepository->findById($id);
@@ -140,7 +143,8 @@ final class PizzaController extends AbstractController
      * @throws MongoDBException
      * @throws Throwable
      */
-    #[Route('/{id}', name: 'pizza_delete', methods: ['DELETE'])]
+    #[Route('/pizza/{id}', name: 'pizza_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, string $id): Response
     {
         if ($request->isMethod('DELETE')) {

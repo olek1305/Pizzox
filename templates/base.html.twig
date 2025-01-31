@@ -20,6 +20,15 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="{{ path('pizza') }}" class="text-white font-bold text-lg">Pizza</a>
 
+            {# Show email #}
+            <span class="text-white">
+                {% if app.user %}
+                    Hello, {{ app.user.email }}!
+                {% else %}
+                    Hello, user!
+                {% endif %}
+            </span>
+
             {# Language Switcher #}
             <div>
                 <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'pl'})) }}"

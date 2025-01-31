@@ -5,13 +5,24 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
+        admin_provider:
+            mongodb:
+                class: App\Document\Admin
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: admin_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                default_target_path: pizza_index
+            logout:
+                path: app_logout
+                target: pizza_index
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -24,6 +35,10 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/pizza/create, roles: ROLE_ADMIN }
+        - { path: ^/pizza/\d+/edit, roles: ROLE_ADMIN }
+        - { path: ^/pizza/\d+/delete, roles: ROLE_ADMIN }
+        - { path: ^/pizza, roles: PUBLIC_ACCESS }
 
 when@test:
     security:
