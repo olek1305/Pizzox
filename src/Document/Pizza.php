@@ -24,19 +24,14 @@ class Pizza
     #[ODM\Field(type: 'float')]
     public float $price;
 
+    #[Assert\NotBlank]
     #[ODM\Field(type: 'collection')]
-    public array $ingredients;
+    public array $toppings = [];
 
     #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['small', 'medium', 'large'])]
-    #[ODM\Field(type: 'string')]
-    public string $size;
-
-    #[ODM\Field(type: 'date')]
-    public \DateTime $createdAt;
-
-    #[ODM\Field(type: 'date')]
-    public \DateTime $updatedAt;
+    #[Assert\Choice(choices: ['small', 'medium', 'large'], multiple: true)]
+    #[ODM\Field(type: 'collection')]
+    public array $size = [];
 
     public function getId(): ?string
     {
@@ -62,50 +57,30 @@ class Pizza
     public function setPrice(float $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
-    public function getIngredients(): array
+    public function getToppings(): array
     {
-        return $this->ingredients;
+        return $this->toppings;
     }
 
-    public function setIngredients(array $ingredients): self
+    public function setToppings(array $toppings): self
     {
-        $this->ingredients = $ingredients;
+        $this->toppings = $toppings;
+
         return $this;
     }
 
-    public function getSize(): string
+    public function getSize(): array
     {
         return $this->size;
     }
 
-    public function setSize(string $size): self
+    public function setSize(array $size): self
     {
         $this->size = $size;
-        return $this;
-    }
-
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getUpdatedAt(): \DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
         return $this;
     }
 }
