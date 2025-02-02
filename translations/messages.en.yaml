@@ -13,10 +13,10 @@ form:
       label: 'Size'
       placeholder: 'Enter pizza size'
       not_blank: 'Pizza size cannot be blank.'
-    ingredients:
-      label: 'Ingredient'
-      placeholder: 'Add ingredient'
-      not_blank: 'Ingredient cannot be blank.'
+    toppings:
+      label: 'Toppings'
+      placeholder: 'Add Topping'
+      not_blank: 'Topping cannot be blank.'
 
 pizza:
   list_title: "Pizza List"

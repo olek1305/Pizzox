@@ -13,10 +13,10 @@ form:
       label: 'Rozmiar'
       placeholder: 'Wprowadź rozmiar pizzy'
       not_blank: 'Rozmiar pizzy nie może być pusty.'
-    ingredients:
-      label: 'Składnik'
-      placeholder: 'Dodaj składnik'
-      not_blank: 'Składnik nie może być pusty.'
+    toppings:
+      label: 'Dodatki'
+      placeholder: 'Dodaj dodatek'
+      not_blank: 'Dodatek nie może być pusty.'
 
 pizza:
   list_title: "Lista Pizzy"
