@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Document\Pizza;
 use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -29,13 +30,20 @@ final class PizzaController extends AbstractController
     private LoggerInterface $logger;
 
     /**
+     * @var DocumentManager
+     */
+    private DocumentManager $documentManager;
+
+    /**
      * @param PizzaRepository $pizzaRepository
      * @param LoggerInterface $logger
+     * @param DocumentManager $documentManager
      */
-    public function __construct(PizzaRepository $pizzaRepository, LoggerInterface $logger)
+    public function __construct(PizzaRepository $pizzaRepository, LoggerInterface $logger, DocumentManager $documentManager)
     {
         $this->pizzaRepository = $pizzaRepository;
         $this->logger = $logger;
+        $this->documentManager = $documentManager;
     }
 
     /**
@@ -54,26 +62,31 @@ final class PizzaController extends AbstractController
 
     /**
      * @param Request $request
+     * @param DocumentManager $dm
      * @return Response
      * @throws MongoDBException
      * @throws Throwable
      */
     #[Route('/pizza/create', name: 'pizza_create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function create(Request $request): Response
-    {
+    public function create(Request $request, DocumentManager $dm): Response {
         $pizza = new Pizza();
+
         $form = $this->createForm(PizzaType::class, $pizza);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->pizzaRepository->save($pizza);
+            $toppingsArray = $form->get('toppings')->getData();
+            $pizza->setToppings($toppingsArray);
 
+            $dm->persist($pizza);
+            $dm->flush();
+
+            $this->addFlash('success', 'Pizza created successfully!');
             return $this->redirectToRoute('pizza_index');
         }
 
         return $this->render('pizza/create.html.twig', [
-            'pizza' => $pizza,
             'form' => $form->createView(),
         ]);
     }
@@ -87,6 +100,9 @@ final class PizzaController extends AbstractController
     #[Route('/pizza/{id}', name: 'pizza_show', methods: ['GET'])]
     public function show(string $id): Response
     {
+        $this->logger->debug('Attempting to find pizza by ID', ['id' => $id]);
+
+
         $pizza = $this->pizzaRepository->findById($id);
 
         if (!$pizza) {
