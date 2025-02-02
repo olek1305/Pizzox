@@ -5,17 +5,19 @@
 {% block body %}
     <h1>Log in</h1>
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
-
     <form action="{{ path('app_login') }}" method="post">
         <label for="username">Email:</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}"/>
+        <input type="text" id="username" name="_username" value="{{ last_username }}" required>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="_password"/>
+        <input type="password" id="password" name="_password" required>
 
-        <button type="submit">Login</button>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button type="submit">Log in</button>
+
+        {% if error %}
+            <div class="error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
     </form>
 {% endblock %}
