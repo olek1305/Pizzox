@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Document\Pizza;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,38 +20,39 @@ class PizzaType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'form.pizza.name.label',
-                'attr' => ['placeholder' => 'form.pizza.name.placeholder'],
-                'constraints' => [
-                    new NotBlank(['message' => 'form.pizza.name.not_blank']),
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'form.pizza.name.placeholder',
                 ],
             ])
+
             ->add('price', NumberType::class, [
                 'label' => 'form.pizza.price.label',
-                'attr' => ['placeholder' => 'form.pizza.price.placeholder'],
+                'attr' => [
+                    'placeholder' => 'form.pizza.price.placeholder',
+                ],
                 'constraints' => [
                     new NotBlank(['message' => 'form.pizza.price.not_blank']),
                     new Positive(['message' => 'form.pizza.price.positive']),
                 ],
             ])
-            ->add('size', TextType::class, [
+            ->add('size', ChoiceType::class, [
                 'label' => 'form.pizza.size.label',
-                'attr' => ['placeholder' => 'form.pizza.size.placeholder'],
-                'constraints' => [
-                    new NotBlank(['message' => 'form.pizza.size.not_blank']),
+                'choices' => [
+                    'Small' => 'small',
+                    'Medium' => 'medium',
+                    'Large' => 'large',
                 ],
+                'multiple' => true,
+                'expanded' => true,
             ])
-            ->add('ingredients', CollectionType::class, [
+            ->add('toppings', CollectionType::class, [
+                'label' => 'form.pizza.toppings.label',
                 'entry_type' => TextType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'prototype' => true,
-                'entry_options' => [
-                    'label' => 'form.pizza.ingredients.label',
-                    'attr' => ['placeholder' => 'form.pizza.ingredients.placeholder'],
-                    'constraints' => [
-                        new NotBlank(['message' => 'form.pizza.ingredients.not_blank']),
-                    ],
-                ],
+                'by_reference' => false
             ]);
     }
 
