@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use DateTime;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -28,12 +27,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[MongoDB\Field(type: 'collection')]
     private array $roles = [];
-
-    #[MongoDB\Field(type: 'date')]
-    private DateTime $createdAt;
-
-    #[MongoDB\Field(type: 'date')]
-    private DateTime $updatedAt;
 
     public function getId(): ?string
     {
@@ -62,34 +55,9 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getUpdatedAt(): DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_ADMIN';
-
-        return array_unique($roles);
+        return array_unique(array_merge($this->roles, ['ROLE_USER']));
     }
 
     public function setRoles(array $roles): self
