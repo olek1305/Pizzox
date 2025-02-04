@@ -10,11 +10,9 @@
             {{ form_row(form.price, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
             {{ form_row(form.size, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
 
-            {# Renderujemy dynamiczną kolekcję składników (toppings) #}
             <div id="toppings-container"
                  data-prototype="{{ form_widget(form.toppings.vars.prototype)|e('html_attr') }}"
                  data-index="{{ form.toppings|length }}">
-                {{ form_label(form.toppings) }}
                 {% for toppingField in form.toppings %}
                     <div class="topping-item mb-2">
                         {{ form_widget(toppingField) }}
@@ -45,45 +43,43 @@
             const collectionHolder = document.getElementById('toppings-container');
             const addButton = document.createElement('button');
             addButton.innerText = 'Add Topping';
-            addButton.className = 'bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 mt-4';
+            addButton.className = 'bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700';
             collectionHolder.appendChild(addButton);
 
-            // Inicjujemy domyślny index (liczba istniejących elementów)
-            let index = parseInt(collectionHolder.dataset.index, 10) || 0;
+            let index = parseInt(collectionHolder.getAttribute('data-index'), 10) || 0;
 
-            // Obsługa dynamicznego dodawania składników
             addButton.addEventListener('click', function (e) {
                 e.preventDefault();
 
-                // Pobieramy prototyp i zastępujemy "__name__" aktualnym indeksem
-                const prototype = collectionHolder.dataset.prototype;
-                const newForm = prototype.replace(/__name__/g, index);
+                const prototype = collectionHolder.getAttribute('data-prototype');
+                const newForm = prototype.replace(/__name__/g, index.toString());
 
-                // Tworzymy nowy element i dodajemy do kontenera
                 const newElement = document.createElement('div');
-                newElement.classList.add('topping-item', 'mb-2');
-                newElement.innerHTML = newForm;
+                newElement.classList.add('topping-item', 'flex', 'items-center', 'gap-2', 'mb-2', 'mt-2', 'w-48');
 
-                // Dodaj przycisk usunięcia dla każdego nowego elementu
+                const inputWrapper = document.createElement('div');
+                inputWrapper.classList.add('flex-grow', 'p-2', 'border', 'rounded-lg', 'overflow-hidden');
+                inputWrapper.innerHTML = newForm;
+
                 const removeButton = document.createElement('button');
                 removeButton.type = 'button';
                 removeButton.innerText = 'Remove';
-                removeButton.className = 'remove-topping bg-red-500 text-white px-2 py-1 rounded-lg ml-2';
+                removeButton.className = 'remove-topping bg-red-500 text-white px-2 py-1 rounded-lg flex-shrink-0';
 
-                // Usuwamy składnik po kliknięciu "Remove"
+
                 removeButton.addEventListener('click', function () {
                     newElement.remove();
                 });
 
+                newElement.appendChild(inputWrapper);
                 newElement.appendChild(removeButton);
+
                 collectionHolder.appendChild(newElement);
 
-                // Zwiększamy indeks
                 index++;
-                collectionHolder.dataset.index = index.toString();
+                collectionHolder.setAttribute('data-index', index.toString());
             });
 
-            // Dodaj obsługę usuwania istniejących elementów
             collectionHolder.querySelectorAll('.remove-topping').forEach(function (button) {
                 button.addEventListener('click', function () {
                     button.closest('.topping-item').remove();
