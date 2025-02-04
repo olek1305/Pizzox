@@ -153,25 +153,43 @@ final class PizzaController extends AbstractController
     /**
      * @param Request $request
      * @param string $id
-     * @return Response
-     * @throws LockException
-     * @throws MappingException
-     * @throws MongoDBException
+     * @return void
      * @throws Throwable
      */
-    #[Route('/pizza/{id}', name: 'pizza_delete', methods: ['DELETE'])]
+    /**
+     * @param Request $request
+     * @param string $id
+     * @return Response
+     * @throws Throwable
+     */
+    #[Route('/pizza/{id}', name: 'pizza_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, string $id): Response
     {
-        if ($request->isMethod('DELETE')) {
-            $pizza = $this->pizzaRepository->findById($id);
+        $pizza = $this->pizzaRepository->findById($id);
 
-            if (!$pizza) {
-                $this->logger->error('Pizza not found', ['id' => $id]);
-                throw $this->createNotFoundException('Pizza not found');
-            }
+        if (!$pizza) {
+            $this->logger->error('Pizza not found', ['id' => $id]);
+            throw $this->createNotFoundException('Pizza not found');
+        }
 
-            $this->pizzaRepository->remove($pizza);
+        // Pobierz token CSRF z żądania
+        $token = $request->request->get('_token');
+
+        // Sprawdź, czy token CSRF jest poprawny
+        if (!$this->isCsrfTokenValid('delete' . $pizza->getId(), $token)) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirectToRoute('pizza_index');
+        }
+
+        try {
+            $this->documentManager->remove($pizza);
+            $this->documentManager->flush();
+
+            $this->addFlash('success', 'Pizza deleted successfully!');
+        } catch (Throwable $e) {
+            $this->logger->error('Error deleting pizza', ['id' => $id, 'error' => $e->getMessage()]);
+            $this->addFlash('error', 'Error deleting pizza');
         }
 
         return $this->redirectToRoute('pizza_index');
