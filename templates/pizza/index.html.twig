@@ -22,11 +22,11 @@
             <div class="bg-white shadow-md rounded-lg overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <th class="px-6 py-3">{{ 'pizza.name.label'|trans }}</th>
-                        <th class="px-6 py-3">{{ 'pizza.price.label'|trans }}</th>
-                        <th class="px-6 py-3">{{ 'pizza.toppings.label'|trans }}</th>
-                        <th class="px-6 py-3">{{ 'pizza.size.label'|trans }}</th>
-                        <th class="px-6 py-3">{{ 'actions'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.name'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.price'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.toppings'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.size'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'actions'|trans }}</th>
                     </thead>
                     <tbody>
                     {% for pizza in pizzas %}
@@ -46,7 +46,7 @@
                                     <form action="{{ path('pizza_delete', {'id': pizza.id}) }}" method="POST" class="inline">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pizza.id) }}">
-                                        <button type="submit" class="text-red-700 hover:underline">{{ 'Delete'|trans }}</button>
+                                        <button type="submit" class="text-red-700 hover:underline">{{ 'actions.delete'|trans }}</button>
                                     </form>
                                 {% endif %}
                             </td>

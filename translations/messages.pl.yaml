@@ -21,15 +21,17 @@ form:
 pizza:
   list_title: "Lista Pizzy"
   id: "ID"
-  name:
-    label: "Nazwa Pizzy"
-  price:
-    label: "Cena"
-  size:
-    label: "Rozmiar"
+  name: "Nazwa Pizzy"
+  price: "Cena"
+  size: "Rozmiar"
+  sizes: "Rozmiary"
   no_pizzas: "Brak pizz"
   create_new: "Dodaj nową"
+  toppings: "Dodatki"
 actions:
+  edit: "Edytuj"
   back_to_list: 'Wróć do Listy Pizz'
+  save: "Zapisz"
+  delete: "Usuń"
 show: 'Pokaż'
 edit: 'Edytuj'

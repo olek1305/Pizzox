@@ -4,11 +4,13 @@ namespace App\Repository;
 
 use App\Document\Pizza;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
+use InvalidArgumentException;
 use Throwable;
+use MongoDB\BSON\ObjectId;
+
 
 class PizzaRepository extends DocumentRepository
 {
@@ -26,7 +28,7 @@ class PizzaRepository extends DocumentRepository
      */
     public function findAllOrderedByName(): array
     {
-        return $this->createQueryBuilder('p')
+        return $this->createQueryBuilder()
             ->sort('name', 'ASC')
             ->getQuery()
             ->execute()
@@ -36,12 +38,19 @@ class PizzaRepository extends DocumentRepository
     /**
      * @param string $id
      * @return Pizza|null
-     * @throws LockException
-     * @throws MappingException
      */
     public function findById(string $id): ?Pizza
     {
-        return $this->find($id);
+        if (!preg_match('/^[0-9a-f]{24}$/', $id)) {
+            throw new InvalidArgumentException('Invalid MongoDB ID format');
+        }
+
+        try {
+            $objectId = new ObjectId($id);
+            return $this->find($objectId);
+        } catch (Exception) {
+            return null;
+        }
     }
 
     /**

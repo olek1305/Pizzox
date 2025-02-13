@@ -9,9 +9,11 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     unzip \
     git \
-    && docker-php-ext-install intl opcache \
     && pecl install mongodb \
+    && pecl install redis \
     && docker-php-ext-enable mongodb \
+    && docker-php-ext-enable redis \
+    && docker-php-ext-install intl opcache \
     && apt-get clean
 
 # Install the composer binary from the official Composer image

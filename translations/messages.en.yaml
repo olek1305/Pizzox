@@ -21,15 +21,17 @@ form:
 pizza:
   list_title: "Pizza List"
   id: "ID"
-  name:
-    label: "Pizza Name"
-  price:
-    label: "Price"
-  size:
-    label: "Size"
+  name: "Pizza Name"
+  price: "Price"
+  size: "Size"
+  sizes: "Sizes"
   no_pizzas: "No pizzas found"
   create_new: "Create New"
+  toppings: "Toppings"
 actions:
+  edit: "Edit"
   back_to_list: 'Back to Pizza List'
+  save: "Save"
+  delete: "Delete"
 show: 'Show'
 edit: 'Edit'
