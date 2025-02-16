@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document;
 
+use App\Enum\OrderStatus;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 #[MongoDB\Document(collection: 'order')]
@@ -17,6 +19,7 @@ class Order
     private string $customerName;
 
     #[MongoDB\Field(type: 'string')]
+    #[Assert\Email]
     private string $customerEmail;
 
     #[MongoDB\Field(type: 'string')]
@@ -25,20 +28,27 @@ class Order
     #[MongoDB\Field(type: 'string')]
     private string $address;
 
-    #[MongoDB\Field(type: 'collection')]
-    private array $pizzas;
+    #[MongoDB\EmbedMany(targetDocument: Pizza::class)]
+    private array $pizzas = [];
 
-    #[MongoDB\Field(type: 'collection')]
-    private array $additions;
+    #[MongoDB\EmbedMany(targetDocument: Addition::class)]
+    private array $additions = [];
 
     #[MongoDB\Field(type: 'float')]
+    #[Assert\PositiveOrZero]
     private float $totalPrice;
 
     #[MongoDB\Field(type: 'string')]
-    private string $status;
+    private string $status = OrderStatus::PENDING->value;
 
     #[MongoDB\Field(type: 'date')]
     private DateTime $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+        $this->status = OrderStatus::PENDING->value;
+    }
 
     public function getId(): ?string
     {
@@ -89,25 +99,27 @@ class Order
         return $this;
     }
 
-    public function getPizzas(): array
-    {
-        return $this->pizzas;
-    }
-
     public function setPizzas(array $pizzas): self
     {
         $this->pizzas = $pizzas;
         return $this;
     }
 
-    public function getAdditions(): array
+    public function addPizza(Pizza $pizza): self
     {
-        return $this->additions;
+        $this->pizzas[] = $pizza;
+        return $this;
     }
 
     public function setAdditions(array $additions): self
     {
         $this->additions = $additions;
+        return $this;
+    }
+
+    public function addAddition(Addition $addition): self
+    {
+        $this->additions[] = $addition;
         return $this;
     }
 

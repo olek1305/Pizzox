@@ -35,3 +35,17 @@ actions:
   delete: "Delete"
 show: 'Show'
 edit: 'Edit'
+
+order:
+  status:
+    pending: "Pending"
+    paid: "Paid"
+    preparing: "Preparing"
+    out_for_delivery: "Out for Delivery"
+    completed: "Completed"
+
+driver:
+  status:
+    available: "Available"
+    unavailable: "Unavailable"
+    on_duty: "On Duty"

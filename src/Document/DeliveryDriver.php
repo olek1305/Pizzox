@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document;
 
+use App\Enum\DriverStatus;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[MongoDB\Document(collection: 'delivery_driver')]
 class DeliveryDriver
@@ -13,16 +15,28 @@ class DeliveryDriver
     private ?string $id = null;
 
     #[MongoDB\Field(type: 'string')]
+    #[Assert\NotBlank]
     private string $name;
 
     #[MongoDB\Field(type: 'string')]
+    #[Assert\Email]
+    private string $email;
+
+    #[MongoDB\Field(type: 'string')]
+    #[Assert\NotBlank]
     private string $phone;
 
-    #[MongoDB\Field(type: 'collection')]
+    #[MongoDB\ReferenceMany(targetDocument: Order::class)]
     private array $assignedOrders;
 
     #[MongoDB\Field(type: 'string')]
     private string $status;
+
+    public function __construct()
+    {
+        $this->status = DriverStatus::AVAILABLE->value;
+        $this->assignedOrders = [];
+    }
 
     public function getId(): ?string
     {
@@ -37,6 +51,17 @@ class DeliveryDriver
     public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
         return $this;
     }
 

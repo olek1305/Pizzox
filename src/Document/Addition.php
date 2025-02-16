@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 #[MongoDB\Document(collection: 'addition')]
@@ -14,16 +15,32 @@ class Addition
     private ?string $id = null;
 
     #[MongoDB\Field(type: 'string')]
+    #[Assert\NotBlank]
     private string $name;
 
     #[MongoDB\Field(type: 'float')]
     private float $price;
+
+    #[MongoDB\Field(type: 'string', nullable: true)]
+    private ?string $description = null;
+
+    #[MongoDB\Field(type: 'string')]
+    private string $type;
+
+    #[MongoDB\Field(type: 'boolean')]
+    private bool $active = true;
 
     #[MongoDB\Field(type: 'date')]
     private DateTime $createdAt;
 
     #[MongoDB\Field(type: 'date')]
     private DateTime $updatedAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
 
     public function getId(): ?string
     {
@@ -49,6 +66,39 @@ class Addition
     public function setPrice(float $price): self
     {
         $this->price = $price;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
         return $this;
     }
 

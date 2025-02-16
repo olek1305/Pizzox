@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document;
 
+use App\Enum\PaymentStatus;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 #[MongoDB\Document(collection: 'payment')]
@@ -13,37 +15,44 @@ class Payment
     #[MongoDB\Id]
     private ?string $id = null;
 
-    #[MongoDB\Field(type: 'string')]
-    private string $orderId;
+    #[MongoDB\ReferenceOne(targetDocument: Order::class)]
+    private Order $order;
 
     #[MongoDB\Field(type: 'float')]
+    #[Assert\Positive]
     private float $amount;
 
     #[MongoDB\Field(type: 'string')]
     private string $status;
 
+    #[MongoDB\Field(type: 'string')]
+    private string $paymentMethod;
+
     #[MongoDB\Field(type: 'date')]
-    private DateTime $paymentDate;
+    private DateTime $createdAt;
 
-    #[MongoDB\Field(type: 'string')]
-    private string $stripeId;
-
-    #[MongoDB\Field(type: 'string')]
-    private string $methodPayment;
+    public function __construct(Order $order, float $amount, string $paymentMethod)
+    {
+        $this->order = $order;
+        $this->amount = $amount;
+        $this->paymentMethod = $paymentMethod;
+        $this->status = PaymentStatus::PENDING->value;
+        $this->createdAt = new DateTime();
+    }
 
     public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getOrderId(): string
+    public function getOrder(): Order
     {
-        return $this->orderId;
+        return $this->order;
     }
 
-    public function setOrderId(string $orderId): self
+    public function setOrder(Order $order): self
     {
-        $this->orderId = $orderId;
+        $this->order = $order;
         return $this;
     }
 
@@ -63,42 +72,26 @@ class Payment
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(PaymentStatus $status): self
     {
-        $this->status = $status;
+        $this->status = $status->value;
         return $this;
     }
 
-    public function getPaymentDate(): DateTime
+    public function getPaymentMethod(): string
     {
-        return $this->paymentDate;
+        return $this->paymentMethod;
     }
 
-    public function setPaymentDate(DateTime $paymentDate): self
+    public function setPaymentMethod(string $paymentMethod): self
     {
-        $this->paymentDate = $paymentDate;
+        $this->paymentMethod = $paymentMethod;
         return $this;
     }
 
-    public function getStripeId(): string
+    public function getCreatedAt(): DateTime
     {
-        return $this->stripeId;
+        return $this->createdAt;
     }
 
-    public function setStripeId(string $stripeId): self
-    {
-        $this->stripeId = $stripeId;
-        return $this;
-    }
-
-    public function getmethodPayment(): string
-    {
-        return $this->methodPayment;
-    }
-
-    public function setmethodPayment(string $methodPayment): self
-    {
-        $this->methodPayment = $methodPayment;
-        return $this;
-    }
 }
