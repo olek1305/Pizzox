@@ -1,4 +1,4 @@
-## About: Fast service pizza with API Google map feature with delivery, payment.
+## About: Fast service pizza with Mapbox feature with delivery, payment.
 
 \
 Task:
@@ -6,10 +6,10 @@ Task:
 - Full Translation PL/ENG
 - Add seeders (pizza, coupon, additions, deliveryDrivers, )
 - Add payment Stripe, using with coupons and blik.
-- API Google maps
+- Mapbox
 - Tests
 - CI/CD
 
 \
 Complete:
-- None
+- Redis
