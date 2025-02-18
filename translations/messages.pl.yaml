@@ -26,12 +26,47 @@ pizza:
   size: "Rozmiar"
   sizes: "Rozmiary"
   no_pizzas: "Brak pizz"
-  create_new: "Dodaj nową"
+  create: "Utwórz pizzę"
   toppings: "Dodatki"
-actions:
+
+action:
   edit: "Edytuj"
   back_to_list: 'Wróć do Listy Pizz'
   save: "Zapisz"
   delete: "Usuń"
+
+order:
+  status:
+    pending: "W oczekiwaniu"
+    paid: "Opłacone"
+    preparing: "Przygotowywane"
+    out_for_delivery: "W drodze do dostarczenia"
+    completed: "Zrealizowane"
+
+driver:
+  status:
+    available: "Dostępny"
+    unavailable: "Niedostępny"
+    on_duty: "Na zmianie"
+
+category:
+  name: 'Nazwa'
+  active: 'Aktywna'
+  inactive: 'Nieaktywna'
+  list_title: "Kategorie"
+  no_categories: "Brak dostępnych kategorii."
+  active_categories: "Aktywne Kategorie"
+  inactive_categories: "Nieaktywne Kategorie"
+  create: "Utwórz kategorię"
+  index: "Indeks kategorii"
+
+addition:
+  create: "Utwórz dodatek"
+  name: "Dodatek"
+  price: "Cena"
+  action: "Akcja"
+
 show: 'Pokaż'
 edit: 'Edytuj'
+deactivate: "Dezaktywuj"
+activate: "Aktywuj"

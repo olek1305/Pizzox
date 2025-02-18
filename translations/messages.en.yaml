@@ -26,15 +26,14 @@ pizza:
   size: "Size"
   sizes: "Sizes"
   no_pizzas: "No pizzas found"
-  create_new: "Create New"
+  create: "Create a pizza"
   toppings: "Toppings"
-actions:
+
+action:
   edit: "Edit"
   back_to_list: 'Back to Pizza List'
   save: "Save"
   delete: "Delete"
-show: 'Show'
-edit: 'Edit'
 
 order:
   status:
@@ -49,3 +48,25 @@ driver:
     available: "Available"
     unavailable: "Unavailable"
     on_duty: "On Duty"
+
+category:
+  name: 'Name'
+  active: 'Active'
+  inactive: 'Inactive'
+  list_title: "Categories"
+  no_categories: "No categories available."
+  active_categories: "Active Categories"
+  inactive_categories: "Inactive Categories"
+  create: "Create a category"
+  index: "Category index"
+
+addition:
+  create: "Create an addition"
+  name: "Addition"
+  price: "Price"
+  action: "action"
+
+show: 'Show'
+edit: 'Edit'
+deactivate: "Deactivate"
+activate: "Activate"
