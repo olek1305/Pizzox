@@ -5,43 +5,43 @@ declare(strict_types=1);
 namespace App\Document;
 
 use App\Enum\OrderStatus;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
-#[MongoDB\Document(collection: 'order')]
+#[ODM\Document(collection: 'order')]
 class Order
 {
-    #[MongoDB\Id]
+    #[ODM\Id]
     private ?string $id = null;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private string $customerName;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     #[Assert\Email]
     private string $customerEmail;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private ?string $customerPhone = null;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private string $address;
 
-    #[MongoDB\EmbedMany(targetDocument: Pizza::class)]
+    #[ODM\EmbedMany(targetDocument: Pizza::class)]
     private array $pizzas = [];
 
-    #[MongoDB\EmbedMany(targetDocument: Addition::class)]
+    #[ODM\EmbedMany(targetDocument: Addition::class)]
     private array $additions = [];
 
-    #[MongoDB\Field(type: 'float')]
+    #[ODM\Field(type: 'float')]
     #[Assert\PositiveOrZero]
     private float $totalPrice;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private string $status = OrderStatus::PENDING->value;
 
-    #[MongoDB\Field(type: 'date')]
+    #[ODM\Field(type: 'date')]
     private DateTime $createdAt;
 
     public function __construct()
@@ -105,10 +105,9 @@ class Order
         return $this;
     }
 
-    public function addPizza(Pizza $pizza): self
+    public function getPizzas(): array
     {
-        $this->pizzas[] = $pizza;
-        return $this;
+        return $this->pizzas;
     }
 
     public function setAdditions(array $additions): self
@@ -117,10 +116,9 @@ class Order
         return $this;
     }
 
-    public function addAddition(Addition $addition): self
+    public function getAdditions(): array
     {
-        $this->additions[] = $addition;
-        return $this;
+        return $this->additions;
     }
 
     public function getTotalPrice(): float

@@ -5,30 +5,30 @@ declare(strict_types=1);
 namespace App\Document;
 
 use App\Enum\PaymentStatus;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
-#[MongoDB\Document(collection: 'payment')]
+#[ODM\Document(collection: 'payment')]
 class Payment
 {
-    #[MongoDB\Id]
+    #[ODM\Id]
     private ?string $id = null;
 
-    #[MongoDB\ReferenceOne(targetDocument: Order::class)]
+    #[ODM\ReferenceOne(targetDocument: Order::class)]
     private Order $order;
 
-    #[MongoDB\Field(type: 'float')]
+    #[ODM\Field(type: 'float')]
     #[Assert\Positive]
     private float $amount;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private string $status;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private string $paymentMethod;
 
-    #[MongoDB\Field(type: 'date')]
+    #[ODM\Field(type: 'date')]
     private DateTime $createdAt;
 
     public function __construct(Order $order, float $amount, string $paymentMethod)

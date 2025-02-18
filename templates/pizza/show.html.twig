@@ -34,14 +34,23 @@
                     {{ 'pizza.no_toppings'|trans }}
                 {% endif %}
             </div>
+
+            <div class="mb-4">
+                <strong>{{ 'pizza.category'|trans }}:</strong>
+                {% if pizza.category %}
+                    {{ pizza.category.name }}
+                {% else %}
+                    {{ 'pizza.no_category'|trans }}
+                {% endif %}
+            </div>
         </div>
 
         <div class="mt-6">
             <a href="{{ path('pizza_edit', {'id': pizza.id}) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                {{ 'actions.edit'|trans }}
+                {{ 'action.edit'|trans }}
             </a>
             <a href="{{ path('pizza_index') }}" class="text-blue-500 hover:underline ml-4">
-                {{ 'actions.back_to_list'|trans }}
+                {{ 'action.back_to_list'|trans }}
             </a>
         </div>
     </div>

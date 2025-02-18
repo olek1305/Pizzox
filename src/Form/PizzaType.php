@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Document\Category;
 use App\Document\Pizza;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -28,12 +29,13 @@ class PizzaType extends AbstractType
 
             ->add('price', NumberType::class, [
                 'label' => 'form.pizza.price.label',
-                'attr' => [
-                    'placeholder' => 'form.pizza.price.placeholder',
-                ],
+                'currency' => 'PLN',
                 'constraints' => [
                     new NotBlank(['message' => 'form.pizza.price.not_blank']),
                     new Positive(['message' => 'form.pizza.price.positive']),
+                ],
+                'attr' => [
+                    'placeholder' => 'form.pizza.price.placeholder',
                 ],
             ])
             ->add('size', ChoiceType::class, [
@@ -53,6 +55,18 @@ class PizzaType extends AbstractType
                 'allow_delete' => true,
                 'prototype' => true,
                 'by_reference' => false
+            ])
+            ->add('category', ChoiceType::class, [
+                'label' => 'form.pizza.category.label',
+                'choices' => $options['categories'],
+                'choice_label' => function ($category) {
+                    return $category->getName();
+                },
+                'choice_value' => function (?Category $category) {
+                    return $category ? $category->getId() : '';
+                },
+                'placeholder' => 'form.pizza.category.placeholder',
+                'required' => true
             ]);
     }
 
@@ -60,6 +74,7 @@ class PizzaType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Pizza::class,
+            'categories' => [],
         ]);
     }
 }

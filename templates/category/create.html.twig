@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">Create a New Category</h1>
+
+        {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded-lg p-6'}}) }}
+        <div class="space-y-4">
+            {{ form_row(form.name, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
+        </div>
+
+        <button type="submit" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
+            Save Category
+        </button>
+
+        {{ form_end(form) }}
+
+        <div class="mt-4">
+            <a href="{{ path('category_index') }}" class="text-blue-500 hover:underline">
+                Back to Category List
+            </a>
+        </div>
+    </div>
+{% endblock %}

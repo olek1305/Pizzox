@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace App\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[MongoDB\Document(collection: 'admin')]
+#[ODM\Document(collection: 'admin')]
 class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[MongoDB\Id]
+    #[ODM\Id]
     private ?string $id = null;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\Email]
     private string $email;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\Length(min: 8)]
     private string $password;
 
-    #[MongoDB\Field(type: 'collection')]
+    #[ODM\Field(type: 'collection')]
     private array $roles = [];
 
     public function getId(): ?string

@@ -2,13 +2,14 @@
 
 {% block body %}
     <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-6">{{ 'pizza.create_new'|trans }}</h1>
+        <h1 class="text-3xl font-bold mb-6">{{ 'pizza.create'|trans }}</h1>
 
         {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded-lg p-6'}}) }}
         <div class="space-y-4">
             {{ form_row(form.name, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
             {{ form_row(form.price, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
             {{ form_row(form.size, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
+            {{ form_row(form.category, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
 
             <div id="toppings-container"
                  data-prototype="{{ form_widget(form.toppings.vars.prototype)|e('html_attr') }}"
@@ -30,7 +31,7 @@
 
         <div class="mt-4">
             <a href="{{ path('pizza_index') }}" class="text-blue-500 hover:underline">
-                {{ 'actions.back_to_list'|trans }}
+                {{ 'action.back_to_list'|trans }}
             </a>
         </div>
     </div>

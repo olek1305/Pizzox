@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Document\Category;
 use App\Document\Pizza;
 use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
+use App\Repository\AdditionRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Psr\Cache\InvalidArgumentException;
@@ -21,30 +23,18 @@ use Symfony\Contracts\Cache\ItemInterface;
 final class PizzaController extends AbstractController
 {
     /**
-     * @var PizzaRepository
-     */
-    private PizzaRepository $pizzaRepository;
-
-    /**
-     * @var DocumentManager
-     */
-    private DocumentManager $documentManager;
-
-    /**
-     * @var CacheInterface
-     */
-    private CacheInterface $cache;
-
-    /**
      * @param PizzaRepository $pizzaRepository
+     * @param AdditionRepository $additionRepository
      * @param DocumentManager $documentManager
      * @param CacheInterface $cache
      */
-    public function __construct(PizzaRepository $pizzaRepository, DocumentManager $documentManager, CacheInterface $cache)
-    {
-        $this->pizzaRepository = $pizzaRepository;
-        $this->documentManager = $documentManager;
-        $this->cache = $cache;
+    public function __construct(
+        private readonly PizzaRepository    $pizzaRepository,
+        private readonly AdditionRepository $additionRepository,
+        private readonly DocumentManager    $documentManager,
+        private readonly CacheInterface     $cache
+    ) {
+        //
     }
 
     /**
@@ -59,8 +49,14 @@ final class PizzaController extends AbstractController
             return $this->pizzaRepository->findAllOrderedByName();
         });
 
+        $additions = $this->cache->get('additions_index', function (ItemInterface $item) {
+            $item->expiresAfter(3600);
+            return $this->additionRepository->findAllOrderedByName();
+        });
+
         return $this->render('pizza/index.html.twig', [
             'pizzas' => $pizzas,
+            'additions' => $additions
         ]);
     }
 
@@ -75,15 +71,15 @@ final class PizzaController extends AbstractController
     #[Route('/pizza/create', name: 'pizza_create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, DocumentManager $dm): Response {
+        $categories = $this->documentManager->getRepository(Category::class)->findAll();
         $pizza = new Pizza();
 
-        $form = $this->createForm(PizzaType::class, $pizza);
+        $form = $this->createForm(PizzaType::class, $pizza, [
+            'categories' => $categories
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $toppingsArray = $form->get('toppings')->getData();
-            $pizza->setToppings($toppingsArray);
-
             $dm->persist($pizza);
             $dm->flush();
 
@@ -94,7 +90,7 @@ final class PizzaController extends AbstractController
         }
 
         return $this->render('pizza/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
@@ -119,6 +115,7 @@ final class PizzaController extends AbstractController
     /**
      * @param Request $request
      * @param string $id
+     * @param DocumentManager $dm
      * @return Response
      * @throws InvalidArgumentException
      * @throws MongoDBException
@@ -126,22 +123,26 @@ final class PizzaController extends AbstractController
      */
     #[Route('/pizza/{id}/edit', name: 'pizza_edit', requirements: ['id' => '[0-9a-f]{24}'], methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function edit(Request $request, string $id): Response
+    public function edit(Request $request, string $id, DocumentManager $dm): Response
     {
         $pizza = $this->pizzaRepository->findById($id);
+        $categories = $this->documentManager->getRepository(Category::class)->findAll();
 
         if (!$pizza) {
             throw $this->createNotFoundException('Pizza not found');
         }
 
-        $form = $this->createForm(PizzaType::class, $pizza);
+        $form = $this->createForm(PizzaType::class, $pizza, [
+            'categories' => $categories,
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $toppingsArray = $form->get('toppings')->getData();
-            $pizza->setToppings($toppingsArray);
-            $this->documentManager->flush();
+            $dm->flush();
+
             $this->cache->delete('pizzas_index');
+
             $this->addFlash('success', 'Pizza updated successfully!');
             return $this->redirectToRoute('pizza_index');
         }
@@ -183,5 +184,4 @@ final class PizzaController extends AbstractController
         $this->addFlash('success', 'Pizza deleted successfully!');
         return $this->redirectToRoute('pizza_index');
     }
-
 }

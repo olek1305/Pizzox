@@ -4,38 +4,38 @@ declare(strict_types=1);
 
 namespace App\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
-#[MongoDB\Document(collection: 'coupon')]
+#[ODM\Document(collection: 'coupon')]
 class Coupon
 {
-    #[MongoDB\Id]
+    #[ODM\Id]
     private ?string $id = null;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     private string $code;
 
-    #[MongoDB\Field(type: 'float')]
+    #[ODM\Field(type: 'float')]
     #[Assert\PositiveOrZero]
     private float $discount;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     private string $type;
 
-    #[MongoDB\Field(type: 'date', nullable: true)]
+    #[ODM\Field(type: 'date', nullable: true)]
     private ?DateTime $expiresAt = null;
 
-    #[MongoDB\Field(type: 'boolean')]
+    #[ODM\Field(type: 'boolean')]
     private bool $active = true;
 
-    #[MongoDB\Field(type: 'int')]
+    #[ODM\Field(type: 'int')]
     private int $usageLimit;
 
-    #[MongoDB\Field(type: 'int')]
+    #[ODM\Field(type: 'int')]
     private int $usageCount = 0;
 
 

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">{{ 'addition.show.title'|trans({ '%name%': addition.name }) }}</h1>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <p><strong>{{ 'addition.name'|trans }}</strong>: {{ addition.name }}</p>
+            <p><strong>{{ 'addition.price'|trans }}</strong>: {{ addition.price }}</p>
+            <p><strong>{{ 'addition.category'|trans }}</strong>: {{ addition.category ? addition.category.name : 'None' }}</p>
+            <p><strong>{{ 'addition.created_at'|trans }}</strong>: {{ addition.createdAt ? addition.createdAt|date('Y-m-d H:i:s') : 'N/A' }}</p>
+            <p><strong>{{ 'addition.updated_at'|trans }}</strong>: {{ addition.updatedAt ? addition.updatedAt|date('Y-m-d H:i:s') : 'N/A' }}</p>
+        </div>
+
+        <div class="mt-4">
+            <a href="{{ path('addition_edit', { id: addition.id }) }}" class="text-blue-500 hover:underline">
+                {{ 'action.edit'|trans }}
+            </a>
+            |
+            <a href="{{ path('pizza_index') }}" class="text-blue-500 hover:underline">
+                {{ 'action.back_to_list'|trans }}
+            </a>
+        </div>
+    </div>
+{% endblock %}

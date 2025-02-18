@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Document;
 
-use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,7 +12,6 @@ class Pizza
 {
     #[ODM\Id]
     public ?string $id = null;
-
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
     #[ODM\Field(type: 'string')]
@@ -32,6 +30,9 @@ class Pizza
     #[Assert\Choice(choices: ['small', 'medium', 'large'], multiple: true)]
     #[ODM\Field(type: 'collection')]
     public array $size = [];
+
+    #[ODM\ReferenceOne(targetDocument: Category::class)]
+    private $category;
 
     public function getId(): ?string
     {
@@ -81,6 +82,17 @@ class Pizza
     public function setSize(array $size): self
     {
         $this->size = $size;
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
         return $this;
     }
 }

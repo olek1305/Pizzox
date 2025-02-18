@@ -2,24 +2,21 @@
 
 namespace App\Repository;
 
-use App\Document\Pizza;
+use App\Document\Addition;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Exception;
 use InvalidArgumentException;
-use Throwable;
 use MongoDB\BSON\ObjectId;
+use Throwable;
 
-
-class PizzaRepository extends DocumentRepository
+class AdditionRepository extends DocumentRepository
 {
-    /**
-     * @param DocumentManager $dm
-     */
     public function __construct(DocumentManager $dm)
     {
-        parent::__construct($dm, $dm->getUnitOfWork(), $dm->getClassMetadata(Pizza::class));
+        parent::__construct($dm, $dm->getUnitOfWork(), $dm->getClassMetadata(Addition::class));
     }
 
     /**
@@ -37,54 +34,41 @@ class PizzaRepository extends DocumentRepository
 
     /**
      * @param string $id
-     * @return Pizza|null
+     * @return Addition|null
+     * @throws LockException
+     * @throws MappingException
      */
-    public function findById(string $id): ?Pizza
+    public function findById(string $id): ?Addition
     {
         if (!preg_match('/^[0-9a-f]{24}$/', $id)) {
             throw new InvalidArgumentException('Invalid MongoDB ID format');
         }
-
-        try {
-            $objectId = new ObjectId($id);
-            return $this->find($objectId);
-        } catch (Exception) {
-            return null;
-        }
+        $objectId = new ObjectId($id);
+        return $this->find($objectId);
     }
 
     /**
-     * @param Pizza $pizza
+     * @param Addition $addition
      * @return void
      * @throws MongoDBException
      * @throws Throwable
      */
-    public function save(Pizza $pizza): void
+    public function save(Addition $addition): void
     {
-        try {
-            $this->dm->persist($pizza);
-            $this->dm->flush();
-        } catch (MongoDBException $e) {
-            throw new MongoDBException('Failed to save pizza: ' . $e->getMessage());
-        }
+        $this->dm->persist($addition);
+        $this->dm->flush();
     }
 
     /**
-     * @param Pizza $pizza
+     * @param Addition $addition
      * @return void
      * @throws MongoDBException
      * @throws Throwable
      */
-    public function remove(Pizza $pizza): void
+    public function remove(Addition $addition): void
     {
-        {
-            try {
-                $this->dm->remove($pizza);
-                $this->dm->flush();
-            } catch (MongoDBException $e) {
-                throw new MongoDBException('Failed to remove pizza: ' . $e->getMessage());
-            }
-        }
+        $this->dm->remove($addition);
+        $this->dm->flush();
     }
 
     /**
@@ -97,6 +81,20 @@ class PizzaRepository extends DocumentRepository
         return $this->createQueryBuilder()
             ->field('type')->equals($category)
             ->count()
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * @param string $categoryId
+     * @return void
+     * @throws MongoDBException
+     */
+    public function removeCategory(string $categoryId): void
+    {
+        $this->createQueryBuilder()
+            ->findAndRemove()
+            ->field('category')->equals($categoryId)
             ->getQuery()
             ->execute();
     }

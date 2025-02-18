@@ -3,20 +3,24 @@ form:
     name:
       label: 'Nazwa pizzy'
       placeholder: 'Wprowadź nazwę pizzy'
-      not_blank: 'Nazwa pizzy nie może być pusta.'
+      not_blank: 'Nazwa pizzy nie może być pusta'
     price:
       label: 'Cena'
       placeholder: 'Wprowadź cenę'
-      not_blank: 'Cena nie może być pusta.'
-      positive: 'Cena musi być liczbą dodatnią.'
+      not_blank: 'Cena nie może być pusta'
+      positive: 'Cena musi być liczbą dodatnią'
     size:
       label: 'Rozmiar'
       placeholder: 'Wprowadź rozmiar pizzy'
-      not_blank: 'Rozmiar pizzy nie może być pusty.'
+      not_blank: 'Rozmiar pizzy nie może być pusty'
     toppings:
       label: 'Dodatki'
       placeholder: 'Dodaj dodatek'
-      not_blank: 'Dodatek nie może być pusty.'
+      not_blank: 'Dodatek nie może być pusty'
+    category:
+      label: 'Kategoria'
+      placeholder: 'Wybierz nazwę kategorii'
+      no_category: 'Brak Kategorii'
 
 pizza:
   list_title: "Lista Pizzy"
@@ -28,6 +32,8 @@ pizza:
   no_pizzas: "Brak pizz"
   create: "Utwórz pizzę"
   toppings: "Dodatki"
+  no_category: 'Brak Kategorii'
+  category: 'Kategoria'
 
 action:
   edit: "Edytuj"
@@ -54,7 +60,7 @@ category:
   active: 'Aktywna'
   inactive: 'Nieaktywna'
   list_title: "Kategorie"
-  no_categories: "Brak dostępnych kategorii."
+  no_categories: "Brak dostępnych kategorii"
   active_categories: "Aktywne Kategorie"
   inactive_categories: "Nieaktywne Kategorie"
   create: "Utwórz kategorię"
@@ -65,6 +71,7 @@ addition:
   name: "Dodatek"
   price: "Cena"
   action: "Akcja"
+  edit: "Edytuj dodatek"
 
 show: 'Pokaż'
 edit: 'Edytuj'

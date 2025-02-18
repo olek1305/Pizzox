@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'category.edit_title'|trans }}{% endblock %}
+
+{% block body %}
+    <h1 class="text-3xl font-bold">{{ 'category.edit_title'|trans }}</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary">{{ 'save'|trans }}</button>
+    {{ form_end(form) }}
+{% endblock %}

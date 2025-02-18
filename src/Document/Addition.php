@@ -4,36 +4,39 @@ declare(strict_types=1);
 
 namespace App\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
-#[MongoDB\Document(collection: 'addition')]
+#[ODM\Document(collection: 'addition')]
 class Addition
 {
-    #[MongoDB\Id]
+    #[ODM\Id]
     private ?string $id = null;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     private string $name;
 
-    #[MongoDB\Field(type: 'float')]
+    #[ODM\Field(type: 'float')]
     private float $price;
 
-    #[MongoDB\Field(type: 'string', nullable: true)]
+    #[ODM\Field(type: 'string', nullable: true)]
     private ?string $description = null;
 
-    #[MongoDB\Field(type: 'string')]
+    #[ODM\Field(type: 'string')]
     private string $type;
 
-    #[MongoDB\Field(type: 'boolean')]
+    #[ODM\Field(type: 'boolean')]
     private bool $active = true;
 
-    #[MongoDB\Field(type: 'date')]
+    #[ODM\ReferenceOne(targetDocument: Category::class)]
+    private $category;
+
+    #[ODM\Field(type: 'date')]
     private DateTime $createdAt;
 
-    #[MongoDB\Field(type: 'date')]
+    #[ODM\Field(type: 'date')]
     private DateTime $updatedAt;
 
     public function __construct()
@@ -121,6 +124,17 @@ class Addition
     public function setUpdatedAt(DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
         return $this;
     }
 }

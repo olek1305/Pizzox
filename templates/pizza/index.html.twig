@@ -3,30 +3,42 @@
 {% block title %}{{ 'pizza.list_title'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="container mx-auto p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">{{ 'pizza.list_title'|trans }}</h1>
+    <div class="container mx-auto p-12">
+        <div class="flex justify-center items-center mb-4">
             {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('pizza_create') }}"
-                   class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
-                    {{ 'pizza.create_new'|trans }}
-                </a>
+                <div class="flex space-x-3">
+                    <a href="{{ path('category_index') }}"
+                       class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-green-700">
+                        {{ 'category.index'|trans }}
+                    </a>
+                    <a href="{{ path('pizza_create') }}"
+                       class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
+                        {{ 'pizza.create'|trans }}
+                    </a>
+                    <a href="{{ path('addition_create') }}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
+                        {{ 'addition.create'|trans }}
+                    </a>
+                </div>
             {% endif %}
         </div>
 
+        <!-- Pizzas -->
         {% if pizzas is empty %}
-            <div class="bg-white shadow-md rounded-lg p-6 text-center text-gray-600">
+            <div class="bg-white shadow-md rounded-lg p-6 text-center text-gray-600 mb-3">
+                <h1 class="text-3xl font-bold">{{ 'pizza.list_title'|trans }}</h1>
                 {{ 'pizza.no_pizzas'|trans }}
             </div>
         {% else %}
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="bg-white shadow-md rounded-lg overflow-hidden mb-3">
+                <h1 class="text-3xl font-bold ml-3 mt-1">{{ 'pizza.list_title'|trans }}</h1>
                 <table class="w-full text-left border-collapse">
                     <thead>
                     <th class="px-6 py-3">{{ 'pizza.name'|trans }}</th>
                     <th class="px-6 py-3">{{ 'pizza.price'|trans }}</th>
                     <th class="px-6 py-3">{{ 'pizza.toppings'|trans }}</th>
                     <th class="px-6 py-3">{{ 'pizza.size'|trans }}</th>
-                    <th class="px-6 py-3">{{ 'actions'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'pizza.category'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'action'|trans }}</th>
                     </thead>
                     <tbody>
                     {% for pizza in pizzas %}
@@ -35,6 +47,13 @@
                             <td class="px-6 py-4">{{ pizza.price }} zł</td>
                             <td class="px-6 py-4">{{ pizza.toppings|join(', ') }}</td>
                             <td class="px-6 py-4">{{ pizza.size|join(', ') }}</td>
+                            <td class="px-6 py-4">
+                                {% if pizza.category %}
+                                    {{ pizza.category.name }}
+                                {% else %}
+                                    {{ 'pizza.no_category'|trans }}
+                                {% endif %}
+                            </td>
                             <td class="px-6 py-4 space-x-2">
                                 <a href="{{ path('pizza_show', {'id': pizza.id}) }}"
                                    class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
@@ -46,7 +65,7 @@
                                     <form action="{{ path('pizza_delete', {'id': pizza.id}) }}" method="POST" class="inline">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pizza.id) }}">
-                                        <button type="submit" class="text-red-700 hover:underline">{{ 'actions.delete'|trans }}</button>
+                                        <button type="submit" class="text-red-700 hover:underline">{{ 'action.delete'|trans }}</button>
                                     </form>
                                 {% endif %}
                             </td>
@@ -56,5 +75,40 @@
                 </table>
             </div>
         {% endif %}
+
+        <!-- Additions -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <h2 class="text-3xl font-bold ml-3 mt-1">{{ 'Additions'|trans }}</h2>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr>
+                    <th class="px-6 py-3">{{ 'addition.name'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'addition.price'|trans }}</th>
+                    <th class="px-6 py-3">{{ 'addition.action'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for addition in additions %}
+                    <tr class="border-b hover:bg-gray-100">
+                        <td class="px-6 py-4">{{ addition.name }}</td>
+                        <td class="px-6 py-4">{{ addition.price }} zł</td>
+                        <td class="px-6 py-4 space-x-2">
+                            <a href="{{ path('addition_show', {'id': addition.id}) }}" class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                |
+                                <a href="{{ path('addition_edit', {'id': addition.id}) }}" class="text-green-500 hover:underline">{{ 'edit'|trans }}</a>
+                                |
+                                <form action="{{ path('addition_delete', {'id': addition.id}) }}" method="POST" class="inline">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ addition.id) }}">
+                                    <button type="submit" class="text-red-700 hover:underline">{{ 'delete'|trans }}</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
