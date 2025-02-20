@@ -7,10 +7,10 @@ use App\Form\CategoryType;
 use App\Repository\AdditionRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\PizzaRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,14 +22,12 @@ use Symfony\Contracts\Cache\CacheInterface;
 class CategoryController extends AbstractController
 {
     /**
-     * @param DocumentManager $documentManager
      * @param CategoryRepository $categoryRepository
      * @param PizzaRepository $pizzaRepository
      * @param AdditionRepository $additionRepository
      * @param CacheInterface $cache
      */
     public function __construct(
-        private readonly DocumentManager    $documentManager,
         private readonly CategoryRepository $categoryRepository,
         private readonly PizzaRepository    $pizzaRepository,
         private readonly AdditionRepository $additionRepository,
@@ -84,6 +82,7 @@ class CategoryController extends AbstractController
      * @param string $id
      * @param Request $request
      * @return Response
+     * @throws InvalidArgumentException
      * @throws LockException
      * @throws MappingException
      * @throws MongoDBException
@@ -100,23 +99,26 @@ class CategoryController extends AbstractController
             return $this->redirectToRoute('category_index');
         }
 
-        $linkedPizzas = $this->pizzaRepository->countByCategory($id);
-        $linkedAdditions = $this->additionRepository->countByCategory($id);
-
-        if ($linkedPizzas > 0 || $linkedAdditions > 0) {
-            $this->addFlash('warning', sprintf(
-                'The category has %d pizzas and %d additions linked to it. Deleting it will also delete these items!',
-                $linkedPizzas,
-                $linkedAdditions
-            ));
+        // Check CSRF token
+        $submittedToken = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('delete'.$id, $submittedToken)) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirectToRoute('category_index');
         }
 
-        $this->pizzaRepository->removeCategory($id);
-        $this->additionRepository->removeCategory($id);
+        // Remove associated pizzas
+        $this->pizzaRepository->removeAllByCategory($id);
+        $this->additionRepository->removeAllByCategory($id);
 
+        // Remove the category itself
         $this->categoryRepository->delete($category);
-        $this->addFlash('success', 'Category and all linked items successfully deleted.');
 
+        // Clear cache
+        $this->cache->delete('categories_index');
+        $this->cache->delete('pizzas_index');
+        $this->cache->delete('additions_index');
+
+        $this->addFlash('success', 'Category and all associated pizzas have been deleted successfully.');
         return $this->redirectToRoute('category_index');
     }
 

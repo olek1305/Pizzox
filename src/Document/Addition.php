@@ -31,7 +31,7 @@ class Addition
     private bool $active = true;
 
     #[ODM\ReferenceOne(targetDocument: Category::class)]
-    private $category;
+    private ?Category $category;
 
     #[ODM\Field(type: 'date')]
     private DateTime $createdAt;

@@ -32,7 +32,7 @@ class Pizza
     public array $size = [];
 
     #[ODM\ReferenceOne(targetDocument: Category::class)]
-    private $category;
+    private ?Category $category;
 
     public function getId(): ?string
     {

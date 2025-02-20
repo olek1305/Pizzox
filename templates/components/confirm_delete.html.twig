@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirm Delete Category{% endblock %}
+
+{% block body %}
+    <h1>Confirm Delete Category</h1>
+    <p>
+        You are about to delete the category "<strong>{{ category.name }}</strong>".
+        {% if linkedPizzas > 0 %}
+            This will also delete <strong>{{ linkedPizzas }}</strong> pizzas linked to this category.
+        {% endif %}
+        Are you sure you want to proceed?
+    </p>
+
+    <form method="post" action="{{ path('category_confirm_delete', {'id': category.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+        <button type="submit" name="confirm" value="yes" class="btn btn-danger">Yes, delete</button>
+        <button type="submit" name="confirm" value="no" class="btn btn-secondary">Cancel</button>
+    </form>
+
+
+{% endblock %}

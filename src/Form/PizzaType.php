@@ -29,7 +29,6 @@ class PizzaType extends AbstractType
 
             ->add('price', NumberType::class, [
                 'label' => 'form.pizza.price.label',
-                'currency' => 'PLN',
                 'constraints' => [
                     new NotBlank(['message' => 'form.pizza.price.not_blank']),
                     new Positive(['message' => 'form.pizza.price.positive']),

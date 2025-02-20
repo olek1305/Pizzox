@@ -90,11 +90,11 @@ class AdditionRepository extends DocumentRepository
      * @return void
      * @throws MongoDBException
      */
-    public function removeCategory(string $categoryId): void
+    public function removeAllByCategory(string $categoryId): void
     {
         $this->createQueryBuilder()
-            ->findAndRemove()
-            ->field('category')->equals($categoryId)
+            ->remove()
+            ->field('category.$id')->equals(new ObjectId($categoryId))
             ->getQuery()
             ->execute();
     }

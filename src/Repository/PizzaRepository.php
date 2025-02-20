@@ -88,15 +88,15 @@ class PizzaRepository extends DocumentRepository
     }
 
     /**
-     * @param string $category
-     * @return int
+     * @param string $categoryId
+     * @return void
      * @throws MongoDBException
      */
-    public function countByCategory(string $category): int
+    public function removeAllByCategory(string $categoryId): void
     {
-        return $this->createQueryBuilder()
-            ->field('type')->equals($category)
-            ->count()
+        $this->createQueryBuilder()
+            ->remove()
+            ->field('category.$id')->equals(new ObjectId($categoryId))
             ->getQuery()
             ->execute();
     }
