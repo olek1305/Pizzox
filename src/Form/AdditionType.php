@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
 
 class AdditionType extends AbstractType
 {
@@ -19,25 +20,22 @@ class AdditionType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Addition Name',
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'The addition name cannot be empty.',
-                    ]),
-                ],
+                'required' => true,
+                'constraints' => new NotBlank(['message' => 'not_blank']),
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('price', MoneyType::class, [
                 'label' => 'Addition Price',
-                'currency' => 'PLN',
+                'currency' => '%app.currency%',
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'The addition price cannot be empty.',
-                    ]),
+                    new NotBlank(['message' => 'not_blank']),
+                    new Positive(['message' => 'positive']),
                 ],
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('category', ChoiceType::class, [
                 'label' => 'form.pizza.category.label',
+                'required' => true,
                 'choices' => $options['categories'],
                 'choice_label' => function ($category) {
                     return $category->getName();
@@ -45,8 +43,7 @@ class AdditionType extends AbstractType
                 'choice_value' => function (?Category $category) {
                     return $category ? $category->getId() : '';
                 },
-                'placeholder' => 'form.pizza.category.placeholder',
-                'required' => true
+                'placeholder' => 'form.pizza.category.placeholder'
             ]);
     }
 

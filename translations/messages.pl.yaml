@@ -3,20 +3,15 @@ form:
     name:
       label: 'Nazwa pizzy'
       placeholder: 'Wprowadź nazwę pizzy'
-      not_blank: 'Nazwa pizzy nie może być pusta'
     price:
       label: 'Cena'
       placeholder: 'Wprowadź cenę'
-      not_blank: 'Cena nie może być pusta'
-      positive: 'Cena musi być liczbą dodatnią'
     size:
       label: 'Rozmiar'
       placeholder: 'Wprowadź rozmiar pizzy'
-      not_blank: 'Rozmiar pizzy nie może być pusty'
     toppings:
       label: 'Dodatki'
       placeholder: 'Dodaj dodatek'
-      not_blank: 'Dodatek nie może być pusty'
     category:
       label: 'Kategoria'
       placeholder: 'Wybierz nazwę kategorii'
@@ -77,3 +72,5 @@ show: 'Pokaż'
 edit: 'Edytuj'
 deactivate: "Dezaktywuj"
 activate: "Aktywuj"
+not_blank: 'Cena nie może być pusta'
+positive: 'Cena musi być liczbą dodatnią'

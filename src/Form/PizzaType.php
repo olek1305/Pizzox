@@ -7,7 +7,7 @@ use App\Document\Pizza;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,20 +22,17 @@ class PizzaType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'form.pizza.name.label',
                 'required' => true,
-                'attr' => [
-                    'placeholder' => 'form.pizza.name.placeholder',
-                ],
+                'constraints' => new NotBlank(['message' => 'not_blank']),
+                'attr' => ['placeholder' => 'form.pizza.name.placeholder'],
             ])
-
-            ->add('price', NumberType::class, [
+            ->add('price', MoneyType::class, [
                 'label' => 'form.pizza.price.label',
+                'currency' => '%app.currency%',
                 'constraints' => [
-                    new NotBlank(['message' => 'form.pizza.price.not_blank']),
-                    new Positive(['message' => 'form.pizza.price.positive']),
+                    new NotBlank(['message' => 'not_blank']),
+                    new Positive(['message' => 'positive']),
                 ],
-                'attr' => [
-                    'placeholder' => 'form.pizza.price.placeholder',
-                ],
+                'attr' => ['placeholder' => 'form.pizza.price.placeholder'],
             ])
             ->add('size', ChoiceType::class, [
                 'label' => 'form.pizza.size.label',
@@ -57,6 +54,7 @@ class PizzaType extends AbstractType
             ])
             ->add('category', ChoiceType::class, [
                 'label' => 'form.pizza.category.label',
+                'required' => true,
                 'choices' => $options['categories'],
                 'choice_label' => function ($category) {
                     return $category->getName();
@@ -65,7 +63,6 @@ class PizzaType extends AbstractType
                     return $category ? $category->getId() : '';
                 },
                 'placeholder' => 'form.pizza.category.placeholder',
-                'required' => true
             ]);
     }
 

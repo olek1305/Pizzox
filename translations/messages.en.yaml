@@ -3,20 +3,15 @@ form:
     name:
       label: 'Pizza name'
       placeholder: 'Enter pizza name'
-      not_blank: 'Pizza name cannot be blank.'
     price:
       label: 'Price'
       placeholder: 'Enter price'
-      not_blank: 'Price cannot be blank.'
-      positive: 'Price must be a positive number.'
     size:
       label: 'Size'
       placeholder: 'Enter pizza size'
-      not_blank: 'Pizza size cannot be blank.'
     toppings:
       label: 'Toppings'
       placeholder: 'Add Topping'
-      not_blank: 'Topping cannot be blank.'
     category:
       label: 'Category'
       placeholder: 'Select category'
@@ -77,3 +72,5 @@ show: 'Show'
 edit: 'Edit'
 deactivate: "Deactivate"
 activate: "Activate"
+not_blank: 'Price cannot be blank.'
+positive: 'Price must be a positive number.'
