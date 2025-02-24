@@ -35,5 +35,15 @@ services:
         tags:
             - { name: doctrine.event_subscriber }
 
+    App\Repository\SettingRepository:
+        factory: ['@doctrine_mongodb.odm.default_document_manager', getRepository]
+        arguments:
+            - 'App\Document\Setting'
+
+    App\Service\CurrencyProvider:
+        public: true
+        arguments:
+            $settingRepository: '@App\Repository\SettingRepository'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

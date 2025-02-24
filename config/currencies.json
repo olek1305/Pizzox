@@ -1,0 +1,206 @@
+[
+  {
+    "iso": "usd",
+    "symbol": "$",
+    "currency": "United States Dollar",
+    "country": "United States"
+  },
+  {
+    "iso": "aed",
+    "symbol": "د.إ",
+    "currency": "UAE Dirham",
+    "country": "United Arab Emirates"
+  },
+  {
+    "iso": "all",
+    "symbol": "Lek",
+    "currency": "Albanian Lek",
+    "country": "Albania"
+  },
+  {
+    "iso": "amd",
+    "symbol": "Դ",
+    "currency": "Armenian Dram",
+    "country": "Armenia"
+  },
+  {
+    "iso": "ang",
+    "symbol": "ƒ",
+    "currency": "Netherlands Antillean Guilder",
+    "country": "Cura\u00e7ao, Sint Maarten"
+  },
+  {
+    "iso": "aud",
+    "symbol": "$",
+    "currency": "Australian Dollar",
+    "country": "Australia"
+  },
+  {
+    "iso": "awg",
+    "symbol": "ƒ",
+    "currency": "Aruban Florin",
+    "country": "Aruba"
+  },
+  {
+    "iso": "azn",
+    "symbol": "₼",
+    "currency": "Azerbaijani Manat",
+    "country": "Azerbaijan"
+  },
+  {
+    "iso": "bam",
+    "symbol": "KM",
+    "currency": "Convertible Mark",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "iso": "bbd",
+    "symbol": "$",
+    "currency": "Barbados Dollar",
+    "country": "Barbados"
+  },
+  {
+    "iso": "bdt",
+    "symbol": "৳",
+    "currency": "Bangladeshi Taka",
+    "country": "Bangladesh"
+  },
+  {
+    "iso": "bgn",
+    "symbol": "лв",
+    "currency": "Bulgarian Lev",
+    "country": "Bulgaria"
+  },
+  {
+    "iso": "bif",
+    "symbol": "FBu",
+    "currency": "Burundian Franc",
+    "country": "Burundi"
+  },
+  {
+    "iso": "bmd",
+    "symbol": "$",
+    "currency": "Bermudian Dollar",
+    "country": "Bermuda"
+  },
+  {
+    "iso": "bnd",
+    "symbol": "$",
+    "currency": "Brunei Dollar",
+    "country": "Brunei"
+  },
+  {
+    "iso": "bsd",
+    "symbol": "$",
+    "currency": "Bahamian Dollar",
+    "country": "Bahamas"
+  },
+  {
+    "iso": "bwp",
+    "symbol": "P",
+    "currency": "Botswana Pula",
+    "country": "Botswana"
+  },
+  {
+    "iso": "bzd",
+    "symbol": "BZ$",
+    "currency": "Belize Dollar",
+    "country": "Belize"
+  },
+  {
+    "iso": "cad",
+    "symbol": "$",
+    "currency": "Canadian Dollar",
+    "country": "Canada"
+  },
+  {
+    "iso": "cdf",
+    "symbol": "FC",
+    "currency": "Congolese Franc",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "iso": "chf",
+    "symbol": "CHF",
+    "currency": "Swiss Franc",
+    "country": "Switzerland"
+  },
+  {
+    "iso": "cny",
+    "symbol": "¥",
+    "currency": "Chinese Yuan Renminbi",
+    "country": "China"
+  },
+  {
+    "iso": "dkk",
+    "symbol": "kr",
+    "currency": "Danish Krone",
+    "country": "Denmark"
+  },
+  {
+    "iso": "dop",
+    "symbol": "RD$",
+    "currency": "Dominican Peso",
+    "country": "Dominican Republic"
+  },
+  {
+    "iso": "dzd",
+    "symbol": "د.ج",
+    "currency": "Algerian Dinar",
+    "country": "Algeria"
+  },
+  {
+    "iso": "egp",
+    "symbol": "£",
+    "currency": "Egyptian Pound",
+    "country": "Egypt"
+  },
+  {
+    "iso": "etb",
+    "symbol": "Br",
+    "currency": "Ethiopian Birr",
+    "country": "Ethiopia"
+  },
+  {
+    "iso": "eur",
+    "symbol": "€",
+    "currency": "Euro",
+    "country": "Eurozone"
+  },
+  {
+    "iso": "fjd",
+    "symbol": "$",
+    "currency": "Fijian Dollar",
+    "country": "Fiji"
+  },
+  {
+    "iso": "gbp",
+    "symbol": "£",
+    "currency": "British Pound Sterling",
+    "country": "United Kingdom"
+  },
+  {
+    "iso": "gel",
+    "symbol": "₾",
+    "currency": "Georgian Lari",
+    "country": "Georgia"
+  },
+  {
+    "iso": "gip",
+    "symbol": "£",
+    "currency": "Gibraltar Pound",
+    "country": "Gibraltar"
+  },
+  {
+    "iso": "gmd",
+    "symbol": "D",
+    "currency": "Gambian Dalasi",
+    "country": "Gambia"
+  },
+  {
+    "iso": "gyd",
+    "symbol": "$",
+    "currency": "Guyanese Dollar",
+    "country": "Guyana"
+  }
+]

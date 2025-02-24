@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Settings</h1>
+
+    {% if form.currency is defined and form.currency.vars.choices|length > 0 %}
+        {{ form_start(form) }}
+        {{ form_row(form.currency) }}
+        <button class="btn btn-primary">Save</button>
+        {{ form_end(form) }}
+    {% else %}
+        <p>No currencies available to select. Please contact the administrator.</p>
+    {% endif %}
+
+    {% for label, messages in app.flashes %}
+        <div class="alert alert-{{ label }}">
+            {% for message in messages|slice(0, 5) %} {# Pokazujemy maksymalnie 5 wiadomości danego typu #}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}
