@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Your Cart</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in cart %}
+            <tr>
+                <td>{{ item.item_name }} ({{ item.type }})</td> {# Display item name and type #}
+                <td>{{ item.quantity }}</td>
+                <td>
+                    <form method="POST" action="{{ path('cart_remove', {itemId: item.item_id, itemType: item.type}) }}"> {# Pass both itemId and itemType #}
+                        <button type="submit">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -15,21 +15,51 @@
     </head>
     <body class="bg-gray-100">
 
+    {% set cart = cart_service.getCart() %}
+
     {# Navigation Bar #}
     <nav class="bg-blue-600 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <a href="{{ path('pizza') }}" class="text-white font-bold text-lg">Pizza</a>
 
-            {# Show email #}
-            <span class="text-white">
-                {% if app.user %}
-                    Hello, {{ app.user.email }}!
-                {% else %}
-                    Hello, user!
-                {% endif %}
-            </span>
+            <div class="relative">
+                <!-- Cart Icon -->
+                <a href="{{ path('cart_index') }}" id="cart-trigger" class="relative block text-white hover:text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 7M7 13a4 4 0 11-4-4m4 4H1" />
+                    </svg>
+                    <span class="absolute right-0 top-0 bg-red-500 text-xs text-white font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {{ cart|length }}
+                </span>
+                </a>
 
-            {# Language Switcher #}
+                <!-- Dropdown Area -->
+                <div id="cart-dropdown" class="hidden absolute right-0 bg-white shadow-md rounded-lg p-4 w-72">
+                    <h4 class="text-lg font-bold mb-2">Your Cart</h4>
+                    {% if cart|length == 0 %}
+                        <p class="text-gray-500 text-sm">Your cart is empty.</p>
+                    {% else %}
+                        {% set totalCost = 0 %} {# Initialize Total Cost #}
+
+                        <ul>
+                            {% for item in cart %}
+                                <li>
+                                    <strong>{{ item.type|capitalize }}:</strong> {{ item.item_name }} x {{ item.quantity }} - ${{ item.price * item.quantity }}
+                                    {% set totalCost = totalCost + (item.price * item.quantity) %}
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+
+                        <div>
+                            <p class="text-lg font-bold my-2">Total: ${{ totalCost }}</p>
+                            <a href="{{ path('cart_index') }}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                Go to Cart
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
             <div>
                 <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'pl'})) }}"
                    class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700">PL</a>
@@ -45,3 +75,25 @@
     </div>
     </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get References to the Cart Icon and the Dropdown
+        const cartTrigger = document.getElementById('cart-trigger');
+        const cartDropdown = document.getElementById('cart-dropdown');
+
+        // Add Click Event Listener to the Cart Icon
+        cartTrigger.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default behavior of anchor
+            // Toggle the "hidden" class on the dropdown
+            cartDropdown.classList.toggle('hidden');
+        });
+
+        // Optional: Hide the dropdown if you click anywhere outside it
+        document.addEventListener('click', (event) => {
+            if (!cartTrigger.contains(event.target) && !cartDropdown.contains(event.target)) {
+                cartDropdown.classList.add('hidden');
+            }
+        });
+    });
+</script>

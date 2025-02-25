@@ -55,9 +55,18 @@
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 space-x-2">
-                                <a href="{{ path('pizza_show', {'id': pizza.id}) }}"
-                                   class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
+                                <form action="{{ path('cart_add_pizza', {'pizzaId': pizza.id}) }}" method="POST" class="inline">
+                                    <label>
+                                        <input type="number" name="quantity" value="1" min="1" class="w-12 border rounded-md px-2 text-center" />
+                                    </label>
+                                    <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-700">
+                                        {{ 'add'|trans }}
+                                    </button>
+                                </form>
                                 {% if is_granted('ROLE_ADMIN') %}
+                                    |
+                                    <a href="{{ path('pizza_show', {'id': pizza.id}) }}"
+                                       class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
                                     |
                                     <a href="{{ path('pizza_edit', {'id': pizza.id}) }}"
                                        class="text-green-500 hover:underline">{{ 'edit'|trans }}</a>
@@ -93,8 +102,18 @@
                         <td class="px-6 py-4">{{ addition.name }}</td>
                         <td class="px-6 py-4">{{ addition.price }} {{ currency }}</td>
                         <td class="px-6 py-4 space-x-2">
-                            <a href="{{ path('addition_show', {'id': addition.id}) }}" class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
+                            <form action="{{ path('cart_add_addition', {'additionId': addition.id}) }}" method="POST" class="inline">
+                                <label>
+                                    <input type="number" name="quantity" value="1" min="1" class="w-12 border rounded-md px-2 text-center" />
+                                </label>
+                                <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-700">
+                                    {{ 'add'|trans }}
+                                </button>
+                            </form>
+
                             {% if is_granted('ROLE_ADMIN') %}
+                                |
+                                <a href="{{ path('addition_show', {'id': addition.id}) }}" class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
                                 |
                                 <a href="{{ path('addition_edit', {'id': addition.id}) }}" class="text-green-500 hover:underline">{{ 'edit'|trans }}</a>
                                 |
