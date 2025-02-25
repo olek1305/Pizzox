@@ -7,6 +7,7 @@ use App\Document\Pizza;
 use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
 use App\Repository\AdditionRepository;
+use App\Service\CurrencyProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Psr\Cache\InvalidArgumentException;
@@ -27,12 +28,14 @@ final class PizzaController extends AbstractController
      * @param AdditionRepository $additionRepository
      * @param DocumentManager $documentManager
      * @param CacheInterface $cache
+     * @param CurrencyProvider $currencyProvider
      */
     public function __construct(
         private readonly PizzaRepository    $pizzaRepository,
         private readonly AdditionRepository $additionRepository,
         private readonly DocumentManager    $documentManager,
-        private readonly CacheInterface     $cache
+        private readonly CacheInterface     $cache,
+        private readonly CurrencyProvider   $currencyProvider
     ) {
         //
     }
@@ -54,9 +57,12 @@ final class PizzaController extends AbstractController
             return $this->additionRepository->findAllOrderedByName();
         });
 
+        $currency = $this->currencyProvider->getCurrency();
+
         return $this->render('pizza/index.html.twig', [
             'pizzas' => $pizzas,
-            'additions' => $additions
+            'additions' => $additions,
+            'currency' => $currency
         ]);
     }
 
@@ -107,8 +113,11 @@ final class PizzaController extends AbstractController
             throw $this->createNotFoundException('Pizza not found');
         }
 
+        $currency = $this->currencyProvider->getCurrency();
+
         return $this->render('pizza/show.html.twig', [
             'pizza' => $pizza,
+            'currency' => $currency
         ]);
     }
 

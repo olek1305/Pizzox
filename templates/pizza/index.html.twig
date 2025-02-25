@@ -44,7 +44,7 @@
                     {% for pizza in pizzas %}
                         <tr class="border-b hover:bg-gray-100">
                             <td class="px-6 py-4">{{ pizza.name }}</td>
-                            <td class="px-6 py-4">{{ pizza.price }} zł</td>
+                            <td class="px-6 py-4">{{ pizza.price }} {{ currency }}</td>
                             <td class="px-6 py-4">{{ pizza.toppings|join(', ') }}</td>
                             <td class="px-6 py-4">{{ pizza.size|join(', ') }}</td>
                             <td class="px-6 py-4">
@@ -91,7 +91,7 @@
                 {% for addition in additions %}
                     <tr class="border-b hover:bg-gray-100">
                         <td class="px-6 py-4">{{ addition.name }}</td>
-                        <td class="px-6 py-4">{{ addition.price }} zł</td>
+                        <td class="px-6 py-4">{{ addition.price }} {{ currency }}</td>
                         <td class="px-6 py-4 space-x-2">
                             <a href="{{ path('addition_show', {'id': addition.id}) }}" class="text-blue-500 hover:underline">{{ 'show'|trans }}</a>
                             {% if is_granted('ROLE_ADMIN') %}

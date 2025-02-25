@@ -67,6 +67,7 @@ addition:
   price: "Cena"
   action: "Akcja"
   edit: "Edytuj dodatek"
+  category: 'Kategoria'
 
 show: 'Pokaż'
 edit: 'Edytuj'

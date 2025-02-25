@@ -67,6 +67,7 @@ addition:
   price: "Price"
   action: "action"
   edit: "Edit an addition"
+  category: "Category"
 
 show: 'Show'
 edit: 'Edit'
