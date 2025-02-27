@@ -2,8 +2,7 @@
 
 namespace App\Service;
 
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use JsonException;
 
 class CurrencyService
 {
@@ -21,7 +20,7 @@ class CurrencyService
 
         try {
             $this->currencies = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $exception) {
+        } catch (JsonException $exception) {
             throw new \RuntimeException('Error decoding currencies.js: ' . $exception->getMessage());
         }
     }

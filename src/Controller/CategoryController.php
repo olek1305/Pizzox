@@ -38,6 +38,7 @@ class CategoryController extends AbstractController
 
     /**
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route('/category', name: 'category_index')]
     public function index(): Response
@@ -117,6 +118,7 @@ class CategoryController extends AbstractController
         $this->cache->delete('categories_index');
         $this->cache->delete('pizzas_index');
         $this->cache->delete('additions_index');
+        $this->cache->delete('user_cart');
 
         $this->addFlash('success', 'Category and all associated pizzas have been deleted successfully.');
         return $this->redirectToRoute('category_index');

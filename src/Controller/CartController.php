@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Document\Addition;
 use App\Document\Pizza;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,15 +26,10 @@ class CartController extends AbstractController
         //
     }
 
-    public function provideCartForLayouts(): array
-    {
-        $cart = $this->cache->get('user_cart', function () {
-            return [];
-        });
-
-        return $cart;
-    }
-
+    /**
+     * @return Response
+     * @throws InvalidArgumentException
+     */
     #[Route('/cart', name: 'cart_index', methods: ['GET'])]
     public function index(): Response
     {
@@ -45,14 +43,22 @@ class CartController extends AbstractController
         ]);
     }
 
+    /**
+     * @param string $pizzaId
+     * @param Request $request
+     * @return Response
+     * @throws LockException
+     * @throws MappingException
+     */
     #[Route('/cart/add/pizza/{pizzaId}', name: 'cart_add_pizza', methods: ['POST'])]
-    public function addPizza(string $pizzaId, Request $request): JsonResponse
+    public function addPizza(string $pizzaId, Request $request): Response
     {
         $cart = $this->getCartFromCache();  // Helper function (see below)
 
         $pizza = $this->documentManager->getRepository(Pizza::class)->find($pizzaId);
         if (!$pizza) {
-            return $this->json(['status' => 'error', 'message' => 'Pizza not found'], 404);
+//            return $this->json(['status' => 'error', 'message' => 'Pizza not found'], 404);
+            return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
         $quantity = (int)$request->get('quantity', 1);
@@ -61,18 +67,26 @@ class CartController extends AbstractController
 
         $this->saveCartToCache($cart);
 
-        return $this->json(['status' => 'success', 'cart' => $cart]);
+//        return $this->json(['status' => 'success', 'cart' => $cart]);
+        return $this->redirectToRoute('pizza_index');
     }
 
-
+    /**
+     * @param string $additionId
+     * @param Request $request
+     * @return Response
+     * @throws LockException
+     * @throws MappingException
+     */
     #[Route('/cart/add/addition/{additionId}', name: 'cart_add_addition', methods: ['POST'])]
-    public function addAddition(string $additionId, Request $request): JsonResponse
+    public function addAddition(string $additionId, Request $request): Response
     {
         $cart = $this->getCartFromCache();
 
         $addition = $this->documentManager->getRepository(Addition::class)->find($additionId);
         if (!$addition) {
-            return $this->json(['status' => 'error', 'message' => 'Addition not found'], 404);
+//            return $this->json(['status' => 'error', 'message' => 'Addition not found'], 404);
+            return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
         $quantity = (int)$request->get('quantity', 1);
@@ -81,9 +95,16 @@ class CartController extends AbstractController
 
         $this->saveCartToCache($cart);
 
-        return $this->json(['status' => 'success', 'cart' => $cart]);
+//        return $this->json(['status' => 'success', 'cart' => $cart]);
+        return $this->redirectToRoute('pizza_index');
     }
 
+    /**
+     * @param Request $request
+     * @param string $itemType
+     * @param string $itemId
+     * @return Response
+     */
     #[Route('/cart/remove/{itemType}/{itemId}', name: 'cart_remove', methods: ['POST'])]
     public function remove(Request $request, string $itemType, string $itemId): Response
     {
@@ -92,16 +113,20 @@ class CartController extends AbstractController
         foreach ($cart as $key => $cartItem) {
             if ($cartItem['type'] === $itemType && $cartItem['item_id'] === $itemId) {
                 unset($cart[$key]);
-                break; // Important: exit the loop once the item is removed
+                break;
             }
         }
 
 
-        $this->saveCartToCache($cart); //Don't forget to save changes
+        $this->saveCartToCache($cart);
 
-        return $this->redirectToRoute('cart_index'); // or appropriate redirect
+        return $this->redirectToRoute('cart_index');
     }
 
+    /**
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
     #[Route('/cart/clear', name: 'cart_clear', methods: ['POST'])]
     public function clearCart(): JsonResponse
     {
@@ -110,7 +135,17 @@ class CartController extends AbstractController
         return new JsonResponse(['status' => 'success']);
     }
 
-    private function addItemToCart(&$cart, $type, $itemId, $itemName, $quantity, $price) {
+    /**
+     * @param $cart
+     * @param $type
+     * @param $itemId
+     * @param $itemName
+     * @param $quantity
+     * @param $price
+     * @return void
+     */
+    private function addItemToCart(&$cart, $type, $itemId, $itemName, $quantity, $price): void
+    {
         $found = false;
         foreach ($cart as &$item) {
             if ($item['type'] === $type && $item['item_id'] === $itemId) {
@@ -130,14 +165,19 @@ class CartController extends AbstractController
         }
     }
 
-
-// Helper functions for cleaner code:
+    /**
+     * @return array
+     */
     private function getCartFromCache(): array
     {
         $cartItem = $this->cache->getItem('user_cart');
         return $cartItem->isHit() ? $cartItem->get() : [];
     }
 
+    /**
+     * @param array $cart
+     * @return void
+     */
     private function saveCartToCache(array $cart): void
     {
         $cartItem = $this->cache->getItem('user_cart');
@@ -145,5 +185,4 @@ class CartController extends AbstractController
         $cartItem->expiresAfter(3600);
         $this->cache->save($cartItem);
     }
-
 }

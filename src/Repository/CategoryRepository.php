@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Document\Category;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use MongoDB\BSON\ObjectId;
@@ -74,8 +72,6 @@ class CategoryRepository
     /**
      * @param string $id
      * @return Category|null
-     * @throws LockException
-     * @throws MappingException
      */
     public function findById(string $id): ?Category
     {
@@ -89,32 +85,5 @@ class CategoryRepository
         } catch (Exception) {
             return null;
         }
-    }
-
-    /**
-     * @param string $category
-     * @return int
-     * @throws MongoDBException
-     */
-    public function countByCategory(string $category): int
-    {
-        return $this->createQueryBuilder()
-            ->field('type')->equals($category)
-            ->count()
-            ->getQuery()
-            ->execute();
-    }
-
-    /**
-     * @param string $categoryId
-     * @return void
-     */
-    public function removeCategory(string $categoryId): void
-    {
-        $this->createQueryBuilder()
-            ->findAndRemove()
-            ->field('category')->equals($categoryId)
-            ->getQuery()
-            ->execute();
     }
 }

@@ -7,6 +7,9 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class CartService
 {
+    /**
+     * @param CacheInterface $cache
+     */
     public function __construct(private readonly CacheInterface $cache)
     {
         //

@@ -14,6 +14,9 @@ use Throwable;
 
 class AdditionRepository extends DocumentRepository
 {
+    /**
+     * @param DocumentManager $dm
+     */
     public function __construct(DocumentManager $dm)
     {
         parent::__construct($dm, $dm->getUnitOfWork(), $dm->getClassMetadata(Addition::class));
