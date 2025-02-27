@@ -137,15 +137,16 @@ class CartController extends AbstractController
     {
         $found = false;
         foreach ($cart as &$cartItem) {
-            if ($cartItem['item_id'] === $item->getId() && $cartItem['type'] === ($item instanceof Pizza ? 'pizza' : 'addition')) {
+            if ($cartItem['item_id'] === $item->getId() && $cartItem['type'] === $item->getCartType()) {
                 $cartItem['quantity'] += $quantity;
                 $found = true;
                 break;
             }
         }
+
         if (!$found) {
             $cart[] = [
-                'type' => $item instanceof Pizza ? 'pizza' : 'addition',
+                'type' => $item->getCartType(),
                 'item_id' => $item->getId(),
                 'item_name' => $item->getName(),
                 'quantity' => $quantity,
