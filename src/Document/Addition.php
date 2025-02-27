@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Document;
 
+use App\Interfaces\CartItemInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 #[ODM\Document(collection: 'addition')]
-class Addition
+class Addition implements CartItemInterface
 {
     #[ODM\Id]
     private ?string $id = null;

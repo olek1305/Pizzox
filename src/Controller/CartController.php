@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Document\Addition;
 use App\Document\Pizza;
+use App\Interfaces\CartItemInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -33,7 +34,6 @@ class CartController extends AbstractController
     #[Route('/cart', name: 'cart_index', methods: ['GET'])]
     public function index(): Response
     {
-        // Fetch cart from cache
         $cart = $this->cache->get('user_cart', function () {
             return [];
         });
@@ -53,23 +53,20 @@ class CartController extends AbstractController
     #[Route('/cart/add/pizza/{pizzaId}', name: 'cart_add_pizza', methods: ['POST'])]
     public function addPizza(string $pizzaId, Request $request): Response
     {
-        $cart = $this->getCartFromCache();  // Helper function (see below)
-
+        $cart = $this->getCartFromCache();
         $pizza = $this->documentManager->getRepository(Pizza::class)->find($pizzaId);
+
         if (!$pizza) {
-//            return $this->json(['status' => 'error', 'message' => 'Pizza not found'], 404);
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
         $quantity = (int)$request->get('quantity', 1);
-
-        $this->addItemToCart($cart, 'pizza', $pizzaId, $pizza->getName(), $quantity, $pizza->getPrice());
+        $this->addItemToCart($cart, $pizza, $quantity); // Simplified call
 
         $this->saveCartToCache($cart);
-
-//        return $this->json(['status' => 'success', 'cart' => $cart]);
         return $this->redirectToRoute('pizza_index');
     }
+
 
     /**
      * @param string $additionId
@@ -82,22 +79,19 @@ class CartController extends AbstractController
     public function addAddition(string $additionId, Request $request): Response
     {
         $cart = $this->getCartFromCache();
-
         $addition = $this->documentManager->getRepository(Addition::class)->find($additionId);
+
         if (!$addition) {
-//            return $this->json(['status' => 'error', 'message' => 'Addition not found'], 404);
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
         $quantity = (int)$request->get('quantity', 1);
-
-        $this->addItemToCart($cart, 'addition', $additionId, $addition->getName(), $quantity, $addition->getPrice());
+        $this->addItemToCart($cart, $addition, $quantity);
 
         $this->saveCartToCache($cart);
-
-//        return $this->json(['status' => 'success', 'cart' => $cart]);
         return $this->redirectToRoute('pizza_index');
     }
+
 
     /**
      * @param Request $request
@@ -117,9 +111,7 @@ class CartController extends AbstractController
             }
         }
 
-
         $this->saveCartToCache($cart);
-
         return $this->redirectToRoute('cart_index');
     }
 
@@ -136,31 +128,28 @@ class CartController extends AbstractController
     }
 
     /**
-     * @param $cart
-     * @param $type
-     * @param $itemId
-     * @param $itemName
-     * @param $quantity
-     * @param $price
+     * @param array $cart
+     * @param CartItemInterface $item
+     * @param int $quantity
      * @return void
      */
-    private function addItemToCart(&$cart, $type, $itemId, $itemName, $quantity, $price): void
+    private function addItemToCart(array &$cart, CartItemInterface $item, int $quantity): void
     {
         $found = false;
-        foreach ($cart as &$item) {
-            if ($item['type'] === $type && $item['item_id'] === $itemId) {
-                $item['quantity'] += $quantity;
+        foreach ($cart as &$cartItem) {
+            if ($cartItem['item_id'] === $item->getId() && $cartItem['type'] === ($item instanceof Pizza ? 'pizza' : 'addition')) {
+                $cartItem['quantity'] += $quantity;
                 $found = true;
                 break;
             }
         }
         if (!$found) {
             $cart[] = [
-                'type' => $type,
-                'item_id' => $itemId,
-                'item_name' => $itemName,
+                'type' => $item instanceof Pizza ? 'pizza' : 'addition',
+                'item_id' => $item->getId(),
+                'item_name' => $item->getName(),
                 'quantity' => $quantity,
-                'price' => $price
+                'price' => $item->getPrice(),
             ];
         }
     }

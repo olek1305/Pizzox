@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Document;
 
+use App\Interfaces\CartItemInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ODM\Document(collection: 'pizza')]
-class Pizza
+class Pizza implements CartItemInterface
 {
     #[ODM\Id]
     public ?string $id = null;
