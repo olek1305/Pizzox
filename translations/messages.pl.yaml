@@ -69,6 +69,12 @@ addition:
   edit: "Edytuj dodatek"
   category: 'Kategoria'
 
+cart:
+  title: "Twój Koszyk"
+  empty: "Twój koszyk jest pusty."
+  total: "Razem"
+  go_to_cart: "Przejdź do koszyka"
+
 show: 'Pokaż'
 edit: 'Edytuj'
 deactivate: "Dezaktywuj"

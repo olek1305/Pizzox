@@ -69,6 +69,12 @@ addition:
   edit: "Edit an addition"
   category: "Category"
 
+cart:
+  title: "Your Cart"
+  empty: "Your cart is empty."
+  total: "Total"
+  go_to_cart: "Go to Cart"
+
 show: 'Show'
 edit: 'Edit'
 deactivate: "Deactivate"
