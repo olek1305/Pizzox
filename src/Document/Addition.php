@@ -138,4 +138,10 @@ class Addition implements CartItemInterface
         $this->category = $category;
         return $this;
     }
+
+    public function getCartType(): string
+    {
+        return 'addition';
+    }
+
 }

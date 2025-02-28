@@ -96,4 +96,9 @@ class Pizza implements CartItemInterface
         $this->category = $category;
         return $this;
     }
+
+    public function getCartType(): string
+    {
+        return 'pizza';
+    }
 }
