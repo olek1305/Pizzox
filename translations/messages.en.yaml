@@ -81,3 +81,4 @@ deactivate: "Deactivate"
 activate: "Activate"
 not_blank: 'Price cannot be blank.'
 positive: 'Price must be a positive number.'
+currency: 'Currency'
