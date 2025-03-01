@@ -35,6 +35,7 @@ action:
   back_to_list: 'Wróć do Listy Pizz'
   save: "Zapisz"
   delete: "Usuń"
+  logout: "Wyloguj się"
 
 order:
   status:

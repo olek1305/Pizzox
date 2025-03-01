@@ -35,6 +35,7 @@ action:
   back_to_list: 'Back to Pizza List'
   save: "Save"
   delete: "Delete"
+  logout: "Logout"
 
 order:
   status:

@@ -29,8 +29,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 7M7 13a4 4 0 11-4-4m4 4H1" />
                     </svg>
                     <span class="absolute right-0 top-0 bg-red-500 text-xs text-white font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {{ cart|length }}
-                </span>
+                        {{ cart|length }}
+                    </span>
                 </a>
 
                 <!-- Dropdown Area -->
@@ -40,7 +40,6 @@
                         <p class="text-gray-500 text-sm">{{ 'cart.empty'|trans }}</p>
                     {% else %}
                         {% set totalCost = 0 %} {# Initialize Total Cost #}
-
                         <ul>
                             {% for item in cart %}
                                 <li>
@@ -50,7 +49,6 @@
                             {% endfor %}
 
                         </ul>
-
 
                         <div>
                             <p class="text-lg font-bold my-2">{{ 'cart.total'|trans }}: ${{ totalCost|number_format(2, '.', ',') }}</p>
@@ -62,6 +60,9 @@
                 </div>
             </div>
             <div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_logout') }}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">{{ 'action.logout'|trans }}</a>
+                {% endif %}
                 <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'pl'})) }}"
                    class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700">PL</a>
                 <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'en'})) }}"
