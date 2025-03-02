@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Document\Addition;
 use App\Document\Pizza;
 use App\Interfaces\CartItemInterface;
+use App\Service\CurrencyProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -19,12 +20,20 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CartController extends AbstractController
 {
+    private string $currency;
+
+    /**
+     * @param CacheInterface $cache
+     * @param DocumentManager $documentManager
+     * @param CurrencyProvider $currencyProvider
+     */
     public function __construct(
         private readonly CacheInterface $cache,
-        private readonly DocumentManager $documentManager
+        private readonly DocumentManager $documentManager,
+        CurrencyProvider $currencyProvider
     )
     {
-        //
+        $this->currency = $currencyProvider->getCurrency();
     }
 
     /**
@@ -38,8 +47,15 @@ class CartController extends AbstractController
             return [];
         });
 
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
         return $this->render('cart/index.html.twig', [
             'cart' => $cart,
+            'total' => $total,
+            'currency' => $this->currency,
         ]);
     }
 
@@ -146,11 +162,11 @@ class CartController extends AbstractController
 
         if (!$found) {
             $cart[] = [
-                'type' => $item->getCartType(),
                 'item_id' => $item->getId(),
                 'item_name' => $item->getName(),
                 'quantity' => $quantity,
                 'price' => $item->getPrice(),
+                'type' => $item->getCartType()
             ];
         }
     }

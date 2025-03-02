@@ -99,26 +99,38 @@ class Order
         return $this;
     }
 
+    public function getPizzas(): array
+    {
+        return $this->pizzas;
+    }
+
+    public function addPizza(Pizza $pizza): self
+    {
+        $this->pizzas[] = $pizza;
+        return $this;
+    }
+
     public function setPizzas(array $pizzas): self
     {
         $this->pizzas = $pizzas;
         return $this;
     }
 
-    public function getPizzas(): array
+    public function getAdditions(): array
     {
-        return $this->pizzas;
+        return $this->additions;
+    }
+
+    public function addAddition(Addition $addition): self
+    {
+        $this->additions[] = $addition;
+        return $this;
     }
 
     public function setAdditions(array $additions): self
     {
         $this->additions = $additions;
         return $this;
-    }
-
-    public function getAdditions(): array
-    {
-        return $this->additions;
     }
 
     public function getTotalPrice(): float

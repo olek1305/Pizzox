@@ -1,27 +1,52 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Your Cart</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in cart %}
-            <tr>
-                <td>{{ item.item_name }} ({{ item.type }})</td> {# Display item name and type #}
-                <td>{{ item.quantity }}</td>
-                <td>
-                    <form method="POST" action="{{ path('cart_remove', {itemId: item.item_id, itemType: item.type}) }}"> {# Pass both itemId and itemType #}
-                        <button type="submit">Remove</button>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="container mx-auto my-8">
+        <h1 class="text-2xl font-bold mb-6 text-center">Your Cart</h1>
+        <div class="flex justify-center w-full">
+            <div class="overflow-x-auto w-full md:w-3/4 lg:w-2/3">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <tr>
+                        <th class="py-3 px-6 text-left">Item</th>
+                        <th class="py-3 px-6 text-center">Quantity</th>
+                        <th class="py-3 px-6 text-right">Price</th>
+                        <th class="py-3 px-6 text-right">Subtotal</th>
+                        <th class="py-3 px-6 text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                    {% for item in cart %}
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-6 text-left font-medium">{{ item.item_name }}
+                                <span class="text-xs text-gray-500">({{ item.type }})</span>
+                            </td>
+                            <td class="py-3 px-6 text-center">{{ item.quantity }}</td>
+                            <td class="py-3 px-6 text-right">{{ item.price | number_format(2) }}</td>
+                            <td class="py-3 px-6 text-right font-semibold">{{ (item.price * item.quantity) | number_format(2) }}</td>
+                            <td class="py-3 px-6 text-center">
+                                <form method="POST" action="{{ path('cart_remove', {itemId: item.item_id, itemType: item.type}) }}" class="inline-block">
+                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot class="text-gray-600 font-semibold">
+                    <tr class="bg-gray-50">
+                        <td colspan="3" class="py-3 px-6 text-right text-lg"><strong>Total:</strong></td>
+                        <td class="py-3 px-6 text-right text-lg">{{ total | number_format(2) }}</td>
+                        <td>
+                            <form method="POST" action="{{ path('checkout') }}" class="inline-block">
+                                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-600 transition duration-200">
+                                    Order Now
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

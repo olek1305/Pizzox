@@ -13,6 +13,7 @@ class Pizza implements CartItemInterface
 {
     #[ODM\Id]
     public ?string $id = null;
+
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
     #[ODM\Field(type: 'string')]

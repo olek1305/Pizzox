@@ -22,6 +22,9 @@ class Setting
     #[ODM\Field(type: 'string')]
     private string $currency;
 
+    #[ODM\Field(type: 'string')]
+    private ?string $stripeSecretKey = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -46,6 +49,17 @@ class Setting
     public function setCountry(?string $country): self
     {
         $this->country = $country;
+        return $this;
+    }
+
+    public function getStripeSecretKey(): ?string
+    {
+        return $this->stripeSecretKey;
+    }
+
+    public function setStripeSecretKey(?string $stripeSecretKey): self
+    {
+        $this->stripeSecretKey = $stripeSecretKey;
         return $this;
     }
 }
