@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout Cancelled{% endblock %}
+
+{% block body %}
+    <h1>Checkout Cancelled</h1>
+
+    <p>Your order has been cancelled.</p>
+
+    <a href="{{ path('cart_index') }}" class="btn btn-primary">Back to Cart</a>
+{% endblock %}

@@ -16,30 +16,30 @@ class Order
     private ?string $id = null;
 
     #[ODM\Field(type: 'string')]
-    private string $customerName;
+    private string $fullName;
 
     #[ODM\Field(type: 'string')]
     #[Assert\Email]
-    private string $customerEmail;
+    private string $email = 'null';
 
     #[ODM\Field(type: 'string')]
-    private ?string $customerPhone = null;
+    private string $phone;
 
     #[ODM\Field(type: 'string')]
     private string $address;
 
-    #[ODM\EmbedMany(targetDocument: Pizza::class)]
+    #[ODM\Field(name: 'pizzas', type: 'collection')]
     private array $pizzas = [];
 
-    #[ODM\EmbedMany(targetDocument: Addition::class)]
+    #[ODM\Field(name: 'additions', type: 'collection')]
     private array $additions = [];
 
     #[ODM\Field(type: 'float')]
     #[Assert\PositiveOrZero]
     private float $totalPrice;
 
-    #[ODM\Field(type: 'string')]
-    private string $status = OrderStatus::PENDING->value;
+    #[ODM\Field(type: 'string', enumType: OrderStatus::class)]
+    private OrderStatus $status = OrderStatus::PENDING;
 
     #[ODM\Field(type: 'date')]
     private DateTime $createdAt;
@@ -47,7 +47,6 @@ class Order
     public function __construct()
     {
         $this->createdAt = new DateTime();
-        $this->status = OrderStatus::PENDING->value;
     }
 
     public function getId(): ?string
@@ -55,36 +54,36 @@ class Order
         return $this->id;
     }
 
-    public function getCustomerName(): string
+    public function getFullName(): string
     {
-        return $this->customerName;
+        return $this->fullName;
     }
 
-    public function setCustomerName(string $customerName): self
+    public function setFullName(string $fullName): self
     {
-        $this->customerName = $customerName;
+        $this->fullName = $fullName;
         return $this;
     }
 
-    public function getCustomerEmail(): string
+    public function getEmail(): string
     {
-        return $this->customerEmail;
+        return $this->email;
     }
 
-    public function setCustomerEmail(string $customerEmail): self
+    public function setEmail(string $email): self
     {
-        $this->customerEmail = $customerEmail;
+        $this->email = $email;
         return $this;
     }
 
-    public function getCustomerPhone(): ?string
+    public function getPhone(): ?string
     {
-        return $this->customerPhone;
+        return $this->phone;
     }
 
-    public function setCustomerPhone(?string $customerPhone): self
+    public function setPhone(?string $phone): self
     {
-        $this->customerPhone = $customerPhone;
+        $this->phone = $phone;
         return $this;
     }
 

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout Successful{% endblock %}
+
+{% block body %}
+    <h1>Thank You!</h1>
+
+    <p>Your order has been placed successfully.</p>
+
+    <h2>Order Details</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in lineItems %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ (item.price.unit_amount / 100) | number_format(2, '.', ',') }} {{ item.price.currency }}</td>
+                <td>{{ (item.amount_total / 100) | number_format(2, '.', ',') }} {{ item.price.currency }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+        <tfoot>
+        <tr>
+            <td colspan="3"><strong>Total:</strong></td>
+            <td>{{ total | number_format(2, '.', ',') }}</td>
+        </tr>
+        </tfoot>
+    </table>
+
+
+    <a href="{{ path('app_homepage') }}" class="btn btn-primary">Back to Home</a>
+{% endblock %}
