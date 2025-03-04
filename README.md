@@ -13,3 +13,12 @@ Task:
 \
 Complete:
 - Redis
+
+
+Create an admin account using the command:
+    php bin/console app:create-admin
+
+Mongo Express:
+    http://localhost:8081/
+    Login: admin
+    Password: pass
