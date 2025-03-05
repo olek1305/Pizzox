@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Currency Settings{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Currency Settings</h1>
+
+        {# Debug information #}
+        {% if app.debug %}
+            <div class="debug-info">
+                <p>Available currencies: {{ form.currency.vars.choices|length }}</p>
+                <p>Current currency: {{ form.currency.vars.value }}</p>
+            </div>
+        {% endif %}
+
+        {{ form_start(form) }}
+
+        {# Show global form errors #}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.currency) }}
+            {{ form_widget(form.currency, {
+                'attr': {'class': 'form-control'}
+            }) }}
+            {{ form_errors(form.currency) }}
+        </div>
+
+        {{ form_widget(form.save) }}
+
+        {{ form_end(form) }}
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

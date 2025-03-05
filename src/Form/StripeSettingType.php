@@ -5,10 +5,10 @@ namespace App\Form;
 use App\Document\Setting;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Positive;
 
 class StripeSettingType extends AbstractType
 {
@@ -23,9 +23,14 @@ class StripeSettingType extends AbstractType
                     'placeholder' => '••••••••••',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'not_blank']),
-                    new Positive(['message' => 'positive']),
+                    new NotBlank(['message' => 'not_blank'])
                 ],
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Save Changes',
+                'attr' => [
+                    'class' => 'bg-green-500 text-white rounded-lg hover:bg-green-700'
+                ]
             ])
         ;
     }

@@ -17,6 +17,7 @@ services:
       MONGO_INITDB_DATABASE: pizza_db
     volumes:
       - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
       - "27017:27017"
 
@@ -29,23 +30,6 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongo:27017/
     ports:
       - "8081:8081"
-
-  mongo-setup:
-    image: mongo:latest
-    container_name: mongo_setup
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGO_INITDB_DATABASE: pizza_db
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
-    volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    command: >
-      bash -c "until mongo --host mongo --eval 'print(\"waiting for mongo...\")' &>/dev/null; do
-        sleep 1;
-      done;
-      mongo --host mongo -u admin -p admin --authenticationDatabase admin pizza_db /docker-entrypoint-initdb.d/mongo-init.js"
 
   redis:
     image: redis:7.4

@@ -18,9 +18,10 @@ class Order
     #[ODM\Field(type: 'string')]
     private string $fullName;
 
-    #[ODM\Field(type: 'string')]
+    #[ODM\Field(type: 'string', nullable: true)]
     #[Assert\Email]
-    private string $email = 'null';
+    #[Assert\NotEqualTo('null')]
+    private ?string $email = null;
 
     #[ODM\Field(type: 'string')]
     private string $phone;
@@ -70,7 +71,7 @@ class Order
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email = null): self
     {
         $this->email = $email;
         return $this;
@@ -143,12 +144,12 @@ class Order
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): OrderStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(OrderStatus $status): self
     {
         $this->status = $status;
         return $this;

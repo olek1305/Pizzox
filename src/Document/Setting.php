@@ -14,13 +14,11 @@ class Setting
     #[ODM\Id]
     private ?string $id = null;
 
-    #[Assert\NotBlank]
     #[ODM\Field(type: 'string')]
     private ?string $country = null;
 
-    #[Assert\NotBlank]
     #[ODM\Field(type: 'string')]
-    private string $currency;
+    private ?string $currency = null;
 
     #[ODM\Field(type: 'string')]
     private ?string $stripeSecretKey = null;
@@ -32,7 +30,7 @@ class Setting
 
     public function getCurrency(): string
     {
-        return $this->currency;
+        return $this->currency ?? "Null";
     }
 
     public function setCurrency(string $currency): self

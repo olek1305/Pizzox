@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Settings</h1>
+
+        <div class="mt-4">
+            <div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Currency Settings</h5>
+                            <p class="card-text">Configure currency and country settings for your application.</p>
+                            <a href="{{ path('currency_setting') }}" class="list-group-item list-group-item-action">
+                                Currency Setting
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Stripe Settings</h5>
+                            <p class="card-text">Configure your Stripe integration settings.</p>
+                            <a href="{{ path('stripe_setting') }}" class="list-group-item list-group-item-action">
+                                Stripe Setting
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

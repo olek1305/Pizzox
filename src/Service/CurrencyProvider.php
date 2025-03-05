@@ -17,7 +17,7 @@ class CurrencyProvider
      */
     public function __construct(SettingRepository $settingRepository)
     {
-        $setting = $settingRepository->findOrCreateSetting();
+        $setting = $settingRepository->findLastOrCreate();
         $this->currency = $setting->getCurrency();
     }
 

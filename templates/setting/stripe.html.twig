@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stripe Settings{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Stripe Settings</h1>
+
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.stripeSecretKey) }}
+            {{ form_widget(form.stripeSecretKey) }}
+            {{ form_errors(form.stripeSecretKey) }}
+        </div>
+
+        <div class="form-group mt-3">
+            {{ form_widget(form.save) }}
+        </div>
+        {{ form_end(form) }}
+
+        {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} mt-3">
+                <p>{{ messages[0] }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

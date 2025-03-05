@@ -6,6 +6,7 @@ use App\Document\Setting;
 use App\Service\CurrencyService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,8 +21,11 @@ class SettingType extends AbstractType
                 'choices' => $currencies,
                 'label' => 'Currency',
                 'required' => true,
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Save Changes',
+                'attr' => ['class' => 'btn btn-primary mt-3']
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
