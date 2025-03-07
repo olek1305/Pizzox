@@ -9,7 +9,17 @@
 
     <h2>Order Details</h2>
 
-    <table>
+    <div class="order-info">
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Name:</strong> {{ order.fullName }}</p>
+        <p><strong>Address:</strong> {{ order.address }}</p>
+        <p><strong>Phone:</strong> {{ order.phone }}</p>
+        {% if order.email %}
+            <p><strong>Email:</strong> {{ order.email }}</p>
+        {% endif %}
+    </div>
+
+    <table class="table">
         <thead>
         <tr>
             <th>Item</th>
@@ -21,10 +31,10 @@
         <tbody>
         {% for item in lineItems %}
             <tr>
-                <td>{{ item.description }}</td>
+                <td>{{ item.name }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>{{ (item.price.unit_amount / 100) | number_format(2, '.', ',') }} {{ item.price.currency }}</td>
-                <td>{{ (item.amount_total / 100) | number_format(2, '.', ',') }} {{ item.price.currency }}</td>
+                <td>{{ (item.price.unit_amount / 100) | number_format(2, '.', ',') }} {{ currency | upper }}</td>
+                <td>{{ (item.amount_total / 100) | number_format(2, '.', ',') }} {{ currency | upper }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -32,11 +42,12 @@
         <tfoot>
         <tr>
             <td colspan="3"><strong>Total:</strong></td>
-            <td>{{ total | number_format(2, '.', ',') }}</td>
+            <td><strong>{{ total | number_format(2, '.', ',') }} {{ currency | upper }}</strong></td>
         </tr>
         </tfoot>
     </table>
 
-
-    <a href="{{ path('app_homepage') }}" class="btn btn-primary">Back to Home</a>
+    <div class="mt-4">
+        <a href="{{ path('pizza_index') }}" class="btn btn-primary">Back to Home</a>
+    </div>
 {% endblock %}

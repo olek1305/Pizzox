@@ -6,6 +6,7 @@ use App\Document\Addition;
 use App\Document\Order;
 use App\Document\Pizza;
 use App\Document\Setting;
+use App\Enum\OrderStatus;
 use App\Service\CurrencyProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
@@ -91,7 +92,6 @@ class CheckoutController extends AbstractController
         }
 
         $order->setTotalPrice($totalPrice);
-
         $this->documentManager->persist($order);
         $this->documentManager->flush();
 
@@ -131,12 +131,13 @@ class CheckoutController extends AbstractController
                 'payment_method_types' => ['card'],
                 'line_items' => $lineItems,
                 'mode' => 'payment',
-                'success_url' => $urlGenerator->generate('checkout_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'success_url' => $this->generateUrl('checkout_success', [
+                    'order_id' => $order->getId()
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
                 'cancel_url' => $urlGenerator->generate('checkout_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'customer_email' => $order->getEmail(),
                 'metadata' => [
-                    'customer_name' => $order->getFullName(),
                     'order_id' => $order->getId(),
-                    'description' => 'Pizza Restaurant Owner'
                 ],
             ]);
 
@@ -153,64 +154,97 @@ class CheckoutController extends AbstractController
      * @param Request $request
      * @return Response
      * @throws InvalidArgumentException
+     * @throws LockException
+     * @throws MappingException
+     * @throws MongoDBException
+     * @throws Throwable
      */
     #[Route('/checkout/success', name: 'checkout_success', methods: ['GET'])]
     public function checkoutSuccess(Request $request): Response
     {
-        $sessionId = $request->query->get('session_id');
-
-        if (!$sessionId) {
-            // Handle missing session ID (redirect or error message)
-            $this->addFlash('error', 'Invalid checkout session.');
-            return $this->redirectToRoute('cart_index');
+        // Get order ID from URL
+        $orderId = $request->query->get('order_id');
+        if (!$orderId) {
+            $this->addFlash('error', 'Order ID not found');
+            return $this->redirectToRoute('pizza_index');
         }
 
-        try {
-            $stripe = new StripeClient($this->getStripeSecretKey()); // Get your Stripe secret key
-            $session = $stripe->checkout->sessions->retrieve($sessionId);
-
-
-            // Extract order details from Stripe session
-            $lineItems = $session->line_items->data;  // No need for calculateTotal
-
-            // Clear the cart now that the order is complete
-            $this->cache->delete('user_cart');
-            $this->saveCartToCache(); // Ensure empty cart is saved
-
-
-            return $this->render('checkout/success.html.twig', [
-                'lineItems' => $lineItems,
-                'total' => $session->amount_total / 100
-            ]);
-
-        } catch (ApiErrorException $e) {
-            // Handle Stripe API errors
-            $this->addFlash('error', 'Error retrieving order details. Please contact support.');
-            return $this->redirectToRoute('cart_index');
-        } catch (Exception $e) {
-            $this->addFlash('error', 'An unexpected error occurred during checkout.');
-            return $this->redirectToRoute('cart_index');
+        // Find the order in database
+        $order = $this->documentManager->getRepository(Order::class)->find($orderId);
+        if (!$order) {
+            $this->addFlash('error', 'Order not found');
+            return $this->redirectToRoute('pizza_index');
         }
+
+        // Remove cache cart
+        $this->cache->delete('user_cart');
+        $this->saveCartToCache();
+
+        // Update order status
+        $order->setStatus(OrderStatus::PAID);
+        $this->documentManager->flush();
+
+        // Prepare items for display
+        $items = $this->prepareItemsForDisplay($order);
+
+        $this->addFlash('success', 'Your order has been successfully processed!');
+
+        return $this->render('checkout/success.html.twig', [
+            'lineItems' => $items,
+            'total' => $order->getTotalPrice(),
+            'order' => $order,
+            'currency' => $this->currency
+        ]);
     }
 
     /**
+     * @param Request $request
      * @return Response
+     * @throws MongoDBException
+     * @throws Throwable
      */
     #[Route('/checkout/fail', name: 'checkout_fail', methods: ['GET'])]
-    public function checkoutFail(): Response
+    public function checkoutFail(Request $request): Response
     {
-        $this->addFlash('error', 'Payment was canceled or failed. Please try again.');
-        //        TODO add OrderStatus to Fail
+        if ($orderId = $request->query->get('order_id')) {
+            $order = $this->documentManager->getRepository(Order::class)->find($orderId);
+            if ($order) {
+                $order->setStatus(OrderStatus::FAILED);
+                $this->documentManager->flush();
+            }
+        }
+
+        $this->addFlash('error', 'Checkout process failed. Please try again.');
         return $this->redirectToRoute('cart_index');
     }
 
     /**
+     * @param Request $request
      * @return Response
+     * @throws LockException
+     * @throws MappingException
+     * @throws MongoDBException
+     * @throws Throwable
      */
     #[Route('/checkout/cancel', name: 'checkout_cancel', methods: ['GET'])]
-    public function checkoutCancel(): Response
+    public function checkoutCancel(Request $request): Response
     {
-        //        TODO add OrderStatus to Cancel
+        // Check if there's a current order ID in the session
+        if ($orderId = $request->getSession()->get('current_order_id')) {
+            $order = $this->documentManager->getRepository(Order::class)->find($orderId);
+            if ($order) {
+                $order->setStatus(OrderStatus::CANCELLED);
+                $this->documentManager->flush();
+
+                // Clear the session
+                $request->getSession()->remove('current_order_id');
+
+                // Clear the cart
+                $this->cache->delete('user_cart');
+            }
+        }
+
+        $this->addFlash('info', 'Checkout was cancelled.');
         return $this->render('checkout/cancel.html.twig');
     }
 
@@ -227,15 +261,37 @@ class CheckoutController extends AbstractController
     }
 
     /**
-     * @return string
-     * @throws Exception
+     * @param Order $order
+     * @return array
      */
-    private function getStripeSecretKey(): string
+    public function prepareItemsForDisplay(Order $order): array
     {
-        $stripeSecretKey = $this->documentManager->getRepository(Setting::class)->findOneBy([])->getStripeSecretKey();
-        if (!$stripeSecretKey) {
-            throw new Exception('Stripe Secret Key not configured.'); // Or handle differently
+        $items = [];
+
+        // Handle pizzas
+        foreach ($order->getPizzas() as $pizza) {
+            $items[] = [
+                'name' => $pizza['name'],
+                'quantity' => 1,
+                'price' => [
+                    'unit_amount' => $pizza['price'] * 100
+                ],
+                'amount_total' => $pizza['price'] * 100
+            ];
         }
-        return $stripeSecretKey;
+
+        // Handle additions
+        foreach ($order->getAdditions() as $addition) {
+            $items[] = [
+                'name' => $addition['name'],
+                'quantity' => 1,
+                'price' => [
+                    'unit_amount' => $addition['price'] * 100
+                ],
+                'amount_total' => $addition['price'] * 100
+            ];
+        }
+
+        return $items;
     }
 }

@@ -20,8 +20,7 @@ class Order
 
     #[ODM\Field(type: 'string', nullable: true)]
     #[Assert\Email]
-    #[Assert\NotEqualTo('null')]
-    private ?string $email = null;
+    private string $email;
 
     #[ODM\Field(type: 'string')]
     private string $phone;
@@ -71,7 +70,7 @@ class Order
         return $this->email;
     }
 
-    public function setEmail(?string $email = null): self
+    public function setEmail(string $email): self
     {
         $this->email = $email;
         return $this;
@@ -106,7 +105,13 @@ class Order
 
     public function addPizza(Pizza $pizza): self
     {
-        $this->pizzas[] = $pizza;
+        $this->pizzas[] = [
+            'id' => $pizza->getId(),
+            'name' => $pizza->getName(),
+            'price' => $pizza->getPrice(),
+            'size' => $pizza->getSize(),
+            'toppings' => $pizza->getToppings(),
+        ];
         return $this;
     }
 
@@ -123,7 +128,11 @@ class Order
 
     public function addAddition(Addition $addition): self
     {
-        $this->additions[] = $addition;
+        $this->additions[] = [
+            'id' => $addition->getId(),
+            'name' => $addition->getName(),
+            'price' => $addition->getPrice(),
+        ];
         return $this;
     }
 
