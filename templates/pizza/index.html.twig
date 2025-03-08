@@ -59,13 +59,24 @@
                             </td>
                             <td class="px-6 py-4 space-x-2">
                                 <form action="{{ path('cart_add_pizza', {'pizzaId': pizza.id}) }}" method="POST" class="inline">
-                                    <label>
-                                        <input type="number" name="quantity" value="1" min="1" class="w-12 border rounded-md px-2 text-center" />
-                                    </label>
-                                    <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-700">
-                                        {{ 'add'|trans }}
-                                    </button>
+                                    <div class="flex space-x-2">
+                                        <div class="flex space-x-1">
+                                            <button type="submit" name="size" value="small"
+                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
+                                                S
+                                            </button>
+                                            <button type="submit" name="size" value="medium"
+                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
+                                                M
+                                            </button>
+                                            <button type="submit" name="size" value="large"
+                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
+                                                L
+                                            </button>
+                                        </div>
+                                    </div>
                                 </form>
+
                                 {% if is_granted('ROLE_ADMIN') %}
                                     |
                                     <a href="{{ path('pizza_show', {'id': pizza.id}) }}"
@@ -81,7 +92,6 @@
                                     </form>
                                 {% endif %}
                             </td>
-                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>

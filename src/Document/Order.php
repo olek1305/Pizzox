@@ -16,6 +16,8 @@ class Order
     private ?string $id = null;
 
     #[ODM\Field(type: 'string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 255)]
     private string $fullName;
 
     #[ODM\Field(type: 'string', nullable: true)]
@@ -23,9 +25,12 @@ class Order
     private string $email;
 
     #[ODM\Field(type: 'string')]
+    #[Assert\NotBlank]
+    #[Assert\Regex(pattern: '/^\+?[1-9][0-9]{7,14}$/')]
     private string $phone;
 
     #[ODM\Field(type: 'string')]
+    #[Assert\NotBlank]
     private string $address;
 
     #[ODM\Field(name: 'pizzas', type: 'collection')]
@@ -103,14 +108,19 @@ class Order
         return $this->pizzas;
     }
 
-    public function addPizza(Pizza $pizza): self
-    {
+    public function addPizza(
+        Pizza $pizza,
+        int $quantity = 1,
+        string $selectedSize = 'medium',
+        float $actualPrice = null
+    ): self {
         $this->pizzas[] = [
             'id' => $pizza->getId(),
             'name' => $pizza->getName(),
-            'price' => $pizza->getPrice(),
-            'size' => $pizza->getSize(),
+            'price' => $actualPrice ?? $pizza->getPrice(),
+            'size' => $selectedSize,
             'toppings' => $pizza->getToppings(),
+            'quantity' => $quantity
         ];
         return $this;
     }
@@ -121,17 +131,32 @@ class Order
         return $this;
     }
 
+    private function formatSize(string $size): string
+    {
+        return '(' . strtoupper(substr($size, 0, 1)) . ')';
+    }
+
+    // You might also want to add a getter that includes the formatted size
+    public function getPizzaNameWithSize(array $pizza): string
+    {
+        return sprintf('%s %s',
+            $pizza['name'],
+            $this->formatSize($pizza['size'])
+        );
+    }
+
     public function getAdditions(): array
     {
         return $this->additions;
     }
 
-    public function addAddition(Addition $addition): self
+    public function addAddition(Addition $addition, int $quantity = 1): self
     {
         $this->additions[] = [
             'id' => $addition->getId(),
             'name' => $addition->getName(),
             'price' => $addition->getPrice(),
+            'quantity' => $quantity
         ];
         return $this;
     }

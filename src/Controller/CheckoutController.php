@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Psr\Cache\InvalidArgumentException;
-use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -68,9 +67,8 @@ class CheckoutController extends AbstractController
         }
 
         $order = new Order();
-        $email = $request->request->get('email');
         $order->setFullName($request->request->get('fullName'))
-            ->setEmail(empty($email) ? null : $email)
+            ->setEmail($request->request->get('email'))
             ->setPhone($request->request->get('phone'))
             ->setAddress($request->request->get('address'));
 
@@ -79,13 +77,18 @@ class CheckoutController extends AbstractController
             if ($item['type'] === 'pizza') {
                 $pizza = $this->documentManager->getRepository(Pizza::class)->find($item['item_id']);
                 if ($pizza) {
-                    $order->addPizza($pizza);
+                    $order->addPizza(
+                        $pizza,
+                        $item['quantity'],
+                        $item['size'],
+                        $item['price']
+                    );
                     $totalPrice += $item['price'] * $item['quantity'];
                 }
             } elseif ($item['type'] === 'addition') {
                 $addition = $this->documentManager->getRepository(Addition::class)->find($item['item_id']);
                 if ($addition) {
-                    $order->addAddition($addition);
+                    $order->addAddition($addition, $item['quantity']);
                     $totalPrice += $item['price'] * $item['quantity'];
                 }
             }
@@ -102,19 +105,23 @@ class CheckoutController extends AbstractController
                 throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $item['type'] ?? 'null'));
             }
 
+            $productName = $item['item_name'];
+            if ($item['type'] === 'pizza' && isset($item['size'])) {
+                $productName .= ' (' . strtoupper($item['size']) . ')';
+            }
+
             // Add item to Stripe line items
-            $lineItems = array_map(function ($item) {
-                return [
-                    'price_data' => [
-                        'currency' => $this->currency,
-                        'product_data' => [
-                            'name' => $item['item_name'],
-                        ],
-                        'unit_amount' => $item['price'] * 100,
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => strtolower($this->currency),
+                    'product_data' => [
+                        'name' => $productName,
                     ],
-                    'quantity' => $item['quantity'],
-                ];
-            }, $cart);
+                    'unit_amount' => (int)(round($item['price'] * 100)),
+                ],
+                'quantity' => $item['quantity'],
+            ];
+
         }
 
         try {
@@ -153,46 +160,53 @@ class CheckoutController extends AbstractController
     /**
      * @param Request $request
      * @return Response
-     * @throws InvalidArgumentException
      * @throws LockException
      * @throws MappingException
-     * @throws MongoDBException
-     * @throws Throwable
      */
     #[Route('/checkout/success', name: 'checkout_success', methods: ['GET'])]
     public function checkoutSuccess(Request $request): Response
     {
-        // Get order ID from URL
         $orderId = $request->query->get('order_id');
-        if (!$orderId) {
-            $this->addFlash('error', 'Order ID not found');
-            return $this->redirectToRoute('pizza_index');
-        }
-
-        // Find the order in database
         $order = $this->documentManager->getRepository(Order::class)->find($orderId);
+
         if (!$order) {
-            $this->addFlash('error', 'Order not found');
-            return $this->redirectToRoute('pizza_index');
+            throw $this->createNotFoundException('Order not found');
         }
 
-        // Remove cache cart
-        $this->cache->delete('user_cart');
-        $this->saveCartToCache();
+        $lineItems = [];
 
-        // Update order status
-        $order->setStatus(OrderStatus::PAID);
-        $this->documentManager->flush();
+        // Convert pizzas to line items
+        foreach ($order->getPizzas() as $pizza) {
+            $lineItems[] = [
+                'name' => $pizza['name'],
+                'quantity' => $pizza['quantity'],
+                'price' => [
+                    'unit_amount' => $pizza['price'] * 100 // Convert to cents
+                ],
+                'amount_total' => $pizza['price'] * $pizza['quantity'] * 100,
+                'metadata' => [
+                    'size' => $pizza['size'][0] ?? null  // Take first size from the array
+                ]
+            ];
+        }
 
-        // Prepare items for display
-        $items = $this->prepareItemsForDisplay($order);
-
-        $this->addFlash('success', 'Your order has been successfully processed!');
+        // Convert additions to line items
+        foreach ($order->getAdditions() as $addition) {
+            $lineItems[] = [
+                'name' => $addition['name'],
+                'quantity' => $addition['quantity'],
+                'price' => [
+                    'unit_amount' => $addition['price'] * 100
+                ],
+                'amount_total' => $addition['price'] * $addition['quantity'] * 100
+            ];
+        }
 
         return $this->render('checkout/success.html.twig', [
-            'lineItems' => $items,
-            'total' => $order->getTotalPrice(),
-            'order' => $order
+            'order' => $order,
+            'lineItems' => $lineItems,
+            'currency' => $this->currency,
+            'total' => $order->getTotalPrice()
         ]);
     }
 
@@ -265,32 +279,42 @@ class CheckoutController extends AbstractController
      */
     public function prepareItemsForDisplay(Order $order): array
     {
-        $items = [];
+        $groupedItems = [];
 
-        // Handle pizzas
         foreach ($order->getPizzas() as $pizza) {
-            $items[] = [
-                'name' => $pizza['name'],
-                'quantity' => 1,
-                'price' => [
-                    'unit_amount' => $pizza['price'] * 100
-                ],
-                'amount_total' => $pizza['price'] * 100
-            ];
+            $size = is_array($pizza['size']) ? $pizza['size'][0] : ($pizza['size'] ?? 'medium');
+            $key = sprintf('%s_%s_%s', $pizza['name'], $size, $pizza['price']);
+
+            if (!isset($groupedItems[$key])) {
+                $groupedItems[$key] = [
+                    'name' => $pizza['name'] . ' (' . strtoupper($size) . ')',
+                    'quantity' => 0,
+                    'price' => [
+                        'unit_amount' => $pizza['price'] * 100
+                    ],
+                    'amount_total' => 0
+                ];
+            }
+            $groupedItems[$key]['quantity']++;
+            $groupedItems[$key]['amount_total'] += $pizza['price'] * 100;
         }
 
-        // Handle additions
         foreach ($order->getAdditions() as $addition) {
-            $items[] = [
-                'name' => $addition['name'],
-                'quantity' => 1,
-                'price' => [
-                    'unit_amount' => $addition['price'] * 100
-                ],
-                'amount_total' => $addition['price'] * 100
-            ];
+            $key = 'addition_' . $addition['name'];
+            if (!isset($groupedItems[$key])) {
+                $groupedItems[$key] = [
+                    'name' => $addition['name'],
+                    'quantity' => 0,
+                    'price' => [
+                        'unit_amount' => $addition['price'] * 100
+                    ],
+                    'amount_total' => 0
+                ];
+            }
+            $groupedItems[$key]['quantity']++;
+            $groupedItems[$key]['amount_total'] += $addition['price'] * 100;
         }
 
-        return $items;
+        return array_values($groupedItems);
     }
 }

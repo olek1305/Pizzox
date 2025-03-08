@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Pizza Size Settings'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto p-12">
+        <div class="flex justify-center items-center mb-4">
+            <div class="flex space-x-3">
+                <a href="{{ path('settings_index') }}"
+                   class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-700">
+                    {{ 'Back to Settings'|trans }}
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-3xl font-bold mb-6">{{ 'Pizza Size Price Settings'|trans }}</h1>
+
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            <div class="mb-6">
+                <div class="font-semibold mb-2">{{ form_label(form.pizzaPriceCalculationType) }}</div>
+                <div class="flex space-x-4">
+                    {{ form_widget(form.pizzaPriceCalculationType, {
+                        'attr': {'class': 'rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500'}
+                    }) }}
+                </div>
+                {{ form_errors(form.pizzaPriceCalculationType) }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="font-semibold mb-2">{{ form_label(form.largeSizeModifier) }}</div>
+                    {{ form_widget(form.largeSizeModifier, {
+                        'attr': {
+                            'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
+                        }
+                    }) }}
+                    {{ form_errors(form.largeSizeModifier) }}
+                </div>
+
+                <div>
+                    <div class="font-semibold mb-2">{{ form_label(form.smallSizeModifier) }}</div>
+                    {{ form_widget(form.smallSizeModifier, {
+                        'attr': {
+                            'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
+                        }
+                    }) }}
+                    {{ form_errors(form.smallSizeModifier) }}
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit"
+                        class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
+                    {{ 'Save Changes'|trans }}
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mt-4 p-4 rounded-lg {% if label == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

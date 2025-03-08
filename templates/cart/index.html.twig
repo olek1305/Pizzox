@@ -28,7 +28,14 @@
 
                     {% for item in cart %}
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-6 text-left font-medium">{{ item.item_name }}
+                        <tr class="border-b hover:bg-gray-100">
+                            <td class="px-6 py-4">
+                                {{ item.item_name }}
+                                {% if item.type == 'pizza' %}
+                                    <span class="ml-2 text-sm font-semibold text-gray-600">
+                                        ({{ item.size|upper }})
+                                    </span>
+                                {% endif %}
                                 <span class="text-xs text-gray-500">({{ item.type }})</span>
                             </td>
                             <td class="py-3 px-6 text-center">{{ item.quantity }}</td>

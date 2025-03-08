@@ -2,6 +2,38 @@
 
 {% block title %}Checkout Successful{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .order-info {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .table th, .table td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .table th:last-child,
+        .table td:last-child {
+            text-align: right;
+        }
+
+        .table th:nth-child(1) { width: 40%; } /* Item */
+        .table th:nth-child(2) { width: 15%; } /* Quantity */
+        .table th:nth-child(3) { width: 20%; } /* Price */
+        .table th:nth-child(4) { width: 25%; } /* Subtotal */
+    </style>
+{% endblock %}
+
+
 {% block body %}
     <h1>Thank You!</h1>
 
@@ -11,6 +43,7 @@
 
     <div class="order-info">
         <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Status:</strong> {{ order.status.value }}</p>
         <p><strong>Name:</strong> {{ order.fullName }}</p>
         <p><strong>Address:</strong> {{ order.address }}</p>
         <p><strong>Phone:</strong> {{ order.phone }}</p>
@@ -29,23 +62,31 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in lineItems %}
+        {% for pizza in order.pizzas %}
             <tr>
-                <td>{{ item.name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ (item.price.unit_amount / 100) | number_format(2, '.', ',') }} {{ currency | upper }}</td>
-                <td>{{ (item.amount_total / 100) | number_format(2, '.', ',') }} {{ currency | upper }}</td>
+                <td>{{ pizza.name }} ({{ pizza.size|capitalize }})</td>
+                <td>{{ pizza.quantity }}</td>
+                <td>{{ pizza.price|number_format(2) }} EUR</td>
+                <td>{{ (pizza.price * pizza.quantity)|number_format(2) }} EUR</td>
+            </tr>
+        {% endfor %}
+        {% for addition in order.additions %}
+            <tr>
+                <td>{{ addition.name }}</td>
+                <td>{{ addition.quantity }}</td>
+                <td>{{ addition.price|number_format(2) }} EUR</td>
+                <td>{{ (addition.price * addition.quantity)|number_format(2) }} EUR</td>
             </tr>
         {% endfor %}
         </tbody>
-
         <tfoot>
         <tr>
-            <td colspan="3"><strong>Total:</strong></td>
-            <td><strong>{{ total | number_format(2, '.', ',') }} {{ currency | upper }}</strong></td>
+            <td colspan="3">Total:</td>
+            <td>{{ order.totalPrice|number_format(2) }} EUR</td>
         </tr>
         </tfoot>
     </table>
+
 
     <div class="mt-4">
         <a href="{{ path('pizza_index') }}" class="btn btn-primary">Back to Home</a>

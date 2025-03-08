@@ -23,6 +23,15 @@ class Setting
     #[ODM\Field(type: 'string')]
     private ?string $stripeSecretKey = null;
 
+    #[ODM\Field(type: 'string')]
+    private string $pizzaPriceCalculationType = 'fixed';
+
+    #[ODM\Field(type: 'float')]
+    private float $largeSizeModifier = 12.0;
+
+    #[ODM\Field(type: 'float')]
+    private float $smallSizeModifier = 8.0;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -58,6 +67,39 @@ class Setting
     public function setStripeSecretKey(?string $stripeSecretKey): self
     {
         $this->stripeSecretKey = $stripeSecretKey;
+        return $this;
+    }
+
+    public function getPizzaPriceCalculationType(): string
+    {
+        return $this->pizzaPriceCalculationType;
+    }
+
+    public function setPizzaPriceCalculationType(string $type): self
+    {
+        $this->pizzaPriceCalculationType = $type;
+        return $this;
+    }
+
+    public function getLargeSizeModifier(): float
+    {
+        return $this->largeSizeModifier;
+    }
+
+    public function setLargeSizeModifier(float $modifier): self
+    {
+        $this->largeSizeModifier = $modifier;
+        return $this;
+    }
+
+    public function getSmallSizeModifier(): float
+    {
+        return $this->smallSizeModifier;
+    }
+
+    public function setSmallSizeModifier(float $modifier): self
+    {
+        $this->smallSizeModifier = $modifier;
         return $this;
     }
 }

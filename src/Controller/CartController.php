@@ -71,11 +71,50 @@ class CartController extends AbstractController
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
-        $quantity = (int)$request->get('quantity', 1);
-        $this->addItemToCart($cart, $pizza, $quantity);
+        $size = $request->request->get('size', 'medium');
+        $cartItemId = sprintf('%s_%s', $pizzaId, $size);
+
+        // Check if this pizza with this size already exists in cart
+        $existingItem = null;
+        foreach ($cart as $key => $item) {
+            if ($item['type'] === 'pizza' &&
+                $item['item_id'] === $pizzaId &&
+                $item['size'] === $size) {
+                $existingItem = $key;
+                break;
+            }
+        }
+
+        $price = $this->calculatePizzaPrice($pizza, $size);
+
+        if ($existingItem !== null) {
+            $cart[$existingItem]['quantity']++;
+        } else {
+            $cart[] = [
+                'type' => 'pizza',
+                'item_id' => $pizzaId,
+                'item_name' => $pizza->getName(),
+                'price' => $price,
+                'quantity' => 1,
+                'size' => $size
+            ];
+        }
 
         $this->saveCartToCache($cart);
         return $this->redirectToRoute('pizza_index');
+    }
+
+    private function calculatePizzaPrice(Pizza $pizza, string $size): float
+    {
+        $basePrice = $pizza->getPrice();
+
+        $price = match ($size) {
+            'small' => $basePrice * 0.8,
+            'large' => $basePrice * 1.2,
+            default => $basePrice, // medium size
+        };
+
+        return round($price, 2);
     }
 
 

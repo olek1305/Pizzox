@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\PizzaSizeSettingType;
 use App\Form\SettingType;
 use App\Form\StripeSettingType;
 use App\Repository\SettingRepository;
@@ -107,6 +108,33 @@ class SettingController extends AbstractController
         }
 
         return $this->render('setting/stripe.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws MongoDBException
+     * @throws Throwable
+     */
+    #[Route('/admin/setting/pizza-sizes', name: 'pizza_size_setting', methods: ['GET', 'POST'])]
+    public function editPizzaSizes(Request $request): Response
+    {
+        $settings = $this->settingsRepository->findLastOrCreate();
+
+        $form = $this->createForm(PizzaSizeSettingType::class, $settings);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->documentManager->persist($settings);
+            $this->documentManager->flush();
+
+            $this->addFlash('success', 'Pizza size settings updated successfully!');
+            return $this->redirectToRoute('pizza_size_setting');
+        }
+
+        return $this->render('setting/pizza_sizes.html.twig', [
             'form' => $form->createView()
         ]);
     }
