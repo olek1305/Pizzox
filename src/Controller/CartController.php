@@ -20,20 +20,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CartController extends AbstractController
 {
-    private string $currency;
-
     /**
      * @param CacheInterface $cache
      * @param DocumentManager $documentManager
-     * @param CurrencyProvider $currencyProvider
      */
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly DocumentManager $documentManager,
-        CurrencyProvider $currencyProvider
     )
     {
-        $this->currency = $currencyProvider->getCurrency();
+        //
     }
 
     /**
@@ -54,8 +50,7 @@ class CartController extends AbstractController
 
         return $this->render('cart/index.html.twig', [
             'cart' => $cart,
-            'total' => $total,
-            'currency' => $this->currency,
+            'total' => $total
         ]);
     }
 
@@ -77,7 +72,7 @@ class CartController extends AbstractController
         }
 
         $quantity = (int)$request->get('quantity', 1);
-        $this->addItemToCart($cart, $pizza, $quantity); // Simplified call
+        $this->addItemToCart($cart, $pizza, $quantity);
 
         $this->saveCartToCache($cart);
         return $this->redirectToRoute('pizza_index');

@@ -31,10 +31,6 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    App\EventListener\TimestampListener:
-        tags:
-            - { name: doctrine.event_subscriber }
-
     App\Repository\SettingRepository:
         factory: ['@doctrine_mongodb.odm.default_document_manager', getRepository]
         arguments:
@@ -48,6 +44,9 @@ services:
     App\Service\CartService:
         autowire: true
         public: true
+
+    App\Twig\CurrencyExtension:
+        tags: [ 'twig.extension' ]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

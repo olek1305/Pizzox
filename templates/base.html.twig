@@ -43,15 +43,17 @@
                         <ul>
                             {% for item in cart %}
                                 <li>
-                                    <strong>{{ item.type|capitalize }}:</strong> {{ item.item_name }} x {{ item.quantity }} - ${{ item.price * item.quantity }}
+                                    <strong>{{ item.type|capitalize }}:</strong> {{ item.item_name }} x {{ item.quantity }} -
+                                    {{ item.price * item.quantity }} {{ currency }}
                                     {% set totalCost = totalCost + (item.price * item.quantity) %}
                                 </li>
                             {% endfor %}
-
                         </ul>
 
                         <div>
-                            <p class="text-lg font-bold my-2">{{ 'cart.total'|trans }}: ${{ totalCost|number_format(2, '.', ',') }}</p>
+                            <p class="text-lg font-bold my-2">{{ 'cart.total'|trans }}
+                                {{ totalCost|number_format(2, '.', ',') }} {{ currency }}
+                            </p>
                             <a href="{{ path('cart_index') }}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700">
                                 {{ 'cart.go_to_cart'|trans }}
                             </a>

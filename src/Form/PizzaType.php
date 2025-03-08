@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Document\Category;
 use App\Document\Pizza;
+use App\Service\CurrencyProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -16,6 +17,12 @@ use Symfony\Component\Validator\Constraints\Positive;
 
 class PizzaType extends AbstractType
 {
+    public function __construct(
+        private readonly CurrencyProvider $currencyProvider
+    ) {
+        //
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -27,7 +34,7 @@ class PizzaType extends AbstractType
             ])
             ->add('price', MoneyType::class, [
                 'label' => 'form.pizza.price.label',
-                'currency' => '%app.currency%',
+                'currency' => $this->currencyProvider->getCurrency(),
                 'constraints' => [
                     new NotBlank(['message' => 'not_blank']),
                     new Positive(['message' => 'positive']),

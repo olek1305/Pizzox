@@ -192,8 +192,7 @@ class CheckoutController extends AbstractController
         return $this->render('checkout/success.html.twig', [
             'lineItems' => $items,
             'total' => $order->getTotalPrice(),
-            'order' => $order,
-            'currency' => $this->currency
+            'order' => $order
         ]);
     }
 

@@ -27,13 +27,11 @@ final class AdditionController extends AbstractController
      * @param AdditionRepository $additionRepository
      * @param DocumentManager $documentManager
      * @param CacheInterface $cache
-     * @param CurrencyProvider $currencyProvider
      */
     public function __construct(
         private readonly AdditionRepository $additionRepository,
         private readonly DocumentManager $documentManager,
-        private readonly CacheInterface $cache,
-        private readonly CurrencyProvider $currencyProvider
+        private readonly CacheInterface $cache
     ) {
         //
     }
@@ -88,11 +86,8 @@ final class AdditionController extends AbstractController
             throw $this->createNotFoundException('Addition not found');
         }
 
-        $currency = $this->currencyProvider->getCurrency();
-
         return $this->render('addition/show.html.twig', [
-            'addition' => $addition,
-            'currency' => $currency,
+            'addition' => $addition
         ]);
     }
 
