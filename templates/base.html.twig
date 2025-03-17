@@ -44,8 +44,29 @@
                             {% for item in cart %}
                                 <li>
                                     <strong>{{ item.type|capitalize }}:</strong> {{ item.item_name }} x {{ item.quantity }} -
-                                    {{ item.price * item.quantity }} {{ currency }}
-                                    {% set totalCost = totalCost + (item.price * item.quantity) %}
+                                    {% if item.original_price is defined and item.original_price != item.price %}
+                                        <span class="line-through text-gray-500">
+                                            {% if item.original_price is iterable %}
+                                                {{ item.original_price.price * item.quantity }} {{ currency }}
+                                            {% else %}
+                                                {{ item.original_price * item.quantity }} {{ currency }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-red-600 font-bold">
+                                            {% if item.price is iterable %}
+                                                {{ item.price.price * item.quantity }} {{ currency }}
+                                            {% else %}
+                                                {{ item.price * item.quantity }} {{ currency }}
+                                            {% endif %}
+                                        </span>
+                                        {% else %}
+                                            {% if item.price is iterable %}
+                                                {{ item.price.price * item.quantity }} {{ currency }}
+                                            {% else %}
+                                                {{ item.price * item.quantity }} {{ currency }}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% set totalCost = totalCost + (item.price is iterable ? item.price.price : item.price) * item.quantity %}
                                 </li>
                             {% endfor %}
                         </ul>

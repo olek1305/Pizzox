@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Document\Category;
+use App\Document\Promotion;
 use App\Document\Pizza;
 use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
 use App\Repository\AdditionRepository;
-use App\Service\CurrencyProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Psr\Cache\InvalidArgumentException;
@@ -54,6 +54,47 @@ final class PizzaController extends AbstractController
             $item->expiresAfter(3600);
             return $this->additionRepository->findAllOrderedByName();
         });
+
+        // Get promotions for both pizzas and additions
+        $pizzaPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
+            'itemType' => 'pizza',
+            'active' => true
+        ]);
+
+        $additionPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
+            'itemType' => 'addition',
+            'active' => true
+        ]);
+
+        // Create maps for both types
+        $pizzaPromotionMap = [];
+        foreach ($pizzaPromotions as $promotion) {
+            if ($promotion->isValid()) {
+                $pizzaPromotionMap[$promotion->getItemId()] = $promotion;
+            }
+        }
+
+        $additionPromotionMap = [];
+        foreach ($additionPromotions as $promotion) {
+            if ($promotion->isValid()) {
+                $additionPromotionMap[$promotion->getItemId()] = $promotion;
+            }
+        }
+
+        // Attach promotions to pizzas
+        foreach ($pizzas as $pizza) {
+            if (isset($pizzaPromotionMap[$pizza->getId()])) {
+                $pizza->promotion = $pizzaPromotionMap[$pizza->getId()];
+            }
+        }
+
+        // Attach promotions to additions
+        foreach ($additions as $addition) {
+            if (isset($additionPromotionMap[$addition->getId()])) {
+                $addition->promotion = $additionPromotionMap[$addition->getId()];
+            }
+        }
+
 
         return $this->render('pizza/index.html.twig', [
             'pizzas' => $pizzas,

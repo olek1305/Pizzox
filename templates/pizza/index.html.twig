@@ -47,7 +47,24 @@
                     {% for pizza in pizzas %}
                         <tr class="border-b hover:bg-gray-100">
                             <td class="px-6 py-4">{{ pizza.name }}</td>
-                            <td class="px-6 py-4">{{ pizza.price }} {{ currency }}</td>
+                            <td class="px-6 py-4">
+                                {% if pizza.coupon is defined and pizza.coupon %}
+                                    <div class="flex flex-col">
+                                        <span class="text-gray-500 line-through">{{ pizza.price }} {{ currency }}</span>
+                                        {% if pizza.coupon.type == 'fixed' %}
+                                            <span class="text-red-600 font-semibold">
+                                                {{ pizza.price - pizza.coupon.discount }} {{ currency }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-red-600 font-semibold">
+                                                {{ pizza.price * (1 - pizza.coupon.discount / 100) }} {{ currency }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    {{ pizza.price }} {{ currency }}
+                                {% endif %}
+                            </td>
                             <td class="px-6 py-4">{{ pizza.toppings|join(', ') }}</td>
                             <td class="px-6 py-4">{{ pizza.size|join(', ') }}</td>
                             <td class="px-6 py-4">
@@ -113,7 +130,24 @@
                 {% for addition in additions %}
                     <tr class="border-b hover:bg-gray-100">
                         <td class="px-6 py-4">{{ addition.name }}</td>
-                        <td class="px-6 py-4">{{ addition.price }} {{ currency }}</td>
+                        <td class="px-6 py-4">
+                            {% if addition.coupon is defined and addition.coupon %}
+                                <div class="flex flex-col">
+                                    <span class="text-gray-500 line-through">{{ addition.price }} {{ currency }}</span>
+                                    {% if addition.coupon.type == 'fixed' %}
+                                        <span class="text-red-600 font-semibold">
+                                                {{ addition.price - addition.coupon.discount }} {{ currency }}
+                                            </span>
+                                    {% else %}
+                                        <span class="text-red-600 font-semibold">
+                                                {{ addition.price * (1 - addition.coupon.discount / 100) }} {{ currency }}
+                                            </span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                {{ addition.price }} {{ currency }}
+                            {% endif %}
+                        </td>
                         <td class="px-6 py-4 space-x-2">
                             <form action="{{ path('cart_add_addition', {'additionId': addition.id}) }}" method="POST" class="inline">
                                 <label>

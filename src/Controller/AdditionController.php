@@ -6,7 +6,6 @@ use App\Document\Addition;
 use App\Document\Category;
 use App\Form\AdditionType;
 use App\Repository\AdditionRepository;
-use App\Service\CurrencyProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;

@@ -8,8 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
-#[ODM\Document(collection: 'coupon')]
-class Coupon
+#[ODM\Document(collection: 'promotion')]
+class Promotion
 {
     #[ODM\Id]
     private ?string $id = null;
@@ -36,7 +36,15 @@ class Coupon
     private int $usageLimit;
 
     #[ODM\Field(type: 'int')]
+    #[Assert\PositiveOrZero]
     private int $usageCount = 0;
+
+    #[ODM\Field(type: 'string')]
+    private string $itemType;
+
+    #[ODM\Field(type: 'string')]
+    private string $itemId;
+
 
 
     public function getId(): ?string
@@ -141,5 +149,27 @@ class Coupon
         }
 
         return true;
+    }
+
+    public function getItemType(): string
+    {
+        return $this->itemType;
+    }
+
+    public function setItemType(string $itemType): self
+    {
+        $this->itemType = $itemType;
+        return $this;
+    }
+
+    public function getItemId(): string
+    {
+        return $this->itemId;
+    }
+
+    public function setItemId(string $itemId): self
+    {
+        $this->itemId = $itemId;
+        return $this;
     }
 }

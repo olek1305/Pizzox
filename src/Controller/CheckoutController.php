@@ -110,6 +110,8 @@ class CheckoutController extends AbstractController
                 $productName .= ' (' . strtoupper($item['size']) . ')';
             }
 
+            $priceForStripe = $item['price'];
+
             // Add item to Stripe line items
             $lineItems[] = [
                 'price_data' => [
@@ -117,7 +119,7 @@ class CheckoutController extends AbstractController
                     'product_data' => [
                         'name' => $productName,
                     ],
-                    'unit_amount' => (int)(round($item['price'] * 100)),
+                    'unit_amount' => (int)($priceForStripe * 100),
                 ],
                 'quantity' => $item['quantity'],
             ];
@@ -152,7 +154,7 @@ class CheckoutController extends AbstractController
             $this->documentManager->flush();
 
             return $this->redirect($session->url);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->redirectToRoute('cart_index');
         }
     }
@@ -259,18 +261,6 @@ class CheckoutController extends AbstractController
 
         $this->addFlash('info', 'Checkout was cancelled.');
         return $this->render('checkout/cancel.html.twig');
-    }
-
-    /**
-     * @return void
-     */
-    private function saveCartToCache(): void
-    {
-        $cart = [];
-        $cartItem = $this->cache->getItem('user_cart');
-        $cartItem->set($cart);
-        $cartItem->expiresAfter(3600);
-        $this->cache->save($cartItem);
     }
 
     /**

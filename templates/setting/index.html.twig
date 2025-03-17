@@ -3,45 +3,40 @@
 {% block title %}Settings{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>Settings</h1>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Settings</h1>
 
-        <div class="mt-4">
-            <div>
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Currency Settings</h5>
-                            <p class="card-text">Configure currency and country settings for your application.</p>
-                            <a href="{{ path('currency_setting') }}" class="list-group-item list-group-item-action">
-                                Currency Setting
-                            </a>
-                        </div>
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h5 class="text-xl font-semibold mb-2">Currency Settings</h5>
+                    <p class="text-gray-600 mb-4">Configure currency and country settings for your application.</p>
+                    <a href="{{ path('currency_setting') }}"
+                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
+                        Currency Setting
+                    </a>
                 </div>
+            </div>
 
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Stripe Settings</h5>
-                            <p class="card-text">Configure your Stripe integration settings.</p>
-                            <a href="{{ path('stripe_setting') }}" class="list-group-item list-group-item-action">
-                                Stripe Setting
-                            </a>
-                        </div>
-                    </div>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h5 class="text-xl font-semibold mb-2">Stripe Settings</h5>
+                    <p class="text-gray-600 mb-4">Configure your Stripe integration settings.</p>
+                    <a href="{{ path('stripe_setting') }}"
+                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
+                        Stripe Setting
+                    </a>
                 </div>
+            </div>
 
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Pizza Size Settings</h5>
-                            <p class="card-text">Configure set prices for size.</p>
-                            <a href="{{ path('pizza_size_setting') }}" class="list-group-item list-group-item-action">
-                                Pizza size Setting
-                            </a>
-                        </div>
-                    </div>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h5 class="text-xl font-semibold mb-2">Pizza Size Settings</h5>
+                    <p class="text-gray-600 mb-4">Configure set prices for size.</p>
+                    <a href="{{ path('pizza_size_setting') }}"
+                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
+                        Pizza Size Setting
+                    </a>
                 </div>
             </div>
         </div>
