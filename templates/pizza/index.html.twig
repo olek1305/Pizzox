@@ -7,10 +7,6 @@
         <div class="flex justify-center items-center mb-4">
             {% if is_granted('ROLE_ADMIN') %}
                 <div class="flex space-x-3">
-                    <a href="{{ path('category_index') }}"
-                       class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-green-700">
-                        {{ 'category.index'|trans }}
-                    </a>
                     <a href="{{ path('pizza_create') }}"
                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
                         {{ 'pizza.create'|trans }}

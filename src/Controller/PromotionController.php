@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Document\Addition;
+use App\Document\Pizza;
 use App\Document\Promotion;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -29,14 +31,33 @@ class PromotionController extends AbstractController
 
     /**
      * @return Response
+     * @throws LockException
+     * @throws MappingException
      */
-    #[Route('/admin/promotions', name: 'admin_promotions', methods: ['GET'])]
+    #[Route('/admin/promotions', name: 'promotions_index', methods: ['GET'])]
     public function index(): Response
     {
         $promotions = $this->documentManager->getRepository(Promotion::class)->findAll();
 
-        return $this->render('admin/promotion/index.html.twig', [
-            'promotions' => $promotions
+        $items = [];
+        foreach ($promotions as $promotion) {
+
+            if ($promotion->getItemType() === 'pizza') {
+                $pizza = $this->documentManager->getRepository(Pizza::class)->find($promotion->getItemId());
+                if ($pizza) {
+                    $items[$promotion->getItemId()] = $pizza->getName();
+                }
+            } else if ($promotion->getItemType() === 'addition') {
+                $addition = $this->documentManager->getRepository(Addition::class)->find($promotion->getItemId());
+                if ($addition) {
+                    $items[$promotion->getItemId()] = $addition->getName();
+                }
+            }
+        }
+
+        return $this->render('setting/promotion.html.twig', [
+            'promotions' => $promotions,
+            'items' => $items
         ]);
     }
 
@@ -108,6 +129,32 @@ class PromotionController extends AbstractController
 
         $this->addFlash('success', 'Promotion status updated successfully');
 
-        return $this->redirectToRoute('promotion_index');
+        return $this->redirectToRoute('promotions_index');
     }
+
+    /**
+     * @param string $id
+     * @return Response
+     * @throws LockException
+     * @throws MappingException
+     * @throws MongoDBException
+     * @throws Throwable
+     */
+    #[Route('/promotion/delete/{id}', name: 'promotion_delete', methods: ['POST'])]
+    public function delete(string $id): Response
+    {
+        $promotion = $this->documentManager->getRepository(Promotion::class)->find($id);
+
+        if (!$promotion) {
+            throw $this->createNotFoundException('Promotion not found');
+        }
+
+        $this->documentManager->remove($promotion);
+        $this->documentManager->flush();
+
+        $this->addFlash('success', 'Promotion deleted successfully');
+
+        return $this->redirectToRoute('promotions_index');
+    }
+
 }

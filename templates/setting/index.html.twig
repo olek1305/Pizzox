@@ -39,6 +39,28 @@
                     </a>
                 </div>
             </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h5 class="text-xl font-semibold mb-2">Category Index</h5>
+                    <p class="text-gray-600 mb-4">Manage pizza categories and organize your menu structure.</p>
+                    <a href="{{ path('category_index') }}"
+                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
+                        {{ 'category.index'|trans }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h5 class="text-xl font-semibold mb-2">Promotions Index</h5>
+                    <p class="text-gray-600 mb-4">Manage discount codes and promotional offers.</p>
+                    <a href="{{ path('promotions_index') }}"
+                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
+                        Promotions
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

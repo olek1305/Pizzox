@@ -1,39 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Currency Settings{% endblock %}
+{% block title %}{{ 'Currency Settings'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>Currency Settings</h1>
-
-        {# Debug information #}
-        {% if app.debug %}
-            <div class="debug-info">
-                <p>Available currencies: {{ form.currency.vars.choices|length }}</p>
-                <p>Current currency: {{ form.currency.vars.value }}</p>
+    <div class="container mx-auto p-12">
+        <div class="flex justify-center items-center mb-4">
+            <div class="flex space-x-3">
+                <a href="{{ path('settings_index') }}"
+                   class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-700">
+                    {{ 'Back to Settings'|trans }}
+                </a>
             </div>
-        {% endif %}
-
-        {{ form_start(form) }}
-
-        {# Show global form errors #}
-        {{ form_errors(form) }}
-
-        <div class="form-group">
-            {{ form_label(form.currency) }}
-            {{ form_widget(form.currency, {
-                'attr': {'class': 'form-control'}
-            }) }}
-            {{ form_errors(form.currency) }}
         </div>
 
-        {{ form_widget(form.save) }}
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-3xl font-bold mb-6">{{ 'Currency Settings'|trans }}</h1>
 
-        {{ form_end(form) }}
+            {# Debug information #}
+            {% if app.debug %}
+                <div class="mb-6 p-4 bg-gray-100 rounded-lg text-gray-700">
+                    <p>Available currencies: {{ form.currency.vars.choices|length }}</p>
+                    <p>Current currency: {{ form.currency.vars.value }}</p>
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            {{ form_errors(form) }}
+
+            <div>
+                <div class="font-semibold mb-2">{{ form_label(form.currency) }}</div>
+                {{ form_widget(form.currency, {
+                    'attr': {
+                        'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
+                    }
+                }) }}
+                {{ form_errors(form.currency) }}
+            </div>
+
+            <div class="mt-6">
+                {{ form_widget(form.save, {
+                    'attr': {
+                        'class': 'w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700'
+                    }
+                }) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
 
         {% for label, messages in app.flashes %}
             {% for message in messages %}
-                <div class="alert alert-{{ label }} mt-3">
+                <div class="mt-4 p-4 rounded-lg {% if label == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
                     {{ message }}
                 </div>
             {% endfor %}

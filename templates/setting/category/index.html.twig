@@ -5,17 +5,19 @@
 {% block body %}
     <div>
         <div class="flex justify-center items-center mb-4">
-            {% if is_granted('ROLE_ADMIN') %}
-                <div class="flex space-x-3">
-                    <a href="{{ path('category_create') }}"
-                       class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-green-700">
-                        {{ 'category.create'|trans }}
-                    </a>
-                </div>
-            {% endif %}
+            <div class="flex space-x-3">
+                <a href="{{ path('category_create') }}"
+                   class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-green-700">
+                    {{ 'category.create'|trans }}
+                </a>
+                <a href="{{ path('settings_index') }}"
+                   class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-700">
+                    {{ 'Back to Settings'|trans }}
+                </a>
+            </div>
         </div>
 
-        <div id="categories-section">
+        <div class="bg-white shadow-md rounded-lg p-6">
             {% if categories is empty %}
                 <div class="bg-white shadow-md rounded-lg p-6 text-center text-gray-600 mb-3">
                     <h1 class="text-3xl font-bold">{{ 'category.list_title'|trans }}</h1>

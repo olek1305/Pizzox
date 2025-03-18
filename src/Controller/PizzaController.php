@@ -141,6 +141,7 @@ final class PizzaController extends AbstractController
      * @return Response
      */
     #[Route('/pizza/{id}', name: 'pizza_show', requirements: ['id' => '[0-9a-f]{24}'], methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(string $id): Response
     {
         $pizza = $this->pizzaRepository->findById($id);

@@ -77,6 +77,7 @@ final class AdditionController extends AbstractController
      * @throws MappingException
      */
     #[Route('/addition/{id}', name: 'addition_show', requirements: ['id' => '[0-9a-f]{24}'], methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(string $id): Response
     {
         $addition = $this->additionRepository->findById($id);
