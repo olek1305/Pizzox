@@ -28,14 +28,6 @@ class CurrencyService
     /**
      * @return array
      */
-    public function getCurrencies(): array
-    {
-        return $this->currencies;
-    }
-
-    /**
-     * @return array
-     */
     public function getCurrencyChoices(): array
     {
         $choices = [];
