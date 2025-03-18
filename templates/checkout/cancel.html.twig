@@ -3,9 +3,20 @@
 {% block title %}Checkout Cancelled{% endblock %}
 
 {% block body %}
-    <h1>Checkout Cancelled</h1>
+    <div class="container mx-auto p-12">
+        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+            <h1 class="text-3xl font-bold mb-6">Checkout Cancelled</h1>
 
-    <p>Your order has been cancelled.</p>
+            <div class="p-4 mb-6 bg-red-50 rounded-lg">
+                <p class="text-lg text-red-700">Your order has been cancelled.</p>
+            </div>
 
-    <a href="{{ path('cart_index') }}" class="btn btn-primary">Back to Cart</a>
+            <div class="mt-6">
+                <a href="{{ path('cart_index') }}"
+                   class="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
+                    Return to Cart
+                </a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

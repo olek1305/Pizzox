@@ -2,93 +2,82 @@
 
 {% block title %}Checkout Successful{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .table {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .order-info {
-            max-width: 1200px;
-            margin: 0 auto 2rem auto;
-        }
-
-        .table th, .table td {
-            padding: 1rem;
-            text-align: left;
-        }
-
-        .table th:last-child,
-        .table td:last-child {
-            text-align: right;
-        }
-
-        .table th:nth-child(1) { width: 40%; } /* Item */
-        .table th:nth-child(2) { width: 15%; } /* Quantity */
-        .table th:nth-child(3) { width: 20%; } /* Price */
-        .table th:nth-child(4) { width: 25%; } /* Subtotal */
-    </style>
-{% endblock %}
-
-
 {% block body %}
-    <h1>Thank You!</h1>
+    <div class="container mx-auto p-12">
+        <div class="flex justify-center items-center mb-4">
+            <div class="flex space-x-3">
+                <a href="{{ path('pizza_index') }}"
+                   class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-700">
+                    Back to Home
+                </a>
+            </div>
+        </div>
 
-    <p>Your order has been placed successfully.</p>
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-3xl font-bold mb-6">Thank You!</h1>
+            <p class="text-lg mb-6">Your order has been placed successfully.</p>
 
-    <h2>Order Details</h2>
+            <h2 class="text-2xl font-semibold mb-4">Order Details</h2>
 
-    <div class="order-info">
-        <p><strong>Order ID:</strong> {{ order.id }}</p>
-        <p><strong>Status:</strong> {{ order.status.value }}</p>
-        <p><strong>Name:</strong> {{ order.fullName }}</p>
-        <p><strong>Address:</strong> {{ order.address }}</p>
-        <p><strong>Phone:</strong> {{ order.phone }}</p>
-        {% if order.email %}
-            <p><strong>Email:</strong> {{ order.email }}</p>
-        {% endif %}
-    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p><span class="font-semibold">Order ID:</span> {{ order.id }}</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p><span class="font-semibold">Status:</span> {{ order.status.value }}</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p><span class="font-semibold">Name:</span> {{ order.fullName }}</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p><span class="font-semibold">Address:</span> {{ order.address }}</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p><span class="font-semibold">Phone:</span> {{ order.phone }}</p>
+                </div>
+                {% if order.email %}
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <p><span class="font-semibold">Email:</span> {{ order.email }}</p>
+                    </div>
+                {% endif %}
+            </div>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for pizza in order.pizzas %}
-            <tr>
-                <td>{{ pizza.name }} ({{ pizza.size|capitalize }})</td>
-                <td>{{ pizza.quantity }}</td>
-                <td>{{ pizza.price|number_format(2) }} EUR</td>
-                <td>{{ (pizza.price * pizza.quantity)|number_format(2) }} EUR</td>
-            </tr>
-        {% endfor %}
-        {% for addition in order.additions %}
-            <tr>
-                <td>{{ addition.name }}</td>
-                <td>{{ addition.quantity }}</td>
-                <td>{{ addition.price|number_format(2) }} EUR</td>
-                <td>{{ (addition.price * addition.quantity)|number_format(2) }} EUR</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-        <tfoot>
-        <tr>
-            <td colspan="3">Total:</td>
-            <td>{{ order.totalPrice|number_format(2) }} EUR</td>
-        </tr>
-        </tfoot>
-    </table>
-
-
-    <div class="mt-4">
-        <a href="{{ path('pizza_index') }}" class="btn btn-primary">Back to Home</a>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-3 px-4 text-left">Item</th>
+                        <th class="py-3 px-4 text-left">Quantity</th>
+                        <th class="py-3 px-4 text-left">Price</th>
+                        <th class="py-3 px-4 text-right">Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for pizza in order.pizzas %}
+                        <tr class="border-b border-gray-200">
+                            <td class="py-3 px-4">{{ pizza.name }} ({{ pizza.size|capitalize }})</td>
+                            <td class="py-3 px-4">{{ pizza.quantity }}</td>
+                            <td class="py-3 px-4">{{ pizza.price|number_format(2) }} {{ currency }}</td>
+                            <td class="py-3 px-4 text-right">{{ (pizza.price * pizza.quantity)|number_format(2) }} {{ currency }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% for addition in order.additions %}
+                        <tr class="border-b border-gray-200">
+                            <td class="py-3 px-4">{{ addition.name }}</td>
+                            <td class="py-3 px-4">{{ addition.quantity }}</td>
+                            <td class="py-3 px-4">{{ addition.price|number_format(2) }} {{ currency }}</td>
+                            <td class="py-3 px-4 text-right">{{ (addition.price * addition.quantity)|number_format(2) }} {{ currency }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="bg-gray-50 font-semibold">
+                        <td class="py-3 px-4" colspan="3">Total:</td>
+                        <td class="py-3 px-4 text-right">{{ order.totalPrice|number_format(2) }} {{ currency }}</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
 {% endblock %}
