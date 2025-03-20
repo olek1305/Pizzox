@@ -44,6 +44,35 @@ order:
     preparing: "Preparing"
     out_for_delivery: "Out for Delivery"
     completed: "Completed"
+  history: 'Order History'
+  no_orders: 'No orders found'
+  id: 'ID'
+  client: 'Client'
+  phone: 'Phone'
+  price: 'Price'
+  date: 'Date'
+  action: 'Action'
+  details_link: 'Details'
+  details: 'Order Details'
+  back_to_list: 'Back to Order List'
+  customer_information: 'Customer Information'
+  full_name: 'Full Name'
+  email: 'Email'
+  address: 'Address'
+  order_details: 'Order Details'
+  order_id: 'Order ID'
+  order_date: 'Order Date'
+  status_label: 'Status'
+  ordered_pizzas: 'Ordered Pizzas'
+  no_pizzas_found: 'No pizzas found'
+  name: 'Name'
+  size: 'Size'
+  toppings: 'Toppings'
+  quantity: 'Quantity'
+  total: 'Total'
+  extras: 'Extras'
+  no_extras_found: 'No extras found'
+  total_price: 'Total Price'
 
 driver:
   status:

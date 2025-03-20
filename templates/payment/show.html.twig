@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'order.details'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">{{ 'order.details'|trans }}</h1>
+            <a href="{{ path('admin-payment-history') }}" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                {{ 'order.back_to_list'|trans }}
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold mb-4">{{ 'order.customer_information'|trans }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-600">{{ 'order.full_name'|trans }}:</p>
+                        <p class="font-medium">{{ order.fullName }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">{{ 'order.email'|trans }}:</p>
+                        <p class="font-medium">{{ order.email }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">{{ 'order.phone'|trans }}:</p>
+                        <p class="font-medium">{{ order.phone }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">{{ 'order.address'|trans }}:</p>
+                        <p class="font-medium">{{ order.address }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold mb-4">{{ 'order.order_details'|trans }}</h2>
+                <div class="mb-4">
+                    <p class="text-gray-600">{{ 'order.order_id'|trans }}:</p>
+                    <p class="font-medium">{{ order.id }}</p>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-600">{{ 'order.order_date'|trans }}:</p>
+                    <p class="font-medium">{{ order.createdAt|date('d.m.Y H:i:s') }}</p>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-600">{{ 'order.status_label'|trans }}:</p>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                        {% elseif order.status == 'completed' %}bg-green-100 text-green-800
+                        {% elseif order.status == 'cancelled' %}bg-red-100 text-red-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ order.status.value }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold mb-4">{{ 'order.ordered_pizzas'|trans }}</h2>
+                {% if order.pizzas is empty %}
+                    <p class="text-gray-600">{{ 'order.no_pizzas_found'|trans }}</p>
+                {% else %}
+                    <table class="min-w-full">
+                        <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 text-left">{{ 'order.name'|trans }}</th>
+                            <th class="px-4 py-2 text-left">{{ 'order.size'|trans }}</th>
+                            <th class="px-4 py-2 text-left">{{ 'order.toppings'|trans }}</th>
+                            <th class="px-4 py-2 text-right">{{ 'order.price'|trans }}</th>
+                            <th class="px-4 py-2 text-center">{{ 'order.quantity'|trans }}</th>
+                            <th class="px-4 py-2 text-right">{{ 'order.total'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for pizza in order.pizzas %}
+                            <tr class="border-t">
+                                <td class="px-4 py-2 font-medium">{{ pizza.name }}</td>
+                                <td class="px-4 py-2">{{ pizza.size }}</td>
+                                <td class="px-4 py-2">{{ pizza.toppings|join(', ') }}</td>
+                                <td class="px-4 py-2 text-right">{{ pizza.price|number_format(2, ',', ' ') }} zł</td>
+                                <td class="px-4 py-2 text-center">{{ pizza.quantity }}</td>
+                                <td class="px-4 py-2 text-right">{{ (pizza.price * pizza.quantity)|number_format(2, ',', ' ') }} zł</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold mb-4">{{ 'order.extras'|trans }}</h2>
+                {% if order.additions is empty %}
+                    <p class="text-gray-600">{{ 'order.no_extras_found'|trans }}</p>
+                {% else %}
+                    <table class="min-w-full">
+                        <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 text-left">{{ 'order.name'|trans }}</th>
+                            <th class="px-4 py-2 text-right">{{ 'order.price'|trans }}</th>
+                            <th class="px-4 py-2 text-center">{{ 'order.quantity'|trans }}</th>
+                            <th class="px-4 py-2 text-right">{{ 'order.total'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for addition in order.additions %}
+                            <tr class="border-t">
+                                <td class="px-4 py-2 font-medium">{{ addition.name }}</td>
+                                <td class="px-4 py-2 text-right">{{ addition.price|number_format(2, ',', ' ') }} zł</td>
+                                <td class="px-4 py-2 text-center">{{ addition.quantity }}</td>
+                                <td class="px-4 py-2 text-right">{{ (addition.price * addition.quantity)|number_format(2, ',', ' ') }} zł</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+
+            <div class="p-6">
+                <div class="text-xl font-bold text-right">
+                    <span>{{ 'order.total_price'|trans }}: {{ order.totalPrice|number_format(2, ',', ' ') }} zł</span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'order.history'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">{{ 'order.history'|trans }}</h1>
+
+        {% if orders is empty %}
+            <p class="text-gray-600">{{ 'order.no_orders'|trans }}</p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
+                    <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left">{{ 'order.id'|trans }}</th>
+                        <th class="px-4 py-3 text-left">{{ 'order.client'|trans }}</th>
+                        <th class="px-4 py-3 text-left">{{ 'order.status.phone'|trans }}</th>
+                        <th class="px-4 py-3 text-left">{{ 'order.price'|trans }}</th>
+                        <th class="px-4 py-3 text-left">{{ 'order.status_label'|trans }}</th>
+                        <th class="px-4 py-3 text-left">{{ 'order.date'|trans }}</th>
+                        <th class="px-4 py-3 text-left">{{ 'order.action'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in orders %}
+                        <tr class="border-t hover:bg-gray-50">
+                            <td class="px-4 py-3 text-gray-600">{{ order.id }}</td>
+                            <td class="px-4 py-3 font-medium">{{ order.fullName }}</td>
+                            <td class="px-4 py-3">{{ order.phone }}</td>
+                            <td class="px-4 py-3">{{ order.totalPrice|number_format(2, ',', ' ') }} zł</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 rounded-full text-xs font-medium
+                                    {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elseif order.status == 'completed' %}bg-green-100 text-green-800
+                                    {% elseif order.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ order.status.value }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">{{ order.createdAt|date('d.m.Y H:i') }}</td>
+                            <td class="px-4 py-3">
+                                <a href="{{ path('admin-payment-history-show', {id: order.id}) }}"
+                                   class="text-blue-600 hover:text-blue-800 underline">
+                                    {{ 'order.details_link'|trans }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

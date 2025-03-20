@@ -44,6 +44,35 @@ order:
     preparing: "Przygotowywane"
     out_for_delivery: "W drodze do dostarczenia"
     completed: "Zrealizowane"
+  history: 'Historia zamówień'
+  no_orders: 'Brak zamówień'
+  id: 'ID'
+  client: 'Klient'
+  phone: 'Telefon'
+  price: 'Cena'
+  date: 'Data'
+  action: 'Akcja'
+  details_link: 'Szczegóły'
+  details: 'Szczegóły zamówienia'
+  back_to_list: 'Powrót do listy zamówień'
+  customer_information: 'Informacje o kliencie'
+  full_name: 'Imię i nazwisko'
+  email: 'Email'
+  address: 'Adres'
+  order_details: 'Szczegóły zamówienia'
+  order_id: 'ID zamówienia'
+  order_date: 'Data zamówienia'
+  status_label: 'Status'
+  ordered_pizzas: 'Zamówione pizze'
+  no_pizzas_found: 'Brak zamówionych pizz'
+  name: 'Nazwa'
+  size: 'Rozmiar'
+  toppings: 'Dodatki'
+  quantity: 'Ilość'
+  total: 'Suma'
+  extras: 'Dodatki'
+  no_extras_found: 'Brak dodatków'
+  total_price: 'Cena całkowita'
 
 driver:
   status:
