@@ -112,3 +112,7 @@ activate: "Aktywuj"
 not_blank: 'Cena nie może być pusta'
 positive: 'Cena musi być liczbą dodatnią'
 currency: 'Waluta'
+settings: 'Ustawienia'
+paymentHistory: 'Historia zamówień'
+saves: 'Zapisz zmiany'
+backSettings: 'Powrót do Ustawień'

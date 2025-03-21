@@ -112,3 +112,7 @@ activate: "Activate"
 not_blank: 'Price cannot be blank.'
 positive: 'Price must be a positive number.'
 currency: 'Currency'
+settings: 'Settings'
+paymentHistory: 'Payment History'
+saves: 'Save Changes'
+backSettings: 'Back to Settings'

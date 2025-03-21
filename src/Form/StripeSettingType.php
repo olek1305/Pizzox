@@ -27,7 +27,7 @@ class StripeSettingType extends AbstractType
                 ],
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
+                'label' => 'saves',
                 'attr' => [
                     'class' => 'bg-green-500 text-white rounded-lg hover:bg-green-700'
                 ]

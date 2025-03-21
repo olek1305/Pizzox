@@ -1,19 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Settings{% endblock %}
+{% block title %}{{ 'settings'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">Settings</h1>
+        <h1 class="text-3xl font-bold mb-6">{{ 'settings'|trans }}</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="p-6">
-                    <h5 class="text-xl font-semibold mb-2">Currency Settings</h5>
+                    <h5 class="text-xl font-semibold mb-2">{{ 'currency'|trans}} {{ 'settings'|trans }}</h5>
                     <p class="text-gray-600 mb-4">Configure currency and country settings for your application.</p>
                     <a href="{{ path('currency_setting') }}"
                        class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        Currency Setting
+                        {{ 'currency'|trans}} {{ 'settings'|trans }}
                     </a>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                     <p class="text-gray-600 mb-4">Configure your Stripe integration settings.</p>
                     <a href="{{ path('stripe_setting') }}"
                        class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        Stripe Setting
+                        Stripe {{ 'settings'|trans }}
                     </a>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                     <p class="text-gray-600 mb-4">Configure set prices for size.</p>
                     <a href="{{ path('pizza_size_setting') }}"
                        class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        Pizza Size Setting
+                        Pizza Size {{ 'settings'|trans }}
                     </a>
                 </div>
             </div>

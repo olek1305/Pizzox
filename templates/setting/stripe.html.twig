@@ -8,13 +8,13 @@
             <div class="flex space-x-3">
                 <a href="{{ path('settings_index') }}"
                    class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-700">
-                    {{ 'Back to Settings'|trans }}
+                    {{ 'backSettings'|trans }}
                 </a>
             </div>
         </div>
 
         <div class="bg-white shadow-md rounded-lg p-6">
-            <h1 class="text-3xl font-bold mb-6">{{ 'Stripe Settings'|trans }}</h1>
+            <h1 class="text-3xl font-bold mb-6">Stripe {{ 'settings'|trans }}</h1>
 
             {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
             {{ form_errors(form) }}
@@ -40,7 +40,7 @@
         </div>
 
         {% for label, messages in app.flashes %}
-            {% for message in messages %}
+            {% for message in messages|slice(0, 1) %}
                 <div class="mt-4 p-4 rounded-lg {% if label == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
                     {{ message }}
                 </div>
