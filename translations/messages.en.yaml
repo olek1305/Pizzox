@@ -105,6 +105,27 @@ cart:
   total: "Total"
   go_to_cart: "Go to Cart"
 
+settings:
+  title: 'Settings'
+  goto: 'Go to'
+  category:
+    title: 'Category Index'
+    description: 'Manage pizza categories and organize your menu structure.'
+  currency:
+    title: 'Currency Settings'
+    description: 'Configure currency and country settings for your application.'
+  stripe:
+    title: 'Stripe Settings'
+    description: 'Configure your Stripe integration settings.'
+  pizza_size:
+    title: 'Pizza Size Settings'
+    description: 'Configure set prices for size.'
+    price_settings: 'Pizza Size Price Settings'
+  promotions:
+    title: 'Promotions Index'
+    description: 'Manage discount codes and promotional offers.'
+    name: 'Promotions'
+
 show: 'Show'
 edit: 'Edit'
 deactivate: "Deactivate"
@@ -112,7 +133,6 @@ activate: "Activate"
 not_blank: 'Price cannot be blank.'
 positive: 'Price must be a positive number.'
 currency: 'Currency'
-settings: 'Settings'
 paymentHistory: 'Payment History'
 saves: 'Save Changes'
 backSettings: 'Back to Settings'

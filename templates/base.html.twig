@@ -10,11 +10,13 @@
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
+            {{ encore_entry_script_tags('pizza-animation') }}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-    </head>
-    <body class="bg-gray-100">
 
+
+    </head>
+    <body class="min-h-screen dark:bg-black">
     {% set cart = cart_service.getCart() %}
 
     {# Navigation Bar #}

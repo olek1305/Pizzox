@@ -1,66 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'settings'|trans }}{% endblock %}
+{% block title %}{{ 'settings.title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">{{ 'settings'|trans }}</h1>
+        <h1 class="text-3xl font-bold mb-6">{{ 'settings.title'|trans }}</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <a href="{{ path('currency_setting') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
                 <div class="p-6">
-                    <h5 class="text-xl font-semibold mb-2">{{ 'currency'|trans}} {{ 'settings'|trans }}</h5>
-                    <p class="text-gray-600 mb-4">Configure currency and country settings for your application.</p>
-                    <a href="{{ path('currency_setting') }}"
-                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        {{ 'currency'|trans}} {{ 'settings'|trans }}
-                    </a>
+                    <h5 class="text-xl font-semibold mb-2">{{ 'settings.currency.title'|trans }}</h5>
+                    <p class="text-gray-600">{{ 'settings.currency.description'|trans }}</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <a href="{{ path('stripe_setting') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
                 <div class="p-6">
-                    <h5 class="text-xl font-semibold mb-2">Stripe Settings</h5>
-                    <p class="text-gray-600 mb-4">Configure your Stripe integration settings.</p>
-                    <a href="{{ path('stripe_setting') }}"
-                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        Stripe {{ 'settings'|trans }}
-                    </a>
+                    <h5 class="text-xl font-semibold mb-2">{{ 'settings.stripe.title'|trans }}</h5>
+                    <p class="text-gray-600">{{ 'settings.stripe.description'|trans }}</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <a href="{{ path('pizza_size_setting') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
                 <div class="p-6">
-                    <h5 class="text-xl font-semibold mb-2">Pizza Size Settings</h5>
-                    <p class="text-gray-600 mb-4">Configure set prices for size.</p>
-                    <a href="{{ path('pizza_size_setting') }}"
-                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        Pizza Size {{ 'settings'|trans }}
-                    </a>
+                    <h5 class="text-xl font-semibold mb-2">{{ 'settings.pizza_size.title'|trans }}</h5>
+                    <p class="text-gray-600">{{ 'settings.pizza_size.description'|trans }}</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <a href="{{ path('category_index') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
                 <div class="p-6">
-                    <h5 class="text-xl font-semibold mb-2">Category Index</h5>
-                    <p class="text-gray-600 mb-4">Manage pizza categories and organize your menu structure.</p>
-                    <a href="{{ path('category_index') }}"
-                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        {{ 'category.index'|trans }}
-                    </a>
+                    <h5 class="text-xl font-semibold mb-2">{{ 'settings.category.title'|trans }}</h5>
+                    <p class="text-gray-600">{{ 'settings.category.description'|trans }}</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <a href="{{ path('promotions_index') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
                 <div class="p-6">
-                    <h5 class="text-xl font-semibold mb-2">Promotions Index</h5>
-                    <p class="text-gray-600 mb-4">Manage discount codes and promotional offers.</p>
-                    <a href="{{ path('promotions_index') }}"
-                       class="block w-full py-2 px-4 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors text-center">
-                        Promotions
-                    </a>
+                    <h5 class="text-xl font-semibold mb-2">{{ 'settings.promotions.title'|trans }}</h5>
+                    <p class="text-gray-600">{{ 'settings.promotions.description'|trans }}</p>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 {% endblock %}

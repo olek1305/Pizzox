@@ -105,6 +105,27 @@ cart:
   total: "Razem"
   go_to_cart: "Przejdź do koszyka"
 
+settings:
+  title: 'Ustawienia'
+  goto: 'Przejdź'
+  category:
+    title: 'Indeks kategorii'
+    description: 'Zarządzaj kategoriami pizzy i organizuj strukturę menu.'
+  currency:
+    title: 'Ustawienia waluty'
+    description: 'Skonfiguruj ustawienia waluty i kraju dla swojej aplikacji.'
+  stripe:
+    title: 'Ustawienia Stripe'
+    description: 'Skonfiguruj ustawienia integracji ze Stripe.'
+  pizza_size:
+    title: 'Ustawienia rozmiarów pizzy'
+    description: 'Skonfiguruj ustalone ceny dla rozmiarów.'
+    price_settings: 'Ustawienia cen rozmiarów pizzy'
+  promotions:
+    title: 'Indeks promocji'
+    description: 'Zarządzaj kodami rabatowymi i ofertami promocyjnymi.'
+    name: 'Promocje'
+
 show: 'Pokaż'
 edit: 'Edytuj'
 deactivate: "Dezaktywuj"
@@ -112,7 +133,6 @@ activate: "Aktywuj"
 not_blank: 'Cena nie może być pusta'
 positive: 'Cena musi być liczbą dodatnią'
 currency: 'Waluta'
-settings: 'Ustawienia'
 paymentHistory: 'Historia zamówień'
 saves: 'Zapisz zmiany'
 backSettings: 'Powrót do Ustawień'
