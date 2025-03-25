@@ -152,6 +152,7 @@ class CheckoutController extends AbstractController
 
             $this->documentManager->persist($order);
             $this->documentManager->flush();
+            $this->cache->delete('user_cart');
 
             return $this->redirect($session->url);
         } catch (Exception) {
