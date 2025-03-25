@@ -126,6 +126,30 @@ settings:
     description: 'Zarządzaj kodami rabatowymi i ofertami promocyjnymi.'
     name: 'Promocje'
 
+pricing:
+  example:
+    title: 'Przykład kalkulacji cen w różnych modelach'
+    fixed:
+      title: 'Model Fixed (stała kwota)'
+      description: 'Dodawanie/odejmowanie stałej kwoty'
+    percent:
+      title: 'Model Percent (procentowy)'
+      description: 'Zmiana o procent ceny podstawowej'
+    pizza: 'Pizza'
+    base_price: 'Podstawowa (M)'
+    large: 'Duża (L)'
+    small: 'Mała (S)'
+    average: 'Średnia'
+    comparison:
+      title: 'Porównanie dla pizzy 40 zł:'
+      fixed_model: 'Model Fixed:'
+      percent_model: 'Model Percent:'
+      large_pizza: 'Pizza duża (L):'
+      small_pizza: 'Pizza mała (S):'
+      difference: 'Różnica między rozmiarami:'
+      explanation_fixed: 'Fixed - stała różnica cenowa niezależnie od pizzy'
+      explanation_percent: 'Percent - różnica cenowa proporcjonalna do ceny podstawowej'
+
 show: 'Pokaż'
 edit: 'Edytuj'
 deactivate: "Dezaktywuj"

@@ -126,6 +126,30 @@ settings:
     description: 'Manage discount codes and promotional offers.'
     name: 'Promotions'
 
+pricing:
+  example:
+    title: 'Price calculation examples in different models'
+    fixed:
+      title: 'Fixed Model (constant amount)'
+      description: 'Adding/subtracting a fixed amount'
+    percent:
+      title: 'Percent Model (percentage)'
+      description: 'Changing by percentage of base price'
+    pizza: 'Pizza'
+    base_price: 'Base (M)'
+    large: 'Large (L)'
+    small: 'Small (S)'
+    average: 'Average'
+    comparison:
+      title: 'Comparison for a 40 zł pizza:'
+      fixed_model: 'Fixed Model:'
+      percent_model: 'Percent Model:'
+      large_pizza: 'Large pizza (L):'
+      small_pizza: 'Small pizza (S):'
+      difference: 'Difference between sizes:'
+      explanation_fixed: 'Fixed - constant price difference regardless of pizza'
+      explanation_percent: 'Percent - price difference proportional to base price'
+
 show: 'Show'
 edit: 'Edit'
 deactivate: "Deactivate"
