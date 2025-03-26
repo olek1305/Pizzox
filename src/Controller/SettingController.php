@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\MapboxSettingType;
 use App\Form\PizzaSizeSettingType;
 use App\Form\SettingType;
 use App\Form\StripeSettingType;
@@ -67,7 +68,7 @@ class SettingController extends AbstractController
                 $this->documentManager->persist($settings);
                 $this->documentManager->flush();
                 $this->addFlash('success', 'Currency and country updated successfully!');
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $this->addFlash('error', 'Error saving settings');
             }
 
@@ -139,6 +140,37 @@ class SettingController extends AbstractController
 
         return $this->render('setting/pizza_sizes.html.twig', [
             'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws Throwable
+     */
+    #[Route('/admin/setting/mapbox', name: 'mapbox_setting', methods: ['GET', 'POST'])]
+    public function editMapboxSettings(Request $request): Response
+    {
+        $settings = $this->settingsRepository->findLastOrCreate();
+
+        $form = $this->createForm(MapboxSettingType::class, $settings);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $this->documentManager->persist($settings);
+                $this->documentManager->flush();
+                $this->addFlash('success', 'Mapbox settings updated successfully!');
+            } catch (Exception $e) {
+                $this->addFlash('error', 'Error saving settings: ' . $e->getMessage());
+            }
+
+            return $this->redirectToRoute('mapbox_setting');
+        }
+
+        return $this->render('setting/mapbox_location.html.twig', [
+            'form' => $form->createView(),
+            'settings' => $settings
         ]);
     }
 }

@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">{{ 'settings.title'|trans }}</h1>
+        <h1 class="text-3xl font-bold mb-6 text-white">{{ 'settings.title'|trans }}</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <a href="{{ path('currency_setting') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
@@ -39,6 +39,13 @@
                 <div class="p-6">
                     <h5 class="text-xl font-semibold mb-2">{{ 'settings.promotions.title'|trans }}</h5>
                     <p class="text-gray-600">{{ 'settings.promotions.description'|trans }}</p>
+                </div>
+            </a>
+
+            <a href="{{ path('mapbox_setting') }}" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:bg-gray-50 transition-all cursor-pointer">
+                <div class="p-6">
+                    <h5 class="text-xl font-semibold mb-2">{{ 'settings.mapbox.title'|trans }}</h5>
+                    <p class="text-gray-600">{{ 'settings.mapbox.description'|trans }}</p>
                 </div>
             </a>
         </div>

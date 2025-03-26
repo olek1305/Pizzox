@@ -6,7 +6,6 @@ namespace App\Document;
 
 use App\Repository\SettingRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ODM\Document(collection: 'setting', repositoryClass: SettingRepository::class)]
 class Setting
@@ -16,6 +15,21 @@ class Setting
 
     #[ODM\Field(type: 'string')]
     private ?string $country = null;
+
+    #[ODM\Field(type: 'string')]
+    private ?string $mapboxToken = null;
+
+    #[ODM\Field(type: 'string')]
+    private ?string $restaurantName = null;
+
+    #[ODM\Field(type: 'string')]
+    private ?string $restaurantAddress = null;
+
+    #[ODM\Field(type: 'float')]
+    private ?float $latitude = null;
+
+    #[ODM\Field(type: 'float')]
+    private ?float $longitude = null;
 
     #[ODM\Field(type: 'string')]
     private ?string $currency = null;
@@ -35,6 +49,61 @@ class Setting
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function getMapboxToken(): ?string
+    {
+        return $this->mapboxToken;
+    }
+
+    public function setMapboxToken(?string $mapboxToken): self
+    {
+        $this->mapboxToken = $mapboxToken;
+        return $this;
+    }
+
+    public function getRestaurantName(): ?string
+    {
+        return $this->restaurantName;
+    }
+
+    public function setRestaurantName(?string $restaurantName): self
+    {
+        $this->restaurantName = $restaurantName;
+        return $this;
+    }
+
+    public function getRestaurantAddress(): ?string
+    {
+        return $this->restaurantAddress;
+    }
+
+    public function setRestaurantAddress(?string $restaurantAddress): self
+    {
+        $this->restaurantAddress = $restaurantAddress;
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+        return $this;
     }
 
     public function getCurrency(): string

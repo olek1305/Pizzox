@@ -125,6 +125,13 @@ settings:
     title: 'Indeks promocji'
     description: 'Zarządzaj kodami rabatowymi i ofertami promocyjnymi.'
     name: 'Promocje'
+  mapbox:
+    title: 'Ustawienia lokalizacji Mapbox'
+    search_address: 'Wyszukaj adres'
+    token: 'Token Mapbox'
+    restaurant:
+      name: 'Nazwa restauracji'
+      address: 'Adres restauracji'
 
 pricing:
   example:
@@ -158,5 +165,6 @@ not_blank: 'Cena nie może być pusta'
 positive: 'Cena musi być liczbą dodatnią'
 currency: 'Waluta'
 paymentHistory: 'Historia zamówień'
+save: 'Zapisz'
 saves: 'Zapisz zmiany'
 backSettings: 'Powrót do Ustawień'

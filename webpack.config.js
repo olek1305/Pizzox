@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('pizza-animation', './assets/components/pizza-animation.js')
+    .addEntry('mapbox', './assets/mapbox.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

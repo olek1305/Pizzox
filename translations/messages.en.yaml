@@ -125,6 +125,13 @@ settings:
     title: 'Promotions Index'
     description: 'Manage discount codes and promotional offers.'
     name: 'Promotions'
+  mapbox:
+    title: 'Mapbox Location Settings'
+    search_address: 'Search Address'
+    token: 'Mapbox Token'
+    restaurant:
+      name: 'Restaurant Name'
+      address: 'Restaurant Address'
 
 pricing:
   example:
@@ -158,5 +165,6 @@ not_blank: 'Price cannot be blank.'
 positive: 'Price must be a positive number.'
 currency: 'Currency'
 paymentHistory: 'Payment History'
+save: 'Save'
 saves: 'Save Changes'
 backSettings: 'Back to Settings'
