@@ -3,10 +3,8 @@
 namespace App\Controller;
 
 use App\Document\Addition;
-use App\Document\Promotion;
 use App\Document\Pizza;
-use App\Repository\SettingRepository;
-use DateTime;
+use App\Service\PriceCalculatorService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -25,12 +23,12 @@ class CartController extends AbstractController
     /**
      * @param CacheInterface $cache
      * @param DocumentManager $documentManager
-     * @param SettingRepository $settingRepository
+     * @param PriceCalculatorService $priceCalculator
      */
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly DocumentManager $documentManager,
-        private readonly SettingRepository $settingRepository
+        private readonly PriceCalculatorService $priceCalculator
     )
     {
         //
@@ -91,7 +89,7 @@ class CartController extends AbstractController
             }
         }
 
-        $priceInfo = $this->calculatePizzaPrice($pizza, $size);
+        $priceInfo = $this->priceCalculator->getPizzaPriceInfo($pizza, $size);
 
         if ($existingItem !== null) {
             $cart[$existingItem]['quantity']++;
@@ -114,63 +112,6 @@ class CartController extends AbstractController
 
         $this->saveCartToCache($cart);
         return $this->redirectToRoute('pizza_index');
-    }
-
-    /**
-     * @param Pizza $pizza
-     * @param string $size
-     * @return array
-     * @throws Throwable
-     */
-    private function calculatePizzaPrice(Pizza $pizza, string $size): array
-    {
-        $basePrice = $pizza->getPrice();
-        $settings = $this->settingRepository->findLastOrCreate();
-
-        // Get size modifiers and calculation type from settings
-        $smallSizeModifier = $settings->getSmallSizeModifier();
-        $largeSizeModifier = $settings->getLargeSizeModifier();
-        $calculationType = $settings->getPizzaPriceCalculationType();
-
-        $price = match ($size) {
-            'small' => $calculationType === 'fixed'
-                ? $basePrice - $smallSizeModifier
-                : $basePrice * (1 - ($smallSizeModifier / 100)),
-            'large' => $calculationType === 'fixed'
-                ? $basePrice + $largeSizeModifier
-                : $basePrice * (1 + ($largeSizeModifier / 100)),
-            default => $basePrice, // medium size
-        };
-
-        $price = max(0, $price);
-
-        // Check if there's an active promotion for this pizza
-        $promotion = $this->documentManager->getRepository(Promotion::class)->findOneBy([
-            'itemType' => 'pizza',
-            'itemId' => $pizza->getId(),
-            'active' => true
-        ]);
-
-        $originalPrice = number_format((float)$price, 2, '.', '');
-        $discountedPrice = $originalPrice;
-
-        if ($promotion && $promotion->isValid()) {
-            // Apply promotion discount
-            if ($promotion->getType() === 'percentage') {
-                $discountedPrice = $originalPrice * (1 - ($promotion->getDiscount() / 100));
-            } else { // fixed amount
-                $discountedPrice = $originalPrice - $promotion->getDiscount();
-                if ($discountedPrice < 0) {
-                    $discountedPrice = 0;
-                }
-            }
-            $discountedPrice = number_format((float)$discountedPrice, 2, '.', '');
-        }
-
-        return [
-            'original_price' => $originalPrice,
-            'price' => $discountedPrice
-        ];
     }
 
     /**
@@ -203,7 +144,7 @@ class CartController extends AbstractController
         }
 
         // Calculate the price taking into account promotions
-        $priceInfo = $this->calculateAdditionPrice($addition);
+        $priceInfo = $this->priceCalculator->getAdditionPriceInfo($addition);
 
         if ($existingItem !== null) {
             $cart[$existingItem]['quantity'] += $quantity;
@@ -225,52 +166,6 @@ class CartController extends AbstractController
 
         $this->saveCartToCache($cart);
         return $this->redirectToRoute('pizza_index');
-    }
-
-    /**
-     * @param Addition $addition
-     * @return array
-     * @throws Throwable
-     */
-    private function calculateAdditionPrice(Addition $addition): array
-    {
-        $basePrice = $addition->getPrice();
-        $originalPrice = $basePrice;
-
-        $promotions = $this->documentManager->getRepository(Promotion::class)->findBy([
-            'itemType' => 'addition',
-            'itemId' => $addition->getId(),
-            'active' => true
-        ]);
-
-        $finalPrice = $basePrice;
-        $now = new DateTime();
-
-        foreach ($promotions as $promotion) {
-            if ($promotion->getExpiresAt() && $promotion->getExpiresAt() < $now) {
-                continue;
-            }
-            if ($promotion->getUsageCount() >= $promotion->getUsageLimit()) {
-                continue;
-            }
-
-            $discountPrice = $basePrice;
-            if ($promotion->getType() === 'percentage') {
-                $discountPrice = $basePrice * (1 - ($promotion->getDiscount() / 100));
-            } elseif ($promotion->getType() === 'fixed') {
-                $discountPrice = $basePrice - $promotion->getDiscount();
-                $discountPrice = max(0, $discountPrice);
-            }
-
-            if ($discountPrice < $finalPrice) {
-                $finalPrice = $discountPrice;
-            }
-        }
-
-        return [
-            'price' => $finalPrice,
-            'original_price' => $originalPrice
-        ];
     }
 
     /**

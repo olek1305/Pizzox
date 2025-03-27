@@ -150,10 +150,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeMap(token) {
         mapboxgl.accessToken = token;
 
+
+        const defaultLat = latitudeInput.value || 53.1235;  // Bydgoszcz
+        const defaultLng = longitudeInput.value || 18.0084;
+
         // Create map
         map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
+            center: [defaultLng, defaultLat],
             zoom: 12
         });
 

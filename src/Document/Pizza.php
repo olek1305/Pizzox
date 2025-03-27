@@ -34,7 +34,7 @@ class Pizza implements CartItemInterface
     public array $size = [];
 
     #[ODM\ReferenceOne(targetDocument: Category::class)]
-    private ?Category $category;
+    private ?Category $category = null;
 
     public function getId(): ?string
     {
