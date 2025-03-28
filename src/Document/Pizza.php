@@ -19,19 +19,20 @@ class Pizza implements CartItemInterface
     #[ODM\Field(type: 'string')]
     public string $name;
 
+    #[ODM\Field(type: 'float', nullable: true)]
+    public ?float $priceSmall = null;
+
     #[Assert\NotBlank]
     #[Assert\Positive]
     #[ODM\Field(type: 'float')]
     public float $price;
 
+    #[ODM\Field(type: 'float', nullable: true)]
+    public ?float $priceLarge = null;
+
     #[Assert\NotBlank]
     #[ODM\Field(type: 'collection')]
     public array $toppings = [];
-
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['small', 'medium', 'large'], multiple: true)]
-    #[ODM\Field(type: 'collection')]
-    public array $size = [];
 
     #[ODM\ReferenceOne(targetDocument: Category::class)]
     private ?Category $category = null;
@@ -60,8 +61,38 @@ class Pizza implements CartItemInterface
     public function setPrice(float $price): self
     {
         $this->price = $price;
-
         return $this;
+    }
+
+    public function getPriceSmall(): float
+    {
+        return $this->priceSmall;
+    }
+
+    public function setPriceSmall(float $price): self
+    {
+        $this->priceSmall = $price;
+        return $this;
+    }
+
+    public function getPriceLarge(): float
+    {
+        return $this->priceLarge;
+    }
+
+    public function setPriceLarge(float $price): self
+    {
+        $this->priceLarge = $price;
+        return $this;
+    }
+
+    public function getPriceBySize(string $size): float
+    {
+        return match ($size) {
+            'small' => $this->priceSmall ?: 0,
+            'large' => $this->priceLarge ?: 0,
+            default => $this->price,
+        };
     }
 
     public function getToppings(): array
@@ -73,17 +104,6 @@ class Pizza implements CartItemInterface
     {
         $this->toppings = $toppings;
 
-        return $this;
-    }
-
-    public function getSize(): array
-    {
-        return $this->size;
-    }
-
-    public function setSize(array $size): self
-    {
-        $this->size = $size;
         return $this;
     }
 

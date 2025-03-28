@@ -44,25 +44,29 @@ readonly class PriceCalculatorService
      */
     private function calculatePizzaUnitPrice(Pizza $pizza, string $size): array
     {
-        $basePrice = $pizza->getPrice();
-        $settings = $this->settingRepository->findLastOrCreate();
+        // Get the price for the specific size
+        $price = $pizza->getPriceBySize($size);
 
-        // Get size modifiers and calculation type from settings
-        $smallSizeModifier = $settings->getSmallSizeModifier();
-        $largeSizeModifier = $settings->getLargeSizeModifier();
-        $calculationType = $settings->getPizzaPriceCalculationType();
+        // If the price for the requested size is not set (0), calculate it from medium price
+        if ($price <= 0) {
+            $settings = $this->settingRepository->findLastOrCreate();
+            $basePrice = $pizza->getPrice(); // Medium price is our reference
 
-        $price = match ($size) {
-            'small' => $calculationType === 'fixed'
-                ? $basePrice - $smallSizeModifier
-                : $basePrice * (1 - ($smallSizeModifier / 100)),
-            'large' => $calculationType === 'fixed'
-                ? $basePrice + $largeSizeModifier
-                : $basePrice * (1 + ($largeSizeModifier / 100)),
-            default => $basePrice, // medium size
-        };
+            // Get size modifiers and calculation type from settings
+            $smallSizeModifier = $settings->getSmallSizeModifier();
+            $largeSizeModifier = $settings->getLargeSizeModifier();
+            $calculationType = $settings->getPizzaPriceCalculationType();
 
-        $price = max(0, $price);
+            $price = match ($size) {
+                'small' => $calculationType === 'fixed'
+                    ? max(0, $basePrice - $smallSizeModifier)
+                    : $basePrice * (1 - ($smallSizeModifier / 100)),
+                'large' => $calculationType === 'fixed'
+                    ? $basePrice + $largeSizeModifier
+                    : $basePrice * (1 + ($largeSizeModifier / 100)),
+                default => $basePrice, // medium size (fallback)
+            };
+        }
 
         // Check if there's an active promotion for this pizza
         $promotion = $this->documentManager->getRepository(Promotion::class)->findOneBy([
@@ -160,6 +164,38 @@ readonly class PriceCalculatorService
         }
 
         return $total;
+    }
+
+    /**
+     *  Set all prices based on default price and settings
+     * @return $this
+     * @throws Throwable
+     */
+    public function setAllPricesFromDefault(float $default): self
+    {
+        $this->setPrice($default);
+
+        // If sizes array includes small/large, calculate their prices
+        $settings = $this->settingRepository->findLastOrCreate();
+        $calculationType = $settings->getPizzaPriceCalculationType();
+
+        if (in_array('small', $this->size)) {
+            $smallModifier = $settings->getSmallSizeModifier();
+            $smallPrice = $calculationType === 'fixed'
+                ? $default - $smallModifier
+                : $default * (1 - ($smallModifier / 100));
+            $this->setPriceSmall(max(0, $smallPrice));
+        }
+
+        if (in_array('large', $this->size)) {
+            $largeModifier = $settings->getLargeSizeModifier();
+            $largePrice = $calculationType === 'fixed'
+                ? $default + $largeModifier
+                : $default * (1 + ($largeModifier / 100));
+            $this->setPriceLarge($largePrice);
+        }
+
+        return $this;
     }
 
     /**

@@ -8,7 +8,8 @@
         <div class="space-y-4">
             {{ form_row(form.name, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
             {{ form_row(form.price, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
-            {{ form_row(form.size, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
+            {{ form_row(form.priceSmall, {'attr': {'class': 'w-full p-2 border rounded-lg price-small'}}) }}
+            {{ form_row(form.priceLarge, {'attr': {'class': 'w-full p-2 border rounded-lg price-large'}}) }}
             {{ form_row(form.category, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
 
             <div id="toppings-container"
@@ -85,6 +86,108 @@
                 button.addEventListener('click', function () {
                     button.closest('.topping-item').remove();
                 });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Pobierz elementy formularza
+            const priceSmallField = document.querySelector('.price-small').closest('.space-y-4 > div');
+            const priceLargeField = document.querySelector('.price-large').closest('.space-y-4 > div');
+            const priceInput = document.querySelector('[name="pizza[price]"]');
+
+            // Pobierz wartości modyfikatorów z atrybutów data
+            const calculationType = priceInput.dataset.calculationType || 'fixed';
+            const smallModifier = parseFloat(priceInput.dataset.smallModifier) || 0;
+            const largeModifier = parseFloat(priceInput.dataset.largeModifier) || 0;
+
+            // Ukryj pola cenowe dla small i large na początku
+            priceSmallField.classList.add('hidden');
+            priceLargeField.classList.add('hidden');
+
+            // Stwórz selektor rozmiarów
+            const sizeSelector = document.createElement('div');
+            sizeSelector.className = 'mb-4 mt-4';
+            sizeSelector.innerHTML = `
+        <label class="block text-gray-700 mb-2 font-medium">Dostępne rozmiary:</label>
+        <div class="flex space-x-4">
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="size-small" class="text-blue-600">
+                <span class="ml-2">Small</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="size-large" class="text-blue-600">
+                <span class="ml-2">Large</span>
+            </label>
+        </div>
+    `;
+
+            // Wstaw selektor rozmiarów przed polem ceny dla small
+            priceSmallField.parentNode.insertBefore(sizeSelector, priceSmallField);
+
+            // Funkcja obliczająca cenę na podstawie modyfikatorów
+            function calculatePrice(basePrice, size) {
+                if (calculationType === 'fixed') {
+                    if (size === 'small') return Math.max(0, basePrice - smallModifier);
+                    if (size === 'large') return basePrice + largeModifier;
+                } else {
+                    // procentowy
+                    if (size === 'small') return basePrice * (1 - (smallModifier / 100));
+                    if (size === 'large') return basePrice * (1 + (largeModifier / 100));
+                }
+                return basePrice; // domyślnie medium
+            }
+
+            // Dodaj obsługę zdarzeń do checkboxów
+            const checkboxSmall = document.querySelector('[name="size-small"]');
+            const checkboxLarge = document.querySelector('[name="size-large"]');
+            const priceSmallInput = document.querySelector('[name="pizza[priceSmall]"]');
+            const priceLargeInput = document.querySelector('[name="pizza[priceLarge]"]');
+
+            // Przy zmianie głównej ceny, aktualizuj również ceny small i large
+            priceInput.addEventListener('input', function() {
+                const basePrice = parseFloat(this.value) || 0;
+
+                if (checkboxSmall.checked && priceSmallInput.value === '') {
+                    priceSmallInput.value = calculatePrice(basePrice, 'small').toFixed(2);
+                }
+
+                if (checkboxLarge.checked && priceLargeInput.value === '') {
+                    priceLargeInput.value = calculatePrice(basePrice, 'large').toFixed(2);
+                }
+            });
+
+            checkboxSmall.addEventListener('change', function() {
+                if (this.checked) {
+                    priceSmallField.classList.remove('hidden');
+
+                    // Sugerowana wartość na podstawie ceny głównej
+                    const basePrice = parseFloat(priceInput.value) || 0;
+                    if (priceSmallInput.value === '') {
+                        priceSmallInput.value = calculatePrice(basePrice, 'small').toFixed(2);
+                    }
+                } else {
+                    priceSmallField.classList.add('hidden');
+                    // Wyczyść wartość pola
+                    priceSmallInput.value = '';
+                }
+            });
+
+            checkboxLarge.addEventListener('change', function() {
+                if (this.checked) {
+                    priceLargeField.classList.remove('hidden');
+
+                    // Sugerowana wartość na podstawie ceny głównej
+                    const basePrice = parseFloat(priceInput.value) || 0;
+                    if (priceLargeInput.value === '') {
+                        priceLargeInput.value = calculatePrice(basePrice, 'large').toFixed(2);
+                    }
+                } else {
+                    priceLargeField.classList.add('hidden');
+                    // Wyczyść wartość pola
+                    priceLargeInput.value = '';
+                }
             });
         });
     </script>

@@ -38,7 +38,6 @@
                     <th class="px-6 py-3">{{ 'pizza.name'|trans }}</th>
                     <th class="px-6 py-3">{{ 'pizza.price'|trans }}</th>
                     <th class="px-6 py-3">{{ 'pizza.toppings'|trans }}</th>
-                    <th class="px-6 py-3">{{ 'pizza.size'|trans }}</th>
                     <th class="px-6 py-3">{{ 'pizza.category'|trans }}</th>
                     <th class="px-6 py-3">{{ 'action'|trans }}</th>
                     </thead>
@@ -65,7 +64,6 @@
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4">{{ pizza.toppings|join(', ') }}</td>
-                            <td class="px-6 py-4">{{ pizza.size|join(', ') }}</td>
                             <td class="px-6 py-4">
                                 {% if pizza.category %}
                                     {{ pizza.category.name }}
@@ -77,18 +75,22 @@
                                 <form action="{{ path('cart_add_pizza', {'pizzaId': pizza.id}) }}" method="POST" class="inline">
                                     <div class="flex space-x-2">
                                         <div class="flex space-x-1">
-                                            <button type="submit" name="size" value="small"
-                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
-                                                S
-                                            </button>
+                                            {% if pizza.priceSmall %}
+                                                <button type="submit" name="size" value="small"
+                                                        class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
+                                                    S
+                                                </button>
+                                            {% endif %}
                                             <button type="submit" name="size" value="medium"
                                                     class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
                                                 M
                                             </button>
-                                            <button type="submit" name="size" value="large"
-                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
-                                                L
-                                            </button>
+                                            {% if pizza.priceLarge %}
+                                                <button type="submit" name="size" value="large"
+                                                        class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
+                                                    L
+                                                </button>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </form>

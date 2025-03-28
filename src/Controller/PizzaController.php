@@ -185,6 +185,7 @@ final class PizzaController extends AbstractController
             $dm->flush();
 
             $this->cache->delete('pizzas_index');
+            $this->cache->delete('user_cart');
 
             $this->addFlash('success', 'Pizza updated successfully!');
             return $this->redirectToRoute('pizza_index');
@@ -223,6 +224,7 @@ final class PizzaController extends AbstractController
         $this->documentManager->flush();
 
         $this->cache->delete('pizzas_index');
+        $this->cache->delete('user_cart');
 
         $this->addFlash('success', 'Pizza deleted successfully!');
         return $this->redirectToRoute('pizza_index');

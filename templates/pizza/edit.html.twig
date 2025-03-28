@@ -8,7 +8,8 @@
         <div class="space-y-4">
             {{ form_row(form.name, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
             {{ form_row(form.price, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
-            {{ form_row(form.size, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
+            {{ form_row(form.priceSmall, {'attr': {'class': 'w-full p-2 border rounded-lg price-small'}}) }}
+            {{ form_row(form.priceLarge, {'attr': {'class': 'w-full p-2 border rounded-lg price-large'}}) }}
             {{ form_row(form.category, {'attr': {'class': 'w-full p-2 border rounded-lg'}}) }}
 
             <div id="toppings-container"

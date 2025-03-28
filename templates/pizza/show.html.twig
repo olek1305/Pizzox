@@ -18,26 +18,23 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div class="p-3 bg-gray-50 rounded-lg">
-                    <p class="font-semibold mb-2">{{ 'pizza.price'|trans }}</p>
+                    <p class="font-semibold mb-2">{{ 'pizza.price'|trans }} (Medium)</p>
                     <p>{{ pizza.price }} {{ currency }}</p>
+                </div>
+
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-semibold mb-2">{{ 'pizza.price_small'|trans }}</p>
+                    <p>{{ pizza.priceSmall ? pizza.priceSmall ~ ' ' ~ currency : 'Calculated from medium price' }}</p>
+                </div>
+
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-semibold mb-2">{{ 'pizza.price_large'|trans }}</p>
+                    <p>{{ pizza.priceLarge ? pizza.priceLarge ~ ' ' ~ currency : 'Calculated from medium price' }}</p>
                 </div>
 
                 <div class="p-3 bg-gray-50 rounded-lg">
                     <p class="font-semibold mb-2">{{ 'pizza.category'|trans }}</p>
                     <p>{% if pizza.category %}{{ pizza.category.name }}{% else %}{{ 'pizza.no_category'|trans }}{% endif %}</p>
-                </div>
-
-                <div class="p-3 bg-gray-50 rounded-lg">
-                    <p class="font-semibold mb-2">{{ 'pizza.sizes'|trans }}</p>
-                    {% if pizza.size|length > 0 %}
-                        <ul class="list-disc pl-6">
-                            {% for size in pizza.size %}
-                                <li>{{ size }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>{{ 'pizza.no_sizes'|trans }}</p>
-                    {% endif %}
                 </div>
 
                 <div class="p-3 bg-gray-50 rounded-lg">
@@ -82,31 +79,22 @@
                                 <select id="discount_type" name="discount_type" required
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     <option value="percentage">Percentage (%)</option>
-                                    <option value="fixed">Fixed Amount</option>
+                                    <option value="fixed">Fixed Amount ({{ currency }})</option>
                                 </select>
                             </div>
 
                             <div>
                                 <div class="font-semibold mb-2">
-                                    <label for="expiry_days">Valid For (days)</label>
+                                    <label for="valid_until">Valid Until</label>
                                 </div>
-                                <input type="number" id="expiry_days" name="expiry_days" required min="1" value="30"
+                                <input type="date" id="valid_until" name="valid_until" required
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <p class="text-sm text-gray-500 mt-1">Number of days until promotion expires</p>
                             </div>
                         </div>
 
-                        <div class="flex justify-end">
-                            <a href="{{ path('pizza_edit', {'id': pizza.id}) }}"
-                               class="px-4 py-2 mr-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
-                                {{ 'action.edit'|trans }}
-                            </a>
-
-                            <button type="submit"
-                                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
-                                Create Promotion
-                            </button>
-                        </div>
+                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
+                            Create Promotion
+                        </button>
                     </form>
                 </div>
             {% endif %}

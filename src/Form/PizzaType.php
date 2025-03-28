@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Document\Category;
 use App\Document\Pizza;
+use App\Repository\SettingRepository;
 use App\Service\CurrencyProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -14,17 +15,21 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
+use Throwable;
 
 class PizzaType extends AbstractType
 {
     public function __construct(
-        private readonly CurrencyProvider $currencyProvider
+        private readonly CurrencyProvider $currencyProvider,
+        private readonly SettingRepository $settingRepository
     ) {
         //
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $settings = $this->settingRepository->findLastOrCreate();
+
         $builder
             ->add('name', TextType::class, [
                 'label' => 'form.pizza.name.label',
@@ -39,17 +44,28 @@ class PizzaType extends AbstractType
                     new NotBlank(['message' => 'not_blank']),
                     new Positive(['message' => 'positive']),
                 ],
-                'attr' => ['placeholder' => 'form.pizza.price.placeholder'],
-            ])
-            ->add('size', ChoiceType::class, [
-                'label' => 'form.pizza.size.label',
-                'choices' => [
-                    'Small' => 'small',
-                    'Medium' => 'medium',
-                    'Large' => 'large',
+                'attr' => [
+                    'placeholder' => 'form.pizza.price.placeholder',
+                    'data-calculation-type' => $settings->getPizzaPriceCalculationType(),
+                    'data-small-modifier' => $settings->getSmallSizeModifier(),
+                    'data-large-modifier' => $settings->getLargeSizeModifier(),
                 ],
-                'multiple' => true,
-                'expanded' => true,
+            ])
+            ->add('priceSmall', MoneyType::class, [
+                'label' => 'form.pizza.price_small.label',
+                'currency' => $this->currencyProvider->getCurrency(),
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Will be calculated if empty',
+                ],
+            ])
+            ->add('priceLarge', MoneyType::class, [
+                'label' => 'form.pizza.price_large.label',
+                'currency' => $this->currencyProvider->getCurrency(),
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Will be calculated if empty',
+                ],
             ])
             ->add('toppings', CollectionType::class, [
                 'label' => 'form.pizza.toppings.label',
