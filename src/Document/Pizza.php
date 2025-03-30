@@ -42,6 +42,15 @@ class Pizza implements CartItemInterface
         return $this->id;
     }
 
+    /**
+     * @internal Only for test purposes
+     */
+    public function setId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getName(): string
     {
         return $this->name;

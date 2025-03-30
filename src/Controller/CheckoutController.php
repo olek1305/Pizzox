@@ -5,16 +5,14 @@ namespace App\Controller;
 use App\Document\Addition;
 use App\Document\Order;
 use App\Document\Pizza;
-use App\Document\Setting;
 use App\Enum\OrderStatus;
 use App\Service\CurrencyProvider;
+use App\Service\StripeIntegrationService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Psr\Cache\InvalidArgumentException;
-use Stripe\StripeClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,11 +30,13 @@ class CheckoutController extends AbstractController
      * @param CacheInterface $cache
      * @param DocumentManager $documentManager
      * @param CurrencyProvider $currencyProvider
+     * @param StripeIntegrationService $stripeService
      */
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly DocumentManager $documentManager,
-        CurrencyProvider $currencyProvider
+        CurrencyProvider $currencyProvider,
+        private readonly StripeIntegrationService $stripeService
     )
     {
         $this->currency = $currencyProvider->getCurrency();
@@ -55,12 +55,10 @@ class CheckoutController extends AbstractController
     #[Route('/checkout', name: 'checkout', methods: ['GET', 'POST'])]
     public function checkout(Request $request, UrlGeneratorInterface $urlGenerator): RedirectResponse
     {
-        // Retrieve cart from cache
         $cart = $this->cache->get('user_cart', function () {
             return [];
         });
 
-        // If the cart is empty, redirect back to cart
         if (empty($cart)) {
             $this->addFlash('error', 'Your cart is empty.');
             return $this->redirectToRoute('cart_index');
@@ -98,64 +96,23 @@ class CheckoutController extends AbstractController
         $this->documentManager->persist($order);
         $this->documentManager->flush();
 
-        // Build Stripe line items from the cart
-        $lineItems = [];
-        foreach ($cart as $item) {
-            if (!isset($item['type']) || !in_array($item['type'], ['pizza', 'addition'], true)) {
-                throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $item['type'] ?? 'null'));
-            }
-
-            $productName = $item['item_name'];
-            if ($item['type'] === 'pizza' && isset($item['size'])) {
-                $productName .= ' (' . strtoupper($item['size']) . ')';
-            }
-
-            $priceForStripe = $item['price'];
-
-            // Add item to Stripe line items
-            $lineItems[] = [
-                'price_data' => [
-                    'currency' => strtolower($this->currency),
-                    'product_data' => [
-                        'name' => $productName,
-                    ],
-                    'unit_amount' => (int)($priceForStripe * 100),
-                ],
-                'quantity' => $item['quantity'],
-            ];
-
-        }
-
         try {
-            $stripeSecretKey = $this->documentManager->getRepository(Setting::class)->findOneBy([])->getStripeSecretKey();
+            $session = $this->stripeService->createCheckoutSession(
+                $cart,
+                $urlGenerator,
+                $this->currency,
+                $order->getId(),
+                $order->getEmail()
+            );
 
-            if (!$stripeSecretKey) {
-                throw new Exception('Stripe Secret Key not configured.');
-            }
-
-            $stripe = new StripeClient($stripeSecretKey);
-
-            // Create Stripe Session
-            $session = $stripe->checkout->sessions->create([
-                'payment_method_types' => ['card'],
-                'line_items' => $lineItems,
-                'mode' => 'payment',
-                'success_url' => $this->generateUrl('checkout_success', [
-                    'order_id' => $order->getId()
-                ], UrlGeneratorInterface::ABSOLUTE_URL),
-                'cancel_url' => $urlGenerator->generate('checkout_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
-                'customer_email' => $order->getEmail(),
-                'metadata' => [
-                    'order_id' => $order->getId(),
-                ],
-            ]);
-
-            $this->documentManager->persist($order);
+            $order->setStripeSessionId($session->id);
+            $order->setStatus(OrderStatus::PENDING);
             $this->documentManager->flush();
-            $this->cache->delete('user_cart');
 
             return $this->redirect($session->url);
-        } catch (Exception) {
+
+        } catch (Throwable $e) {
+            $this->addFlash('error', 'Payment processing error: ' . $e->getMessage());
             return $this->redirectToRoute('cart_index');
         }
     }
@@ -165,6 +122,8 @@ class CheckoutController extends AbstractController
      * @return Response
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
+     * @throws Throwable
      */
     #[Route('/checkout/success', name: 'checkout_success', methods: ['GET'])]
     public function checkoutSuccess(Request $request): Response
@@ -175,6 +134,10 @@ class CheckoutController extends AbstractController
         if (!$order) {
             throw $this->createNotFoundException('Order not found');
         }
+
+        $order->setStatus(OrderStatus::PAID);
+        $this->cache->delete('user_cart');
+        $this->documentManager->flush();
 
         $lineItems = [];
 
@@ -193,7 +156,6 @@ class CheckoutController extends AbstractController
             ];
         }
 
-        // Convert additions to line items
         foreach ($order->getAdditions() as $addition) {
             $lineItems[] = [
                 'name' => $addition['name'],
@@ -252,10 +214,8 @@ class CheckoutController extends AbstractController
                 $order->setStatus(OrderStatus::CANCELLED);
                 $this->documentManager->flush();
 
-                // Clear the session
                 $request->getSession()->remove('current_order_id');
 
-                // Clear the cart
                 $this->cache->delete('user_cart');
             }
         }

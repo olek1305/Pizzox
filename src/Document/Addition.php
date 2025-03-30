@@ -13,7 +13,7 @@ use DateTime;
 class Addition implements CartItemInterface
 {
     #[ODM\Id]
-    private ?string $id = null;
+    public ?string $id = null;
 
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
@@ -49,6 +49,15 @@ class Addition implements CartItemInterface
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    /**
+     * @internal Only for test purposes
+     */
+    public function setId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getName(): string

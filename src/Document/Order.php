@@ -15,6 +15,9 @@ class Order
     #[ODM\Id]
     private ?string $id = null;
 
+    #[ODM\Field(type: 'string', nullable: true)]
+    private ?string $stripeSessionId = null;
+
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 255)]
@@ -57,6 +60,17 @@ class Order
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function getStripeSessionId(): ?string
+    {
+        return $this->stripeSessionId;
+    }
+
+    public function setStripeSessionId(?string $stripeSessionId): self
+    {
+        $this->stripeSessionId = $stripeSessionId;
+        return $this;
     }
 
     public function getFullName(): string

@@ -167,35 +167,15 @@ readonly class PriceCalculatorService
     }
 
     /**
-     *  Set all prices based on default price and settings
-     * @return $this
-     * @throws Throwable
+     * Calculate the price of an addition
+     * @param Addition $addition
+     * @param int $quantity
+     * @return float
      */
-    public function setAllPricesFromDefault(float $default): self
+    public function calculateAdditionPrice(Addition $addition, int $quantity): float
     {
-        $this->setPrice($default);
-
-        // If sizes array includes small/large, calculate their prices
-        $settings = $this->settingRepository->findLastOrCreate();
-        $calculationType = $settings->getPizzaPriceCalculationType();
-
-        if (in_array('small', $this->size)) {
-            $smallModifier = $settings->getSmallSizeModifier();
-            $smallPrice = $calculationType === 'fixed'
-                ? $default - $smallModifier
-                : $default * (1 - ($smallModifier / 100));
-            $this->setPriceSmall(max(0, $smallPrice));
-        }
-
-        if (in_array('large', $this->size)) {
-            $largeModifier = $settings->getLargeSizeModifier();
-            $largePrice = $calculationType === 'fixed'
-                ? $default + $largeModifier
-                : $default * (1 + ($largeModifier / 100));
-            $this->setPriceLarge($largePrice);
-        }
-
-        return $this;
+        $priceInfo = $this->getAdditionPriceInfo($addition);
+        return $priceInfo['price'] * $quantity;
     }
 
     /**
