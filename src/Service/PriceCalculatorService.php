@@ -142,24 +142,19 @@ readonly class PriceCalculatorService
      */
     public function calculateCartTotal(array $cart): float
     {
-        $total = 0.0;
+        $total = 0;
 
         foreach ($cart as $item) {
             if ($item['type'] === 'pizza') {
-                $pizza = $this->documentManager->getRepository(Pizza::class)->find($item['item_id']);
-                if ($pizza) {
-                    $total += $this->calculatePizzaPrice(
-                        $pizza,
-                        $item['quantity'],
-                        $item['size']
-                    );
-                }
+                $pizzaPrice = $this->calculatePizzaPrice(
+                    $item['item'],
+                    $item['quantity'],
+                    $item['size'] ?? 'medium'
+                );
+                $total += $pizzaPrice;
             } elseif ($item['type'] === 'addition') {
-                $addition = $this->documentManager->getRepository(Addition::class)->find($item['item_id']);
-                if ($addition) {
-                    $priceInfo = $this->getAdditionPriceInfo($addition);
-                    $total += $priceInfo['price'] * $item['quantity'];
-                }
+                $addition = $item['item'];
+                $total += $addition->getPrice() * $item['quantity'];
             }
         }
 

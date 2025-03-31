@@ -29,7 +29,7 @@ class Promotion
     #[ODM\Field(type: 'date', nullable: true)]
     private ?DateTime $expiresAt = null;
 
-    #[ODM\Field(type: 'boolean')]
+    #[ODM\Field(type: 'bool')]
     private bool $active = true;
 
     #[ODM\Field(type: 'int')]

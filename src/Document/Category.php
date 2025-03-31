@@ -15,7 +15,7 @@ class Category
     #[ODM\Field(type: 'string')]
     private string $name;
 
-    #[ODM\Field(type: 'boolean')]
+    #[ODM\Field(type: 'bool')]
     private bool $active = true;
 
     public function getId(): ?string

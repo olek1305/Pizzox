@@ -28,7 +28,7 @@ class Addition implements CartItemInterface
     #[ODM\Field(type: 'string')]
     private string $type;
 
-    #[ODM\Field(type: 'boolean')]
+    #[ODM\Field(type: 'bool')]
     private bool $active = true;
 
     #[ODM\ReferenceOne(targetDocument: Category::class)]

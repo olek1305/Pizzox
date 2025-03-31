@@ -19,12 +19,18 @@ readonly class StripeIntegrationService
      * @param array $cart
      * @param UrlGeneratorInterface $urlGenerator
      * @param string $currency
-     * @param string|null $orderId
-     * @param string|null $customerEmail
+     * @param string $orderId
+     * @param string $customerEmail
      * @return Session
      * @throws ApiErrorException
      */
-    public function createCheckoutSession(array $cart, UrlGeneratorInterface $urlGenerator): Session
+    public function createCheckoutSession(
+        array $cart,
+        UrlGeneratorInterface $urlGenerator,
+        string $currency,
+        string $orderId,
+        string $customerEmail
+    ): Session
     {
         $lineItems = [];
         foreach ($cart as $item) {
