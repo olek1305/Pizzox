@@ -53,10 +53,8 @@ jobs:
 
       - name: Configure MongoDB connection
         run: |
-          # Dodaj zmienne środowiskowe do .env
           echo "MONGODB_URL=mongodb://admin:admin@localhost:27017" > .env
           echo "MONGODB_DB=pizza_db" >> .env
-          # Dodajmy też konfigurację Redis
           echo "REDIS_URL=redis://localhost:6379" >> .env
           cat .env
 
@@ -67,4 +65,12 @@ jobs:
           REDIS_URL: redis://localhost:6379
         run: |
           composer install --prefer-dist --no-progress
-          
+
+      - name: Run PHPUnit tests
+        env:
+          MONGODB_URL: mongodb://admin:admin@localhost:27017
+          MONGODB_DB: pizza_db_test
+          REDIS_URL: redis://localhost:6379
+          APP_ENV: test
+        run: |
+          php bin/phpunit
