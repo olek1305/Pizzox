@@ -1,18 +1,70 @@
-name: Docker Image CI
+name: Symfony Basic Test
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ main, master ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:latest
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin
+          MONGO_INITDB_DATABASE: pizza_db
+        ports:
+          - "27017:27017"
+        options: >-
+          --health-cmd "echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u admin -p admin --quiet | grep 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.4
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, iconv, mongodb-1.21.0, redis
+          coverage: none
+
+      - name: Verify PHP installation
+        run: |
+          php -v
+          php -m | grep mongodb
+          php -m | grep redis
+
+      - name: Configure MongoDB connection
+        run: |
+          # Dodaj zmienne środowiskowe do .env
+          echo "MONGODB_URL=mongodb://admin:admin@localhost:27017" > .env
+          echo "MONGODB_DB=pizza_db" >> .env
+          # Dodajmy też konfigurację Redis
+          echo "REDIS_URL=redis://localhost:6379" >> .env
+          cat .env
+
+      - name: Install Composer dependencies
+        env:
+          MONGODB_URL: mongodb://admin:admin@localhost:27017
+          MONGODB_DB: pizza_db
+          REDIS_URL: redis://localhost:6379
+        run: |
+          composer install --prefer-dist --no-progress
+          

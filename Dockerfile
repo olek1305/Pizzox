@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     unzip \
     git \
-    && pecl install mongodb \
+    && pecl install mongodb-1.21.0 \
     && pecl install redis \
     && docker-php-ext-enable mongodb \
     && docker-php-ext-enable redis \
