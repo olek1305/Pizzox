@@ -1,10 +1,36 @@
+import { registerVueControllerComponents } from '@symfony/ux-vue';
 import './bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
 import './styles/app.css';
 
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+
+registerVueControllerComponents(require.context('./vue/controllers', true, /\.vue$/));
+document.addEventListener('vue:before-mount', (event) => {
+    const {
+        componentName,
+        component,
+        props,
+        app,
+    } = event.detail;
+
+    console.log(`Komponent ${componentName} będzie zamontowany`, component, props);
+});
+
+document.addEventListener('vue:mount', (event) => {
+    const {
+        componentName,
+        component,
+        props,
+    } = event.detail;
+
+    console.log(`Komponent ${componentName} został zamontowany`, component, props);
+});
+
+document.addEventListener('vue:unmount', (event) => {
+    const {
+        componentName,
+        props,
+    } = event.detail;
+
+    console.log(`Komponent ${componentName} został odmontowany`, props);
+});
