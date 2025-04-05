@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install intl opcache \
     && apt-get clean
 
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+
 # Install the composer binary from the official Composer image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
