@@ -1,0 +1,193 @@
+{
+  "form": {
+    "pizza": {
+      "name": {
+        "label": "Nazwa pizzy",
+        "placeholder": "Wprowadź nazwę pizzy"
+      },
+      "price": {
+        "label": "Cena",
+        "placeholder": "Wprowadź cenę"
+      },
+      "size": {
+        "label": "Rozmiar",
+        "placeholder": "Wprowadź rozmiar pizzy"
+      },
+      "toppings": {
+        "label": "Dodatki",
+        "placeholder": "Dodaj dodatek"
+      },
+      "category": {
+        "label": "Kategoria",
+        "placeholder": "Wybierz nazwę kategorii",
+        "no_category": "Brak Kategorii"
+      }
+    }
+  },
+  "pizza": {
+    "list_title": "Lista Pizzy",
+    "id": "ID",
+    "name": "Nazwa Pizzy",
+    "price": "Cena",
+    "size": "Rozmiar",
+    "sizes": "Rozmiary",
+    "no_pizzas": "Brak pizz",
+    "create": "Utwórz pizzę",
+    "toppings": "Dodatki",
+    "no_category": "Brak Kategorii",
+    "category": "Kategoria"
+  },
+  "action": {
+    "label": "Akcja",
+    "edit": "Edytuj",
+    "back_to_list": "Wróć do Listy Pizz",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "logout": "Wyloguj się"
+  },
+  "order": {
+    "status": {
+      "pending": "W oczekiwaniu",
+      "paid": "Opłacone",
+      "preparing": "Przygotowywane",
+      "out_for_delivery": "W drodze do dostarczenia",
+      "completed": "Zrealizowane"
+    },
+    "history": "Historia zamówień",
+    "no_orders": "Brak zamówień",
+    "id": "ID",
+    "client": "Klient",
+    "phone": "Telefon",
+    "price": "Cena",
+    "date": "Data",
+    "action": "Akcja",
+    "details_link": "Szczegóły",
+    "details": "Szczegóły zamówienia",
+    "back_to_list": "Powrót do listy zamówień",
+    "customer_information": "Informacje o kliencie",
+    "full_name": "Imię i nazwisko",
+    "email": "Email",
+    "address": "Adres",
+    "order_details": "Szczegóły zamówienia",
+    "order_id": "ID zamówienia",
+    "order_date": "Data zamówienia",
+    "status_label": "Status",
+    "ordered_pizzas": "Zamówione pizze",
+    "no_pizzas_found": "Brak zamówionych pizz",
+    "name": "Nazwa",
+    "size": "Rozmiar",
+    "toppings": "Dodatki",
+    "quantity": "Ilość",
+    "total": "Suma",
+    "extras": "Dodatki",
+    "no_extras_found": "Brak dodatków",
+    "total_price": "Cena całkowita"
+  },
+  "driver": {
+    "status": {
+      "available": "Dostępny",
+      "unavailable": "Niedostępny",
+      "on_duty": "Na zmianie"
+    }
+  },
+  "category": {
+    "name": "Nazwa",
+    "active": "Aktywna",
+    "inactive": "Nieaktywna",
+    "list_title": "Kategorie",
+    "no_categories": "Brak dostępnych kategorii",
+    "active_categories": "Aktywne Kategorie",
+    "inactive_categories": "Nieaktywne Kategorie",
+    "create": "Utwórz kategorię",
+    "index": "Indeks kategorii"
+  },
+  "addition": {
+    "label": "Dodatek",
+    "create": "Utwórz dodatek",
+    "name": "Dodatek",
+    "price": "Cena",
+    "action": "Akcja",
+    "edit": "Edytuj dodatek",
+    "category": "Kategoria"
+  },
+  "cart": {
+    "title": "Twój Koszyk",
+    "empty": "Twój koszyk jest pusty.",
+    "total": "Razem",
+    "go_to_cart": "Przejdź do koszyka"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "goto": "Przejdź",
+    "category": {
+      "title": "Indeks kategorii",
+      "description": "Zarządzaj kategoriami pizzy i organizuj strukturę menu."
+    },
+    "currency": {
+      "title": "Ustawienia waluty",
+      "description": "Skonfiguruj ustawienia waluty i kraju dla swojej aplikacji."
+    },
+    "stripe": {
+      "title": "Ustawienia Stripe",
+      "description": "Skonfiguruj ustawienia integracji ze Stripe."
+    },
+    "pizza_size": {
+      "title": "Ustawienia rozmiarów pizzy",
+      "description": "Skonfiguruj ustalone ceny dla rozmiarów.",
+      "price_settings": "Ustawienia cen rozmiarów pizzy"
+    },
+    "promotions": {
+      "title": "Indeks promocji",
+      "description": "Zarządzaj kodami rabatowymi i ofertami promocyjnymi.",
+      "name": "Promocje"
+    },
+    "mapbox": {
+      "title": "Ustawienia lokalizacji Mapbox",
+      "search_address": "Wyszukaj adres",
+      "token": "Token Mapbox",
+      "restaurant": {
+        "name": "Nazwa restauracji",
+        "address": "Adres restauracji"
+      }
+    }
+  },
+  "pricing": {
+    "example": {
+      "title": "Przykład kalkulacji cen w różnych modelach",
+      "fixed": {
+        "title": "Model Fixed (stała kwota)",
+        "description": "Dodawanie/odejmowanie stałej kwoty"
+      },
+      "percent": {
+        "title": "Model Percent (procentowy)",
+        "description": "Zmiana o procent ceny podstawowej"
+      },
+      "pizza": "Pizza",
+      "base_price": "Podstawowa (M)",
+      "large": "Duża (L)",
+      "small": "Mała (S)",
+      "average": "Średnia",
+      "comparison": {
+        "title": "Porównanie dla pizzy 40 zł:",
+        "fixed_model": "Model Fixed:",
+        "percent_model": "Model Percent:",
+        "large_pizza": "Pizza duża (L):",
+        "small_pizza": "Pizza mała (S):",
+        "difference": "Różnica między rozmiarami:",
+        "explanation_fixed": "Fixed - stała różnica cenowa niezależnie od pizzy",
+        "explanation_percent": "Percent - różnica cenowa proporcjonalna do ceny podstawowej"
+      }
+    }
+  },
+  "show": "Pokaż",
+  "edit": "Edytuj",
+  "deactivate": "Dezaktywuj",
+  "activate": "Aktywuj",
+  "not_blank": "Cena nie może być pusta",
+  "positive": "Cena musi być liczbą dodatnią",
+  "currency": "Waluta",
+  "paymentHistory": "Historia zamówień",
+  "save": "Zapisz",
+  "saves": "Zapisz zmiany",
+  "backSettings": "Powrót do Ustawień"
+}

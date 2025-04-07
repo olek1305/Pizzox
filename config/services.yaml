@@ -6,6 +6,8 @@
 parameters:
     env(MONGODB_URL): ''
     env(MONGODB_DB): ''
+    app.locale: 'en'
+    app.supported_locales: 'en|pl'
 
 services:
     # default configuration for services in *this* file
@@ -28,8 +30,11 @@ services:
 
     # Listener language to switch
     App\EventListener\LocaleListener:
+        arguments:
+            $defaultLocale: '%kernel.default_locale%'
         tags:
             - { name: kernel.event_subscriber }
+
 
     App\Repository\SettingRepository:
         factory: ['@doctrine_mongodb.odm.default_document_manager', getRepository]

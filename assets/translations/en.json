@@ -1,0 +1,193 @@
+{
+  "form": {
+    "pizza": {
+      "name": {
+        "label": "Pizza name",
+        "placeholder": "Enter pizza name"
+      },
+      "price": {
+        "label": "Price",
+        "placeholder": "Enter price"
+      },
+      "size": {
+        "label": "Size",
+        "placeholder": "Enter pizza size"
+      },
+      "toppings": {
+        "label": "Toppings",
+        "placeholder": "Add Topping"
+      },
+      "category": {
+        "label": "Category",
+        "placeholder": "Select category",
+        "no_category": "No category"
+      }
+    }
+  },
+  "pizza": {
+    "list_title": "Pizza List",
+    "id": "ID",
+    "name": "Pizza Name",
+    "price": "Price",
+    "size": "Size",
+    "sizes": "Sizes",
+    "no_pizzas": "No pizzas found",
+    "create": "Create a pizza",
+    "toppings": "Toppings",
+    "no_category": "No category",
+    "category": "Category"
+  },
+  "action": {
+    "label": "Action",
+    "edit": "Edit",
+    "back_to_list": "Back to Pizza List",
+    "save": "Save",
+    "delete": "Delete",
+    "logout": "Logout"
+  },
+  "order": {
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "preparing": "Preparing",
+      "out_for_delivery": "Out for Delivery",
+      "completed": "Completed"
+    },
+    "history": "Order History",
+    "no_orders": "No orders found",
+    "id": "ID",
+    "client": "Client",
+    "phone": "Phone",
+    "price": "Price",
+    "date": "Date",
+    "action": "Action",
+    "details_link": "Details",
+    "details": "Order Details",
+    "back_to_list": "Back to Order List",
+    "customer_information": "Customer Information",
+    "full_name": "Full Name",
+    "email": "Email",
+    "address": "Address",
+    "order_details": "Order Details",
+    "order_id": "Order ID",
+    "order_date": "Order Date",
+    "status_label": "Status",
+    "ordered_pizzas": "Ordered Pizzas",
+    "no_pizzas_found": "No pizzas found",
+    "name": "Name",
+    "size": "Size",
+    "toppings": "Toppings",
+    "quantity": "Quantity",
+    "total": "Total",
+    "extras": "Extras",
+    "no_extras_found": "No extras found",
+    "total_price": "Total Price"
+  },
+  "driver": {
+    "status": {
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "on_duty": "On Duty"
+    }
+  },
+  "category": {
+    "name": "Name",
+    "active": "Active",
+    "inactive": "Inactive",
+    "list_title": "Categories",
+    "no_categories": "No categories available.",
+    "active_categories": "Active Categories",
+    "inactive_categories": "Inactive Categories",
+    "create": "Create a category",
+    "index": "Category index"
+  },
+  "addition": {
+    "label": "Additions",
+    "create": "Create an addition",
+    "name": "Addition",
+    "price": "Price",
+    "action": "action",
+    "edit": "Edit an addition",
+    "category": "Category"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "total": "Total",
+    "go_to_cart": "Go to Cart"
+  },
+  "settings": {
+    "title": "Settings",
+    "goto": "Go to",
+    "category": {
+      "title": "Category Index",
+      "description": "Manage pizza categories and organize your menu structure."
+    },
+    "currency": {
+      "title": "Currency Settings",
+      "description": "Configure currency and country settings for your application."
+    },
+    "stripe": {
+      "title": "Stripe Settings",
+      "description": "Configure your Stripe integration settings."
+    },
+    "pizza_size": {
+      "title": "Pizza Size Settings",
+      "description": "Configure set prices for size.",
+      "price_settings": "Pizza Size Price Settings"
+    },
+    "promotions": {
+      "title": "Promotions Index",
+      "description": "Manage discount codes and promotional offers.",
+      "name": "Promotions"
+    },
+    "mapbox": {
+      "title": "Mapbox Location Settings",
+      "search_address": "Search Address",
+      "token": "Mapbox Token",
+      "restaurant": {
+        "name": "Restaurant Name",
+        "address": "Restaurant Address"
+      }
+    }
+  },
+  "pricing": {
+    "example": {
+      "title": "Price calculation examples in different models",
+      "fixed": {
+        "title": "Fixed Model (constant amount)",
+        "description": "Adding/subtracting a fixed amount"
+      },
+      "percent": {
+        "title": "Percent Model (percentage)",
+        "description": "Changing by percentage of base price"
+      },
+      "pizza": "Pizza",
+      "base_price": "Base (M)",
+      "large": "Large (L)",
+      "small": "Small (S)",
+      "average": "Average",
+      "comparison": {
+        "title": "Comparison for a 40 zł pizza:",
+        "fixed_model": "Fixed Model:",
+        "percent_model": "Percent Model:",
+        "large_pizza": "Large pizza (L):",
+        "small_pizza": "Small pizza (S):",
+        "difference": "Difference between sizes:",
+        "explanation_fixed": "Fixed - constant price difference regardless of pizza",
+        "explanation_percent": "Percent - price difference proportional to base price"
+      }
+    }
+  },
+  "show": "Show",
+  "edit": "Edit",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "not_blank": "Price cannot be blank.",
+  "positive": "Price must be a positive number.",
+  "currency": "Currency",
+  "paymentHistory": "Payment History",
+  "save": "Save",
+  "saves": "Save Changes",
+  "backSettings": "Back to Settings"
+}

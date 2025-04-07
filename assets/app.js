@@ -1,36 +1,36 @@
+// assets/app.js
 import { registerVueControllerComponents } from '@symfony/ux-vue';
+import { createApp } from 'vue';
 import './bootstrap.js';
 import './styles/app.css';
+import translator from "./js/utils/translator";
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+// Inicjalizuj translator
+translator.init();
 
-registerVueControllerComponents(require.context('./vue/controllers', true, /\.vue$/));
+const vueControllers = require.context('./vue/controllers', true, /\.vue$/);
+registerVueControllerComponents(vueControllers);
+
 document.addEventListener('vue:before-mount', (event) => {
-    const {
-        componentName,
-        component,
-        props,
-        app,
-    } = event.detail;
+    const { app } = event.detail;
 
-    console.log(`Komponent ${componentName} będzie zamontowany`, component, props);
+    app.config.globalProperties.$t = (key, params = {}) => translator.trans(key, params);
+    app.config.globalProperties.$translator = translator;
 });
 
-document.addEventListener('vue:mount', (event) => {
-    const {
-        componentName,
-        component,
-        props,
-    } = event.detail;
+document.addEventListener('DOMContentLoaded', () => {
+    const appElement = document.getElementById('app');
+    if (appElement) {
+        const app = createApp({
+            template: '<Layout><slot></slot></Layout>'
+        });
 
-    console.log(`Komponent ${componentName} został zamontowany`, component, props);
-});
+        const Layout = vueControllers('./Layout.vue').default;
+        app.component('Layout', Layout);
 
-document.addEventListener('vue:unmount', (event) => {
-    const {
-        componentName,
-        props,
-    } = event.detail;
+        app.config.globalProperties.$t = (key, params = {}) => translator.trans(key, params);
+        app.config.globalProperties.$translator = translator;
 
-    console.log(`Komponent ${componentName} został odmontowany`, props);
+        app.mount('#app');
+    }
 });

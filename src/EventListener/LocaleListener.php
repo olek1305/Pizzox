@@ -6,39 +6,38 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-readonly class LocaleListener implements EventSubscriberInterface
+class LocaleListener implements EventSubscriberInterface
 {
-    public function __construct(
-        private string $defaultLocale = 'en'
-    ) {}
+    private $defaultLocale;
 
-    /**
-     * @param RequestEvent $event
-     * @return void
-     */
-    public function onKernelRequest(RequestEvent $event): void
+    public function __construct(string $defaultLocale = 'en')
+    {
+        $this->defaultLocale = $defaultLocale;
+    }
+
+    public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-        $session = $request->getSession();
 
+        // First check if _locale is in the query parameters
         if ($locale = $request->query->get('_locale')) {
-            $request->attributes->set('_locale', $locale);
+            $request->getSession()->set('_locale', $locale);
+            $request->setLocale($locale);
         }
-
-        if ($locale = $request->attributes->get('_locale')) {
-            $session->set('_locale', $locale);
+        // Then try to get locale from _locale attribute (from route)
+        else if ($locale = $request->attributes->get('_locale')) {
+            $request->getSession()->set('_locale', $locale);
         } else {
-            $locale = $session->get('_locale', $this->defaultLocale);
+            // Try to get locale from the session
+            $locale = $request->getSession()->get('_locale', $this->defaultLocale);
             $request->setLocale($locale);
         }
     }
 
-    /**
-     * @return array[]
-     */
-    public static function getSubscribedEvents(): array
+    public static function getSubscribedEvents()
     {
         return [
+            // Must be registered before the default Locale listener
             KernelEvents::REQUEST => [['onKernelRequest', 20]],
         ];
     }

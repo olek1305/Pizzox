@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app.request.locale|split('_')[0] }}">
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
@@ -11,13 +11,14 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
             {{ encore_entry_script_tags('pizza-animation') }}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-
-
     </head>
     <body class="min-h-screen dark:bg-black">
     {% set cart = cart_service.getCart() %}
+
+    <div id="app">
+
+    </div>
 
     {# Navigation Bar #}
     <nav class="bg-blue-600 p-4">
@@ -88,10 +89,6 @@
                 {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('app_logout') }}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">{{ 'action.logout'|trans }}</a>
                 {% endif %}
-                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'pl'})) }}"
-                   class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700">PL</a>
-                <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'en'})) }}"
-                   class="px-4 py-2 text-white bg-gray-500 rounded-lg hover:bg-gray-700">EN</a>
             </div>
         </div>
     </nav>
