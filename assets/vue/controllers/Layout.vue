@@ -1,5 +1,7 @@
 <template>
   <div class="layout-container">
+    <backgroundAnimate />
+
     <!-- Navigation Bar -->
     <nav class="bg-blue-600 p-4">
       <div class="container mx-auto flex justify-between items-center">
@@ -35,7 +37,8 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue';
-import Cart from "../../components/Cart.vue";
+import Cart from "./components/Cart.vue";
+import backgroundAnimate from "./components/PizzaAnimation.vue";
 
 const app = getCurrentInstance();
 const currentLocale = ref('');

@@ -10,8 +10,8 @@
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
-            {{ encore_entry_script_tags('pizza-animation') }}
         {% endblock %}
+
         <script>
             {% set cart = cart_service.getCart() %}
             // Set up global variables for Vue components
@@ -33,25 +33,3 @@
     </div>
     </body>
 </html>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Get References to the Cart Icon and the Dropdown
-        const cartTrigger = document.getElementById('cart-trigger');
-        const cartDropdown = document.getElementById('cart-dropdown');
-
-        // Add Click Event Listener to the Cart Icon
-        cartTrigger.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default behavior of anchor
-            // Toggle the "hidden" class on the dropdown
-            cartDropdown.classList.toggle('hidden');
-        });
-
-        // Optional: Hide the dropdown if you click anywhere outside it
-        document.addEventListener('click', (event) => {
-            if (!cartTrigger.contains(event.target) && !cartDropdown.contains(event.target)) {
-                cartDropdown.classList.add('hidden');
-            }
-        });
-    });
-</script>

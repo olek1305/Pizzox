@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import translator from "../js/utils/translator";
+import translator from "../../../js/utils/translator";
 
 export default {
   data() {
