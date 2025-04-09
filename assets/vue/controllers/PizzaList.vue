@@ -149,85 +149,77 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    initialPizzas: {
-      type: Array,
-      required: true
-    },
-    initialAdditions: {
-      type: Array,
-      required: true
-    },
-    userRoles: {
-      type: Array,
-      default: () => []
-    },
-    currencySymbol: {
-      type: String,
-      default: ''
-    },
-    csrfToken: {
-      type: String,
-      default: ''
-    }
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+
+const props = defineProps({
+  initialPizzas: {
+    type: Array,
+    required: true
   },
-
-  data() {
-    return {
-      pizzas: this.initialPizzas,
-      additions: this.initialAdditions,
-      createPizzaPath: '/pizza/create',
-      createAdditionPath: '/addition/create',
-      settingsPath: '/admin/settings',
-      paymentHistoryPath: '/payment/history',
-      csrf_token: this.csrfToken
-    }
+  initialAdditions: {
+    type: Array,
+    required: true
   },
-
-  computed: {
-    isAdmin() {
-      return this.userRoles.includes('ROLE_ADMIN');
-    }
+  userRoles: {
+    type: Array,
+    default: () => []
   },
-
-  methods: {
-    formatPrice(price) {
-      return `${price} ${this.currencySymbol}`;
-    },
-
-    formatToppings(toppings) {
-      if (!toppings) {
-        return this.$t('pizza.no_toppings');
-      }
-
-      if (Array.isArray(toppings)) {
-        return toppings.join(', ');
-      }
-
-      if (typeof toppings === 'string') {
-        return toppings;
-      }
-
-      return this.$t('pizza.no_toppings');
-    },
-
-    confirmDelete(event) {
-      if (confirm(this.$t('pizza.confirm_delete'))) {
-        event.target.submit();
-      }
-    },
-
-    csrfToken(id) {
-      // This should be replaced with how you're actually getting CSRF tokens
-      // Typically they're passed from the server to your Vue component
-      return this.csrf_tokens?.[id] || '';
-    }
+  currencySymbol: {
+    type: String,
+    default: ''
   },
-  mounted() {
-    console.log('Pizza data:', this.pizzas);
+  csrfToken: {
+    type: String,
+    default: ''
+  }
+});
+
+const pizzas = ref(props.initialPizzas);
+const additions = ref(props.initialAdditions);
+const createPizzaPath = ref('/pizza/create');
+const createAdditionPath = ref('/addition/create');
+const settingsPath = ref('/admin/settings');
+const paymentHistoryPath = ref('/payment/history');
+const csrf_token = ref(props.csrfToken);
+
+const isAdmin = computed(() => {
+  return props.userRoles.includes('ROLE_ADMIN');
+});
+
+function formatPrice(price) {
+  return `${price} ${props.currencySymbol}`;
+}
+
+function formatToppings(toppings) {
+  if (!toppings) {
+    return $t('pizza.no_toppings');
   }
 
+  if (Array.isArray(toppings)) {
+    return toppings.join(', ');
+  }
+
+  if (typeof toppings === 'string') {
+    return toppings;
+  }
+
+  return $t('pizza.no_toppings');
 }
+
+function confirmDelete(event) {
+  if (confirm($t('pizza.confirm_delete'))) {
+    event.target.submit();
+  }
+}
+
+function csrfToken(id) {
+  // This should be replaced with how you're actually getting CSRF tokens
+  // Typically they're passed from the server to your Vue component
+  return csrf_tokens?.[id] || '';
+}
+
+onMounted(() => {
+  console.log('Pizza data:', pizzas.value);
+});
 </script>

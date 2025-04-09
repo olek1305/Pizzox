@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pizzaContainer.className = 'falling-pizzas-container';
     document.body.appendChild(pizzaContainer);
 
-    // Style dla animacji
+    // Style for animation
     const styleSheet = document.createElement('style');
     styleSheet.textContent = `
         .falling-pizzas-container {

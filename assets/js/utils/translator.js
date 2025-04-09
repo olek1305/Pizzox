@@ -25,7 +25,7 @@ export default {
     },
 
     trans(key, parameters = {}, domain = 'messages') {
-        // Ignorujemy parametr domain, ponieważ używamy własnego systemu
+        // We ignore the domain parameter as we use our own system
         const translation = this.getTranslation(key);
         if (!translation) {
             console.warn(`Translation key not found: ${key}`);
@@ -38,24 +38,21 @@ export default {
     getTranslation(key) {
         const messages = translations[currentLocale] || translations.en;
 
-        // Obsługa kluczy zagnieżdżonych z kropką (np. 'action.edit')
         if (key.includes('.')) {
             const parts = key.split('.');
             let result = messages;
 
-            // Przechodzimy przez każdą część klucza
             for (const part of parts) {
                 if (result && typeof result === 'object' && part in result) {
                     result = result[part];
                 } else {
-                    return null; // Jeśli klucz zagnieżdżony nie istnieje
+                    return null;
                 }
             }
 
             return result;
         }
 
-        // Obsługa zwykłych kluczy (bez kropki)
         return messages[key] || null;
     },
 
@@ -68,7 +65,6 @@ export default {
     },
 
     init() {
-        // Sprawdź zapisane preferencje językowe
         const savedLocale = localStorage.getItem('app_locale');
         if (savedLocale && translations[savedLocale]) {
             this.locale = savedLocale;

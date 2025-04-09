@@ -12,6 +12,10 @@
             {{ encore_entry_script_tags('app') }}
             {{ encore_entry_script_tags('pizza-animation') }}
         {% endblock %}
+        <script>
+            // Set up global variables for Vue components
+            window.isAdmin = {{ is_granted('ROLE_ADMIN') ? 'true' : 'false' }};
+        </script>
     </head>
     <body class="min-h-screen dark:bg-black">
     {% set cart = cart_service.getCart() %}
@@ -23,8 +27,6 @@
     {# Navigation Bar #}
     <nav class="bg-blue-600 p-4">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="{{ path('pizza') }}" class="text-white font-bold text-lg">Pizza</a>
-
             <div class="relative">
                 <!-- Cart Icon -->
                 <a href="{{ path('cart_index') }}" id="cart-trigger" class="relative block text-white hover:text-gray-300">
@@ -84,11 +86,6 @@
                         </div>
                     {% endif %}
                 </div>
-            </div>
-            <div>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_logout') }}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">{{ 'action.logout'|trans }}</a>
-                {% endif %}
             </div>
         </div>
     </nav>
