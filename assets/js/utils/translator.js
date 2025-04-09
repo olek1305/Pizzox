@@ -24,7 +24,7 @@ export default {
         }
     },
 
-    trans(key, parameters = {}, domain = 'messages') {
+    trans(key, parameters = {}) {
         // We ignore the domain parameter as we use our own system
         const translation = this.getTranslation(key);
         if (!translation) {
