@@ -35,7 +35,7 @@ class Pizza implements CartItemInterface
     public array $toppings = [];
 
     #[ODM\ReferenceOne(targetDocument: Category::class)]
-    public ?Category $category = null;
+    private ?Category $category = null;
 
     public function getId(): ?string
     {
@@ -73,7 +73,7 @@ class Pizza implements CartItemInterface
         return $this;
     }
 
-    public function getPriceSmall(): float
+    public function getPriceSmall(): ?float
     {
         return $this->priceSmall;
     }
@@ -84,7 +84,7 @@ class Pizza implements CartItemInterface
         return $this;
     }
 
-    public function getPriceLarge(): float
+    public function getPriceLarge(): ?float
     {
         return $this->priceLarge;
     }

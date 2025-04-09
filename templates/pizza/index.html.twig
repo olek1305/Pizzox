@@ -5,8 +5,10 @@
 {% block body %}
     <div class="container mx-auto p-12">
         <div {{ vue_component('PizzaList', {
-            'initialPizzas': pizzas,
+            'initialPizzas': pizzaData,
+            'initialAdditions': additionData,
             'userRoles': app.user ? app.user.roles : [],
+            'currency': currency
         }) }}></div>
     </div>
 {% endblock %}

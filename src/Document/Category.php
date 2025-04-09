@@ -13,7 +13,7 @@ class Category
     private ?string $id = null;
 
     #[ODM\Field(type: 'string')]
-    private string $name;
+    private ?string $name;
 
     #[ODM\Field(type: 'bool')]
     private bool $active = true;
@@ -25,7 +25,7 @@ class Category
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->name ?? 'Null';
     }
 
     public function setName(string $name): self

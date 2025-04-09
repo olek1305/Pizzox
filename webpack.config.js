@@ -60,6 +60,14 @@ Encore
         config.corejs = '3.38';
     })
 
+    .configureCssMinimizerPlugin((options) => {
+        options.minimizerOptions = {
+            preset: ['default', {
+                calc: false,
+            }],
+        };
+    })
+
     // enables Sass/SCSS support
     //.enableSassLoader()
 

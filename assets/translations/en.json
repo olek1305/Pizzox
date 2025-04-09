@@ -114,7 +114,7 @@
     "title": "Your Cart",
     "empty": "Your cart is empty.",
     "total": "Total",
-    "go_to_cart": "Go to Cart"
+    "view": "Go to Cart"
   },
   "settings": {
     "title": "Settings",

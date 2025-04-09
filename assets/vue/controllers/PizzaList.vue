@@ -120,7 +120,7 @@
             </template>
           </td>
           <td class="px-6 py-4 space-x-2">
-            <form :action="`/cart/add-addition/${addition.id}`" method="POST" class="inline">
+            <form :action="`/cart/add/addition/${addition.id}`" method="POST" class="inline">
               <label>
                 <input type="number" name="quantity" value="1" min="1" class="w-12 border rounded-md px-2 text-center" />
               </label>
@@ -175,13 +175,15 @@ const props = defineProps({
   }
 });
 
-const pizzas = ref(props.initialPizzas);
-const additions = ref(props.initialAdditions);
+const pizzas = ref(props.initialPizzas || []);
+const additions = ref(props.initialAdditions || []);
+const csrf_token = ref(props.csrfToken);
+const currency = ref('Please setting your currency');
+
 const createPizzaPath = ref('/pizza/create');
 const createAdditionPath = ref('/addition/create');
 const settingsPath = ref('/admin/settings');
 const paymentHistoryPath = ref('/payment/history');
-const csrf_token = ref(props.csrfToken);
 
 const isAdmin = computed(() => {
   return props.userRoles.includes('ROLE_ADMIN');
@@ -220,6 +222,9 @@ function csrfToken(id) {
 }
 
 onMounted(() => {
+  // if (window.cartCurrency) {
+  //   currency.value = window.cartCurrency;
+  // }
   console.log('Pizza data:', pizzas.value);
 });
 </script>

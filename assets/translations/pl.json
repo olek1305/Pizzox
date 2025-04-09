@@ -114,7 +114,7 @@
     "title": "Twój Koszyk",
     "empty": "Twój koszyk jest pusty.",
     "total": "Razem",
-    "go_to_cart": "Przejdź do koszyka"
+    "view": "Przejdź do koszyka"
   },
   "settings": {
     "title": "Ustawienia",

@@ -81,24 +81,84 @@ final class PizzaController extends AbstractController
             }
         }
 
-        // Attach promotions to pizzas
+        // Prepare pizza data for Vue, including categories and promotions
+        $pizzaData = [];
         foreach ($pizzas as $pizza) {
+            $pizzaItem = [
+                'id' => $pizza->getId(),
+                'name' => $pizza->getName(),
+                'price' => $pizza->getPrice(),
+                'priceSmall' => $pizza->getPriceSmall(),
+                'priceLarge' => $pizza->getPriceLarge(),
+                'toppings' => $pizza->getToppings(),
+            ];
+
+            // Add category if exists
+            $category = $pizza->getCategory();
+            if ($category) {
+                $pizzaItem['category'] = [
+                    'id' => $category->getId(),
+                    'name' => $category->getName(),
+                ];
+            } else {
+                $pizzaItem['category'] = null;
+            }
+
+            // Add promotion if exists
             if (isset($pizzaPromotionMap[$pizza->getId()])) {
-                $pizza->promotion = $pizzaPromotionMap[$pizza->getId()];
+                $promotion = $pizzaPromotionMap[$pizza->getId()];
+                $pizzaItem['coupon'] = [
+                    'id' => $promotion->getId(),
+                    'type' => $promotion->getDiscountType(),
+                    'discount' => $promotion->getDiscountValue(),
+                    'validFrom' => $promotion->getValidFrom(),
+                    'validTo' => $promotion->getValidTo(),
+                ];
             }
+
+            $pizzaData[] = $pizzaItem;
         }
 
-        // Attach promotions to additions
+        // Prepare addition data for Vue, including categories and promotions
+        $additionData = [];
         foreach ($additions as $addition) {
-            if (isset($additionPromotionMap[$addition->getId()])) {
-                $addition->promotion = $additionPromotionMap[$addition->getId()];
-            }
-        }
+            $additionItem = [
+                'id' => $addition->getId(),
+                'name' => $addition->getName(),
+                'price' => $addition->getPrice(),
+            ];
 
+            // Add category if exists
+            if (method_exists($addition, 'getCategory')) {
+                $category = $addition->getCategory();
+                if ($category) {
+                    $additionItem['category'] = [
+                        'id' => $category->getId(),
+                        'name' => $category->getName(),
+                    ];
+                } else {
+                    $additionItem['category'] = null;
+                }
+            }
+
+            // Add promotion if exists
+            if (isset($additionPromotionMap[$addition->getId()])) {
+                $promotion = $additionPromotionMap[$addition->getId()];
+                $additionItem['coupon'] = [
+                    'id' => $promotion->getId(),
+                    'type' => $promotion->getDiscountType(),
+                    'discount' => $promotion->getDiscountValue(),
+                    'validFrom' => $promotion->getValidFrom(),
+                    'validTo' => $promotion->getValidTo(),
+                ];
+            }
+
+            $additionData[] = $additionItem;
+        }
 
         return $this->render('pizza/index.html.twig', [
-            'pizzas' => $pizzas,
-            'additions' => $additions
+            'pizzaData' => $pizzaData,
+            'additionData' => $additionData,
         ]);
     }
 
