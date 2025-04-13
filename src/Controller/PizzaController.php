@@ -109,10 +109,9 @@ final class PizzaController extends AbstractController
                 $promotion = $pizzaPromotionMap[$pizza->getId()];
                 $pizzaItem['coupon'] = [
                     'id' => $promotion->getId(),
-                    'type' => $promotion->getDiscountType(),
-                    'discount' => $promotion->getDiscountValue(),
-                    'validFrom' => $promotion->getValidFrom(),
-                    'validTo' => $promotion->getValidTo(),
+                    'type' => $promotion->getType(),
+                    'discount' => $promotion->getDiscount(),
+                    'expiresAt' => $promotion->getExpiresAt(),
                 ];
             }
 
