@@ -174,6 +174,7 @@ readonly class PriceCalculatorService
     }
 
     /**
+     * Get price information for a pizza, including any applicable promotions
      * @param Pizza $pizza
      * @param string $size
      * @return float[]
