@@ -59,7 +59,7 @@ final class AdditionController extends AbstractController
             $dm->persist($addition);
             $dm->flush();
 
-            $this->cache->delete('additions_index');
+            $this->cache->delete('additions_data');
 
             $this->addFlash('success', 'Addition created successfully!');
             return $this->redirectToRoute('pizza_index');
@@ -122,7 +122,7 @@ final class AdditionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $dm->flush();
 
-            $this->cache->delete('additions_index');
+            $this->cache->delete('additions_data');
 
             $this->addFlash('success', 'Addition updated successfully!');
             return $this->redirectToRoute('pizza_index');
@@ -162,7 +162,7 @@ final class AdditionController extends AbstractController
         $this->additionRepository->remove($addition);
         $this->documentManager->flush();
 
-        $this->cache->delete('additions_index');
+        $this->cache->delete('additions_data');
 
         $this->addFlash('success', 'Addition deleted successfully!');
         return $this->redirectToRoute('pizza_index');

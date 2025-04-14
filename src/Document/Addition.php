@@ -25,9 +25,6 @@ class Addition implements CartItemInterface
     #[ODM\Field(type: 'string', nullable: true)]
     private ?string $description = null;
 
-    #[ODM\Field(type: 'string')]
-    private string $type;
-
     #[ODM\Field(type: 'bool')]
     private bool $active = true;
 
@@ -90,17 +87,6 @@ class Addition implements CartItemInterface
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-        return $this;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
         return $this;
     }
 

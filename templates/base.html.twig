@@ -18,18 +18,17 @@
             window.isAdmin = {{ is_granted('ROLE_ADMIN') ? 'true' : 'false' }};
             window.csrf_tokens = { 'form_id': '{{ csrf_token('form_id') }}' };
             window.cartData = {{ cart|json_encode|raw }};
-            window.cartCurrency = "{{ currency }}";
+            window.cartCurrency = {{ currency|json_encode|raw }};
         </script>
     </head>
-    <body class="min-h-screen dark:bg-black">
+    <body>
+        <div id="app">
+            {#  #}
+        </div>
 
-    <div id="app">
-        {#  #}
-    </div>
-
-    {# Main Content #}
-    <div class="container mx-auto p-6">
-        {% block body %}{% endblock %}
-    </div>
+        {# Main Content #}
+        <div>
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>

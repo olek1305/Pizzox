@@ -3,12 +3,9 @@
 {% block title %}{{ 'pizza.list_title'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="container mx-auto p-12">
-        <div {{ vue_component('PizzaList', {
-            'initialPizzas': pizzaData,
-            'initialAdditions': additionData,
-            'userRoles': app.user ? app.user.roles : [],
-            'currency': currency
-        }) }}></div>
-    </div>
+    <div {{ vue_component('pizza/Index', {
+        'initialPizzas': pizzaData,
+        'initialAdditions': additionData,
+        'userRoles': app.user ? app.user.roles : []
+    }) }}></div>
 {% endblock %}

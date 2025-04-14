@@ -45,115 +45,78 @@ final class PizzaController extends AbstractController
     #[Route('/pizza', name: 'pizza_index', methods: ['GET'])]
     public function index(): Response
     {
-        $pizzas = $this->cache->get('pizzas_index', function (ItemInterface $item) {
+        $pizzaData = $this->cache->get('pizzas_data', function (ItemInterface $item) {
             $item->expiresAfter(3600);
-            return $this->pizzaRepository->findAllOrderedByName();
-        });
 
-        $additions = $this->cache->get('additions_index', function (ItemInterface $item) {
-            $item->expiresAfter(3600);
-            return $this->additionRepository->findAllOrderedByName();
-        });
+            $pizzas = $this->pizzaRepository->findAllOrderedByName();
+            $pizzaData = [];
 
-        // Get promotions for both pizzas and additions
-        $pizzaPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
-            'itemType' => 'pizza',
-            'active' => true
-        ]);
+            // Get pizza promotions within cache callback
+            $pizzaPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
+                'itemType' => 'pizza',
+                'active' => true
+            ]);
 
-        $additionPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
-            'itemType' => 'addition',
-            'active' => true
-        ]);
-
-        // Create maps for both types
-        $pizzaPromotionMap = [];
-        foreach ($pizzaPromotions as $promotion) {
-            if ($promotion->isValid()) {
-                $pizzaPromotionMap[$promotion->getItemId()] = $promotion;
-            }
-        }
-
-        $additionPromotionMap = [];
-        foreach ($additionPromotions as $promotion) {
-            if ($promotion->isValid()) {
-                $additionPromotionMap[$promotion->getItemId()] = $promotion;
-            }
-        }
-
-        // Prepare pizza data for Vue, including categories and promotions
-        $pizzaData = [];
-        foreach ($pizzas as $pizza) {
-            $pizzaItem = [
-                'id' => $pizza->getId(),
-                'name' => $pizza->getName(),
-                'price' => $pizza->getPrice(),
-                'priceSmall' => $pizza->getPriceSmall(),
-                'priceLarge' => $pizza->getPriceLarge(),
-                'toppings' => $pizza->getToppings(),
-            ];
-
-            // Add category if exists
-            $category = $pizza->getCategory();
-            if ($category) {
-                $pizzaItem['category'] = [
-                    'id' => $category->getId(),
-                    'name' => $category->getName(),
-                ];
-            } else {
-                $pizzaItem['category'] = null;
-            }
-
-            // Add promotion if exists
-            if (isset($pizzaPromotionMap[$pizza->getId()])) {
-                $promotion = $pizzaPromotionMap[$pizza->getId()];
-                $pizzaItem['coupon'] = [
-                    'id' => $promotion->getId(),
-                    'type' => $promotion->getType(),
-                    'discount' => $promotion->getDiscount(),
-                    'expiresAt' => $promotion->getExpiresAt(),
-                ];
-            }
-
-            $pizzaData[] = $pizzaItem;
-        }
-
-        // Prepare addition data for Vue, including categories and promotions
-        $additionData = [];
-        foreach ($additions as $addition) {
-            $additionItem = [
-                'id' => $addition->getId(),
-                'name' => $addition->getName(),
-                'price' => $addition->getPrice(),
-            ];
-
-            // Add category if exists
-            if (method_exists($addition, 'getCategory')) {
-                $category = $addition->getCategory();
-                if ($category) {
-                    $additionItem['category'] = [
-                        'id' => $category->getId(),
-                        'name' => $category->getName(),
-                    ];
-                } else {
-                    $additionItem['category'] = null;
+            // Create map for pizzas
+            $pizzaPromotionMap = [];
+            foreach ($pizzaPromotions as $promotion) {
+                if ($promotion->isValid()) {
+                    $pizzaPromotionMap[$promotion->getItemId()] = $promotion;
                 }
             }
 
-            // Add promotion if exists
-            if (isset($additionPromotionMap[$addition->getId()])) {
-                $promotion = $additionPromotionMap[$addition->getId()];
-                $additionItem['coupon'] = [
-                    'id' => $promotion->getId(),
-                    'type' => $promotion->getDiscountType(),
-                    'discount' => $promotion->getDiscountValue(),
-                    'validFrom' => $promotion->getValidFrom(),
-                    'validTo' => $promotion->getValidTo(),
+            foreach ($pizzas as $pizza) {
+                $pizzaItem = [
+                    'id' => $pizza->getId(),
+                    'name' => $pizza->getName(),
+                    'price' => $pizza->getPrice(),
+                    'priceSmall' => $pizza->getPriceSmall(),
+                    'priceLarge' => $pizza->getPriceLarge(),
+                    'toppings' => $pizza->getToppings(),
                 ];
+
+                // Add category if exists
+                $pizzaData = $this->getArr($pizza, $pizzaItem, $pizzaPromotionMap, $pizzaData);
             }
 
-            $additionData[] = $additionItem;
-        }
+            return $pizzaData;
+        });
+
+        $additionData = $this->cache->get('additions_data', function (ItemInterface $item) {
+            $item->expiresAfter(3600);
+
+            $additions = $this->additionRepository->findAllOrderedByName();
+            $additionData = [];
+
+            // Get addition promotions within cache callback
+            $additionPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
+                'itemType' => 'addition',
+                'active' => true
+            ]);
+
+            // Create map for additions
+            $additionPromotionMap = [];
+            foreach ($additionPromotions as $promotion) {
+                if ($promotion->isValid()) {
+                    $additionPromotionMap[$promotion->getItemId()] = $promotion;
+                }
+            }
+
+            foreach ($additions as $addition) {
+                $additionItem = [
+                    'id' => $addition->getId(),
+                    'name' => $addition->getName(),
+                    'price' => $addition->getPrice(),
+                    'description' => $addition->getDescription(),
+                    'active' => $addition->isActive(),
+                ];
+
+                // Add category if exists
+                $additionData = $this->getArr($addition, $additionItem, $additionPromotionMap, $additionData);
+            }
+
+            return $additionData;
+        });
 
         return $this->render('pizza/index.html.twig', [
             'pizzaData' => $pizzaData,
@@ -184,7 +147,7 @@ final class PizzaController extends AbstractController
             $dm->persist($pizza);
             $dm->flush();
 
-            $this->cache->delete('pizzas_index');
+            $this->cache->delete('pizzas_data');
 
             $this->addFlash('success', 'Pizza created successfully!');
             return $this->redirectToRoute('pizza_index');
@@ -192,25 +155,6 @@ final class PizzaController extends AbstractController
 
         return $this->render('pizza/create.html.twig', [
             'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @param string $id
-     * @return Response
-     */
-    #[Route('/pizza/{id}', name: 'pizza_show', requirements: ['id' => '[0-9a-f]{24}'], methods: ['GET'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function show(string $id): Response
-    {
-        $pizza = $this->pizzaRepository->findById($id);
-
-        if (!$pizza) {
-            throw $this->createNotFoundException('Pizza not found');
-        }
-
-        return $this->render('pizza/show.html.twig', [
-            'pizza' => $pizza
         ]);
     }
 
@@ -243,7 +187,7 @@ final class PizzaController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $dm->flush();
 
-            $this->cache->delete('pizzas_index');
+            $this->cache->delete('pizzas_data');
             $this->cache->delete('user_cart');
 
             $this->addFlash('success', 'Pizza updated successfully!');
@@ -282,10 +226,44 @@ final class PizzaController extends AbstractController
         $this->documentManager->remove($pizza);
         $this->documentManager->flush();
 
-        $this->cache->delete('pizzas_index');
+        $this->cache->delete('pizzas_data');
         $this->cache->delete('user_cart');
 
         $this->addFlash('success', 'Pizza deleted successfully!');
         return $this->redirectToRoute('pizza_index');
+    }
+
+    /**
+     * @param mixed $addition
+     * @param array $additionItem
+     * @param array $additionPromotionMap
+     * @param array $additionData
+     * @return array
+     */
+    public function getArr(mixed $addition, array $additionItem, array $additionPromotionMap, array $additionData): array
+    {
+        $category = $addition->getCategory();
+        if ($category) {
+            $additionItem['category'] = [
+                'id' => $category->getId(),
+                'name' => $category->getName(),
+            ];
+        } else {
+            $additionItem['category'] = null;
+        }
+
+        // Add promotion if exists
+        if (isset($additionPromotionMap[$addition->getId()])) {
+            $promotion = $additionPromotionMap[$addition->getId()];
+            $additionItem['coupon'] = [
+                'id' => $promotion->getId(),
+                'type' => $promotion->getType(),
+                'discount' => $promotion->getDiscount(),
+                'expiresAt' => $promotion->getExpiresAt() ? $promotion->getExpiresAt()->format('Y-m-d H:i:s') : null,
+            ];
+        }
+
+        $additionData[] = $additionItem;
+        return $additionData;
     }
 }

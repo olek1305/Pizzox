@@ -114,7 +114,12 @@
     "title": "Twój Koszyk",
     "empty": "Twój koszyk jest pusty.",
     "total": "Razem",
-    "view": "Przejdź do koszyka"
+    "view": "Przejdź do koszyka",
+    "remove": "Usuń",
+    "summary": "Podsumowanie zamówienia",
+    "items_count": "Liczba pozycji",
+    "subtotal": "Suma częściowa",
+    "checkout": "Przejdź do kasy"
   },
   "settings": {
     "title": "Ustawienia",

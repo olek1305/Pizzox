@@ -114,7 +114,12 @@
     "title": "Your Cart",
     "empty": "Your cart is empty.",
     "total": "Total",
-    "view": "Go to Cart"
+    "view": "Go to Cart",
+    "remove": "Remove",
+    "summary": "Order Summary",
+    "items_count": "Item Count",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout"
   },
   "settings": {
     "title": "Settings",
