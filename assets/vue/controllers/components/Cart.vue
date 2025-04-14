@@ -36,16 +36,16 @@
             <template v-if="item.original_price !== undefined && item.original_price !== item.price">
               <div class="flex flex-col">
                   <span class="line-through text-gray-500">
-                    {{ calculatePrice(item.original_price, item.quantity) }} {{ currency }}
+                    {{ calculatePrice(item.original_price, item.quantity) }} {{ $currency }}
                   </span>
-                <span class="text-red-600 font-bold">
-                    {{ calculatePrice(item.price, item.quantity) }} {{ currency }}
+                                  <span class="text-red-600 font-bold">
+                    {{ calculatePrice(item.price, item.quantity) }} {{ $currency }}
                   </span>
               </div>
             </template>
             <template v-else>
                 <span class="font-semibold">
-                  {{ calculatePrice(item.price, item.quantity) }} {{ currency }}
+                  {{ calculatePrice(item.price, item.quantity) }} {{ $currency }}
                 </span>
             </template>
           </div>
@@ -74,13 +74,13 @@
 
             <div class="flex justify-between font-semibold">
               <span>{{ $t('cart.subtotal') }}:</span>
-              <span>{{ totalCost }} {{ currency }}</span>
+              <span>{{ totalCost }} {{ $currency }}</span>
             </div>
 
             <div class="pt-3 border-t mt-3">
               <div class="flex justify-between font-bold text-lg">
                 <span>{{ $t('cart.total') }}:</span>
-                <span>{{ totalCost }} {{ currency }}</span>
+                <span>{{ totalCost }} {{ $currency }}</span>
               </div>
             </div>
           </div>
@@ -104,10 +104,9 @@
 import { ref, computed, onMounted } from 'vue';
 
 const cartItems = ref([]);
-const currency = ref('');
 const loading = ref(true);
 
-// Function to capitalize first letter
+// Function to capitalize the first letter
 const capitalize = (str) => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -136,7 +135,6 @@ const totalCost = computed(() => {
 onMounted(() => {
   try {
     cartItems.value = window.cartData || [];
-    currency.value = window.cartCurrency || '';
   } catch (error) {
     console.error('Failed to load cart data:', error);
     cartItems.value = [];

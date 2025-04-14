@@ -1,11 +1,11 @@
-// assets/app.js
 import { registerVueControllerComponents } from '@symfony/ux-vue';
 import { createApp } from 'vue';
 import './bootstrap.js';
 import './styles/app.css';
 import translator from "./js/utils/translator";
 
-// Inicjalizuj translator
+const currency = window.cartCurrency || 'Null';
+
 translator.init();
 
 const vueControllers = require.context('./vue/controllers', true, /\.vue$/);
@@ -16,6 +16,7 @@ document.addEventListener('vue:before-mount', (event) => {
 
     app.config.globalProperties.$t = (key, params = {}) => translator.trans(key, params);
     app.config.globalProperties.$translator = translator;
+    app.config.globalProperties.$currency = currency;
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         app.config.globalProperties.$t = (key, params = {}) => translator.trans(key, params);
         app.config.globalProperties.$translator = translator;
+        app.config.globalProperties.$currency = currency;
 
         app.mount('#app');
     }

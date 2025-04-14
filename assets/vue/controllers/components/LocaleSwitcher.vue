@@ -5,30 +5,23 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import translator from "../../../js/utils/translator";
+import { ref, onMounted } from 'vue';
 
-export default {
-  data() {
-    return {
-      currentLocale: 'en' // Default
-    }
-  },
+const currentLocale = ref('en');
 
-  mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.currentLocale = urlParams.get('_locale') || translator.locale || 'en';
-  },
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  currentLocale.value = urlParams.get('_locale') || translator.locale || 'en';
+});
 
-  methods: {
-    switchLocale(locale) {
-      if (this.currentLocale !== locale) {
-        // Update URL with new locale and reload page
-        const url = new URL(window.location);
-        url.searchParams.set('_locale', locale);
-        window.location = url.toString();
-      }
-    }
+const switchLocale = (locale) => {
+  if (currentLocale.value !== locale) {
+    // Update URL with new locale and reload page
+    const url = new URL(window.location);
+    url.searchParams.set('_locale', locale);
+    window.location = url.toString();
   }
-}
+};
 </script>

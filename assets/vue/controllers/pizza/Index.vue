@@ -41,16 +41,16 @@
                   <h3 class="text-lg font-semibold">{{ pizza.name }}</h3>
                   <div class="text-right font-medium">
                     <div v-if="pizza.coupon" class="flex flex-col">
-                      <span class="text-gray-500">{{ pizza.price }} {{ currency }}</span>
+                      <span class="text-gray-500">{{ pizza.price }} {{ $currency }}</span>
                       <span v-if="pizza.coupon.type === 'fixed'" class="text-red-600 font-semibold">
-                        {{ pizza.price - pizza.coupon.discount }} {{ currency }}
+                        {{ pizza.price - pizza.coupon.discount }} {{ $currency }}
                       </span>
                       <span v-else class="text-red-600 font-semibold">
-                        {{ pizza.price * (1 - pizza.coupon.discount / 100) }} {{ currency }}
+                        {{ pizza.price * (1 - pizza.coupon.discount / 100) }} {{ $currency }}
                       </span>
                     </div>
                     <template v-else>
-                      <span>od {{ formatPrice(getLowestPrice(pizza)) }} {{ currency }}</span>
+                      <span>od {{ formatPrice(getLowestPrice(pizza)) }} {{ $currency }}</span>
                     </template>
                   </div>
                 </div>
@@ -107,16 +107,16 @@
                     <h3 class="text-lg font-semibold">{{ addition.name }}</h3>
                     <div class="text-right font-medium">
                       <div v-if="addition.coupon" class="flex flex-col">
-                        <span class="text-gray-500">{{ addition.price }} {{ currency }}</span>
+                        <span class="text-gray-500">{{ addition.price }} {{ $currency }}</span>
                         <span v-if="addition.coupon.type === 'fixed'" class="text-red-600 font-semibold">
-                            {{ addition.price - addition.coupon.discount }} {{ currency }}
+                            {{ addition.price - addition.coupon.discount }} {{ $currency }}
                           </span>
                         <span v-else class="text-red-600 font-semibold">
-                            {{ addition.price * (1 - addition.coupon.discount / 100) }} {{ currency }}
+                            {{ addition.price * (1 - addition.coupon.discount / 100) }} {{ $currency }}
                           </span>
                       </div>
                       <template v-else>
-                        <span>od {{ formatPrice(getLowestPrice(addition)) }} {{ currency }}</span>
+                        <span>od {{ formatPrice(getLowestPrice(addition)) }} {{ $currency }}</span>
                       </template>
                     </div>
                   </div>
@@ -153,7 +153,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted} from 'vue';
+import { ref, computed } from 'vue';
 import Cart from "../components/Cart.vue";
 
 const props = defineProps({
@@ -168,16 +168,11 @@ const props = defineProps({
   userRoles: {
     type: Array,
     required: true
-  },
-  currency: {
-    type: String,
-    default: ''
-  },
+  }
 });
 
 const pizzas = ref([...props.initialPizzas]);
 const additions = ref([...props.initialAdditions]);
-const currency = ref('Please setting your currency');
 const createPizzaPath = ref('/pizza/create');
 const createAdditionPath = ref('/addition/create');
 const settingsPath = ref('/admin/settings');
@@ -251,10 +246,4 @@ const onDelete = (event, pizzaName) => {
     event.preventDefault();
   }
 };
-
-onMounted(() => {
-  if (window.cartCurrency) {
-    currency.value = window.cartCurrency;
-  }
-});
 </script>

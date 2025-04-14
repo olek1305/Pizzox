@@ -28,7 +28,9 @@
     "list_title": "Pizza List",
     "id": "ID",
     "name": "Pizza Name",
-    "price": "Price",
+    "price_large": "Large Pizza Price",
+    "price_small": "Small Pizza Price",
+    "price_medium": "Medium Pizza Price",
     "size": "Size",
     "sizes": "Sizes",
     "no_pizzas": "No pizzas found",
@@ -184,6 +186,18 @@
       }
     }
   },
+  "promotion": {
+    "create_title": "Create Promotion",
+    "usage_limit": "Usage Limit",
+    "discount_value": "Discount Value",
+    "discount_type": "Discount Type",
+    "percentage": "Percentage",
+    "fixed_amount": "Fixed Amount",
+    "create": "Create Promotion",
+    "calendar_to_expire": "Calendar to expire",
+    "selected_date": "Selected date",
+    "days_count": "Days count"
+  },
   "show": "Show",
   "edit": "Edit",
   "deactivate": "Deactivate",
@@ -194,5 +208,6 @@
   "paymentHistory": "Payment History",
   "save": "Save",
   "saves": "Save Changes",
-  "backSettings": "Back to Settings"
+  "backSettings": "Back to Settings",
+  "as_the_default": "As the default"
 }

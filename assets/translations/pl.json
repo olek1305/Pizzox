@@ -28,7 +28,9 @@
     "list_title": "Lista Pizzy",
     "id": "ID",
     "name": "Nazwa Pizzy",
-    "price": "Cena",
+    "price_large": "Cena dużej pizzy",
+    "price_small": "Cena małej pizzy",
+    "price_medium": "Cena średniej pizzy",
     "size": "Rozmiar",
     "sizes": "Rozmiary",
     "no_pizzas": "Brak pizz",
@@ -184,6 +186,18 @@
       }
     }
   },
+  "promotion": {
+    "create_title": "Utwórz promocję",
+    "usage_limit": "Limit użycia",
+    "discount_value": "Wartość rabatu",
+    "discount_type": "Typ rabatu",
+    "percentage": "Procentowy",
+    "fixed_amount": "Kwota stała",
+    "create": "Utwórz promocję",
+    "calendar_to_expire": "Kalendarz wygaśnięcia",
+    "selected_date": "Wybrana data",
+    "days_count": "Liczba dni"
+  },
   "show": "Pokaż",
   "edit": "Edytuj",
   "deactivate": "Dezaktywuj",
@@ -194,5 +208,6 @@
   "paymentHistory": "Historia zamówień",
   "save": "Zapisz",
   "saves": "Zapisz zmiany",
-  "backSettings": "Powrót do Ustawień"
+  "backSettings": "Powrót do ustawień",
+  "as_the_default": "Jako domyślny"
 }

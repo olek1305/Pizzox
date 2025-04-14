@@ -51,13 +51,13 @@ final class PizzaController extends AbstractController
             $pizzas = $this->pizzaRepository->findAllOrderedByName();
             $pizzaData = [];
 
-            // Get pizza promotions within cache callback
+            // Get pizza promotions within a cache callback
             $pizzaPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
                 'itemType' => 'pizza',
                 'active' => true
             ]);
 
-            // Create map for pizzas
+            // Create a map for pizzas
             $pizzaPromotionMap = [];
             foreach ($pizzaPromotions as $promotion) {
                 if ($promotion->isValid()) {
@@ -88,13 +88,13 @@ final class PizzaController extends AbstractController
             $additions = $this->additionRepository->findAllOrderedByName();
             $additionData = [];
 
-            // Get addition promotions within cache callback
+            // Get addition promotions within a cache callback
             $additionPromotions = $this->documentManager->getRepository(Promotion::class)->findBy([
                 'itemType' => 'addition',
                 'active' => true
             ]);
 
-            // Create map for additions
+            // Create a map for additions
             $additionPromotionMap = [];
             foreach ($additionPromotions as $promotion) {
                 if ($promotion->isValid()) {
