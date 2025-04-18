@@ -84,7 +84,7 @@ class PromotionController extends AbstractController
         $existingPromotion = $this->documentManager->getRepository(Promotion::class)->findOneBy(['code' => $code]);
         if ($existingPromotion) {
             $this->addFlash('error', 'A promotion with the specified code already exists. Choose a different code.');
-            return $this->redirectToRoute($type . '_show', ['id' => $itemId]);
+            return $this->redirectToRoute($type . '_edit', ['id' => $itemId]);
         }
 
         $promotion = new Promotion();
@@ -104,7 +104,7 @@ class PromotionController extends AbstractController
 
         $this->addFlash('success', 'Promotion created successfully! Valid until: ' . $expiresAt->format('Y-m-d'));
 
-        return $this->redirectToRoute($type . '_show', ['id' => $itemId]);
+        return $this->redirectToRoute($type . '_edit', ['id' => $itemId]);
     }
 
     /**
