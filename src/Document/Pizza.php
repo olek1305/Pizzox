@@ -78,18 +78,18 @@ class Pizza implements CartItemInterface
         return $this->priceSmall;
     }
 
-    public function setPriceSmall(float $price): self
+    public function setPriceSmall(?float $price): self
     {
         $this->priceSmall = $price;
         return $this;
     }
-
+    
     public function getPriceLarge(): ?float
     {
         return $this->priceLarge;
     }
-
-    public function setPriceLarge(float $price): self
+    
+    public function setPriceLarge(?float $price): self
     {
         $this->priceLarge = $price;
         return $this;

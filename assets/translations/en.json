@@ -37,7 +37,20 @@
     "create": "Create a pizza",
     "toppings": "Toppings",
     "no_category": "No category",
-    "category": "Category"
+    "category": "Category",
+    "edit": "Edit Pizza",
+    "leave_empty_for_auto_calc": "Leave empty for automatic calculation",
+    "small_price_help": "Leave empty if you don't want to set small pizza price",
+    "large_price_help": "Leave empty if you don't want to set large pizza price",
+    "price_warning": {
+      "title": "Important:",
+      "message": "Medium pizza price cannot be set to zero or null as it serves as the default price."
+    },
+    "topping_input": {
+      "placeholder": "Add a topping (press space to add)",
+      "help_text": "Type a topping and press space to add it instantly, or click the Add button.",
+      "must_be_greater_than_zero": "Must be greater than 0"
+    }
   },
   "action": {
     "label": "Action",
@@ -45,7 +58,8 @@
     "back_to_list": "Back to Pizza List",
     "save": "Save",
     "delete": "Delete",
-    "logout": "Logout"
+    "logout": "Logout",
+    "add": "Add"
   },
   "order": {
     "status": {
@@ -194,9 +208,7 @@
     "percentage": "Percentage",
     "fixed_amount": "Fixed Amount",
     "create": "Create Promotion",
-    "calendar_to_expire": "Calendar to expire",
-    "selected_date": "Selected date",
-    "days_count": "Days count"
+    "calendar_to_expire": "Calendar to expire"
   },
   "show": "Show",
   "edit": "Edit",

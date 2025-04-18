@@ -36,8 +36,21 @@
     "no_pizzas": "Brak pizz",
     "create": "Utwórz pizzę",
     "toppings": "Dodatki",
-    "no_category": "Brak Kategorii",
-    "category": "Kategoria"
+    "no_category": "Brak Kategorii", 
+    "category": "Kategoria",
+    "edit": "Edycja pizzy",
+    "leave_empty_for_auto_calc": "Pozostaw puste dla automatycznego wyliczenia",
+    "small_price_help": "Pozostaw puste jeśli nie chcesz ustawiać ceny małej pizzy",
+    "large_price_help": "Pozostaw puste jeśli nie chcesz ustawiać ceny dużej pizzy",
+    "price_warning": {
+      "title": "Ważne:",
+      "message": "Cena średniej pizzy nie może wynosić zero lub być pusta, ponieważ służy jako cena domyślna."
+    },
+    "topping_input": {
+      "placeholder": "Dodaj składnik (naciśnij spację, aby dodać)",
+      "help_text": "Wpisz składnik i naciśnij spację, aby natychmiast go dodać, lub kliknij przycisk Dodaj.",
+      "must_be_greater_than_zero": "Musi być większa niż 0"
+    }
   },
   "action": {
     "label": "Akcja",
@@ -45,7 +58,8 @@
     "back_to_list": "Wróć do Listy Pizz",
     "save": "Zapisz",
     "delete": "Usuń",
-    "logout": "Wyloguj się"
+    "logout": "Wyloguj się",
+    "add": "Dodaj"
   },
   "order": {
     "status": {
@@ -194,9 +208,7 @@
     "percentage": "Procentowy",
     "fixed_amount": "Kwota stała",
     "create": "Utwórz promocję",
-    "calendar_to_expire": "Kalendarz wygaśnięcia",
-    "selected_date": "Wybrana data",
-    "days_count": "Liczba dni"
+    "calendar_to_expire": "Kalendarz wygaśnięcia"
   },
   "show": "Pokaż",
   "edit": "Edytuj",
