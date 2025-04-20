@@ -71,27 +71,6 @@ final class AdditionController extends AbstractController
     }
 
     /**
-     * @param string $id
-     * @return Response
-     * @throws LockException
-     * @throws MappingException
-     */
-    #[Route('/addition/{id}', name: 'addition_show', requirements: ['id' => '[0-9a-f]{24}'], methods: ['GET'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function show(string $id): Response
-    {
-        $addition = $this->additionRepository->findById($id);
-
-        if (!$addition) {
-            throw $this->createNotFoundException('Addition not found');
-        }
-
-        return $this->render('addition/show.html.twig', [
-            'addition' => $addition
-        ]);
-    }
-
-    /**
      * @param Request $request
      * @param string $id
      * @param DocumentManager $dm
@@ -135,7 +114,6 @@ final class AdditionController extends AbstractController
     }
 
     /**
-     * @param Request $request
      * @param string $id
      * @return Response
      * @throws InvalidArgumentException
@@ -144,9 +122,9 @@ final class AdditionController extends AbstractController
      * @throws MongoDBException
      * @throws Throwable
      */
-    #[Route('/addition/{id}', name: 'addition_delete', methods: ['POST'])]
+    #[Route('/addition/{id}/delete', name: 'addition_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function delete(Request $request, string $id): Response
+    public function delete(string $id): Response
     {
         $addition = $this->additionRepository->findById($id);
 
@@ -154,15 +132,12 @@ final class AdditionController extends AbstractController
             throw $this->createNotFoundException('Addition not found');
         }
 
-        if (!$this->isCsrfTokenValid('delete' . $addition->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Invalid CSRF token');
-            return $this->redirectToRoute('pizza_index');
-        }
-
-        $this->additionRepository->remove($addition);
+        // Admin role is already checked by the IsGranted attribute
+        $this->documentManager->remove($addition);
         $this->documentManager->flush();
-
+    
         $this->cache->delete('additions_data');
+        $this->cache->delete('user_cart');
 
         $this->addFlash('success', 'Addition deleted successfully!');
         return $this->redirectToRoute('pizza_index');

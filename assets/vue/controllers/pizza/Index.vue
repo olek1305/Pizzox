@@ -136,9 +136,10 @@
                     <a :href="`/addition/${addition.id}/edit`" class="text-blue-500 hover:text-blue-700">
                       {{ $t('action.edit') }}
                     </a>
-                    <a :href="`/addition/${addition.id}/delete`" class="text-red-500 hover:text-red-700">
-                      {{ $t('action.delete') }}
-                    </a>
+                    <form :action="`/addition/${addition.id}/delete`" method="POST" class="inline"
+                          @submit="onDeleteAddition($event, addition.name)">
+                      <button type="submit" class="text-red-500 hover:underline">{{ $t('action.delete') }}</button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -242,7 +243,15 @@ const getLowestPrice = (pizza) => {
 };
 
 const onDelete = (event, pizzaName) => {
-  if (!confirm($t('pizza.confirm_delete', {name: pizzaName}))) {
+  const confirmMessage = `Are you sure you want to delete ${pizzaName}?`;
+  if (!confirm(confirmMessage)) {
+    event.preventDefault();
+  }
+};
+
+const onDeleteAddition = (event, additionName) => {
+  const confirmMessage = `Are you sure you want to delete ${additionName}?`;
+  if (!confirm(confirmMessage)) {
     event.preventDefault();
   }
 };

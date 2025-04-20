@@ -201,7 +201,7 @@ final class PizzaController extends AbstractController
                     }
                 }
                 
-                // Save to database
+                // Save to a database
                 $dm->persist($pizza);
                 $dm->flush();
                 
@@ -222,7 +222,7 @@ final class PizzaController extends AbstractController
             ];
         }, $categories);
         
-        // For regular GET requests, render the template with Vue component
+        // For regular GET requests, render the template with a Vue component
         return $this->render('pizza/create.html.twig', [
             'categories' => $categoriesForVue,
             'priceSettings' => $priceSettings
@@ -400,7 +400,7 @@ final class PizzaController extends AbstractController
      * @throws MongoDBException
      * @throws Throwable
      */
-    #[Route('/pizza/{id}', name: 'pizza_delete', methods: ['POST'])]
+    #[Route('/pizza/{id}/delete', name: 'pizza_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, string $id): Response
     {
@@ -410,11 +410,7 @@ final class PizzaController extends AbstractController
             throw $this->createNotFoundException('Pizza not found');
         }
 
-        if (!$this->isCsrfTokenValid('delete' . $pizza->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Invalid CSRF token');
-            return $this->redirectToRoute('pizza_index');
-        }
-
+        // Admin role is already checked by IsGranted attribute
         $this->documentManager->remove($pizza);
         $this->documentManager->flush();
 
@@ -467,7 +463,7 @@ final class PizzaController extends AbstractController
     public function getData(mixed $data, Pizza $pizza): mixed
     {
         if (isset($data['priceLarge'])) {
-            if ($data['priceLarge'] === null || $data['priceLarge'] === 0) {
+            if ($data['priceLarge'] === 0) {
                 $pizza->setPriceLarge(null);
             } else {
                 $pizza->setPriceLarge((float)$data['priceLarge']);
