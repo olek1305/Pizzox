@@ -42,6 +42,7 @@
     "leave_empty_for_auto_calc": "Pozostaw puste dla automatycznego wyliczenia",
     "small_price_help": "Pozostaw puste jeśli nie chcesz ustawiać ceny małej pizzy",
     "large_price_help": "Pozostaw puste jeśli nie chcesz ustawiać ceny dużej pizzy",
+    "available_sizes": "Dostępne rozmiary",
     "price_warning": {
       "title": "Ważne:",
       "message": "Cena średniej pizzy nie może wynosić zero lub być pusta, ponieważ służy jako cena domyślna."

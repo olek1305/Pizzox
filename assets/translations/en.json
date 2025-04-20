@@ -42,6 +42,7 @@
     "leave_empty_for_auto_calc": "Leave empty for automatic calculation",
     "small_price_help": "Leave empty if you don't want to set small pizza price",
     "large_price_help": "Leave empty if you don't want to set large pizza price",
+    "available_sizes": "Available sizes",
     "price_warning": {
       "title": "Important:",
       "message": "Medium pizza price cannot be set to zero or null as it serves as the default price."

@@ -87,7 +87,7 @@
         </div>
 
         <!-- Additions section -->
-        <h1 class="text-3xl font-bold mb-6 text-center">{{ $t('Additions') }}</h1>
+        <h1 class="text-3xl font-bold mb-6 text-center">{{ $t('addition.label') }}</h1>
 
         <div v-if="!additions || additions.length === 0" class="text-center text-gray-600">
           {{ $t('addition.no_additions') }}
@@ -128,7 +128,7 @@
                       <input type="number" name="quantity" value="1" min="1" class="w-12 border rounded-md px-2 text-center" />
                     </label>
                     <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-700">
-                      {{ $t('add') }}
+                      {{ $t('action.add') }}
                     </button>
                   </form>
 
