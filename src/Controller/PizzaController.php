@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Document\Category;
 use App\Document\Promotion;
 use App\Document\Pizza;
+use App\Document\Setting;
 use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
 use App\Repository\AdditionRepository;
@@ -136,25 +137,95 @@ final class PizzaController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, DocumentManager $dm): Response {
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
-        $pizza = new Pizza();
+        
+        // Get settings for price calculation
+        $settings = $this->documentManager->getRepository(Setting::class)->findLastOrCreate();
+        $priceSettings = [
+            'calculationType' => $settings->getPizzaPriceCalculationType(),
+            'smallModifier' => $settings->getSmallSizeModifier(),
+            'largeModifier' => $settings->getLargeSizeModifier(),
+        ];
+        
+        // Handle JSON request from Vue component
+        if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
+            try {
+                // Get JSON data from request
+                $data = json_decode($request->getContent(), true);
+                
+                if (!$data) {
+                    return $this->json(['error' => 'Invalid JSON data'], 400);
+                }
+                
+                // Input validation
+                $validationErrors = [];
+                
+                // Validate name
+                if (!isset($data['name']) || trim($data['name']) === '') {
+                    $validationErrors['name'] = 'Pizza name is required';
+                }
+                
+                // Validate price - this is critical for medium pizza
+                if (!isset($data['price']) || (float)$data['price'] <= 0) {
+                    $validationErrors['price'] = 'Medium pizza price must be greater than 0';
+                }
+                
+                // If validation fails, return error response
+                if (!empty($validationErrors)) {
+                    return $this->json([
+                        'error' => 'Validation failed',
+                        'validationErrors' => $validationErrors
+                    ], 400);
+                }
+                
+                // Create new pizza
+                $pizza = new Pizza();
+                $pizza->setName($data['name']);
+                $pizza->setPrice((float)$data['price']);
+                
+                // Handle price fields - set to null if empty or zero
+                if (isset($data['priceSmall'])) {
+                    if ($data['priceSmall'] === 0) {
+                        $pizza->setPriceSmall(null);
+                    } else {
+                        $pizza->setPriceSmall((float)$data['priceSmall']);
+                    }
+                }
 
-        $form = $this->createForm(PizzaType::class, $pizza, [
-            'categories' => $categories
-        ]);
-        $form->handleRequest($request);
+                $data = $this->getData($data, $pizza);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $dm->persist($pizza);
-            $dm->flush();
-
-            $this->cache->delete('pizzas_data');
-
-            $this->addFlash('success', 'Pizza created successfully!');
-            return $this->redirectToRoute('pizza_index');
+                // Handle category
+                if (!empty($data['category'])) {
+                    $category = $this->documentManager->getRepository(Category::class)->find($data['category']);
+                    if ($category) {
+                        $pizza->setCategory($category);
+                    }
+                }
+                
+                // Save to database
+                $dm->persist($pizza);
+                $dm->flush();
+                
+                $this->cache->delete('pizzas_data');
+                
+                return $this->json(['success' => true, 'message' => 'Pizza created successfully!']);
+                
+            } catch (\Exception $e) {
+                return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+            }
         }
-
+        
+        // Format categories for Vue component
+        $categoriesForVue = array_map(function($category) {
+            return [
+                'id' => $category->getId(),
+                'name' => $category->getName()
+            ];
+        }, $categories);
+        
+        // For regular GET requests, render the template with Vue component
         return $this->render('pizza/create.html.twig', [
-            'form' => $form->createView()
+            'categories' => $categoriesForVue,
+            'priceSettings' => $priceSettings
         ]);
     }
 
@@ -233,30 +304,15 @@ final class PizzaController extends AbstractController
                 
                 // Handle price fields - set to null if empty or zero
                 if (isset($data['priceSmall'])) {
-                    if ($data['priceSmall'] === null || $data['priceSmall'] === 0) {
+                    if ($data['priceSmall'] === 0) {
                         $pizza->setPriceSmall(null);
                     } else {
                         $pizza->setPriceSmall((float)$data['priceSmall']);
                     }
                 }
-                
-                if (isset($data['priceLarge'])) {
-                    if ($data['priceLarge'] === null || $data['priceLarge'] === 0) {
-                        $pizza->setPriceLarge(null);
-                    } else {
-                        $pizza->setPriceLarge((float)$data['priceLarge']);
-                    }
-                }
-                
-                // Handle toppings array
-                if (isset($data['toppings']) && is_array($data['toppings'])) {
-                    // Filter out empty toppings
-                    $toppings = array_filter($data['toppings'], function($item) {
-                        return !empty($item);
-                    });
-                    $pizza->setToppings(array_values($toppings)); // Re-index array
-                }
-                
+
+                $data = $this->getData($data, $pizza);
+
                 // Handle category
                 if (isset($data['category'])) {
                     $categoryId = $data['category'];
@@ -401,5 +457,31 @@ final class PizzaController extends AbstractController
 
         $additionData[] = $additionItem;
         return $additionData;
+    }
+
+    /**
+     * @param mixed $data
+     * @param Pizza $pizza
+     * @return mixed
+     */
+    public function getData(mixed $data, Pizza $pizza): mixed
+    {
+        if (isset($data['priceLarge'])) {
+            if ($data['priceLarge'] === null || $data['priceLarge'] === 0) {
+                $pizza->setPriceLarge(null);
+            } else {
+                $pizza->setPriceLarge((float)$data['priceLarge']);
+            }
+        }
+
+        // Handle toppings array
+        if (isset($data['toppings']) && is_array($data['toppings'])) {
+            // Filter out empty toppings
+            $toppings = array_filter($data['toppings'], function ($item) {
+                return !empty($item);
+            });
+            $pizza->setToppings(array_values($toppings)); // Re-index array
+        }
+        return $data;
     }
 }
