@@ -35,21 +35,30 @@ class CartController extends AbstractController
     }
 
     /**
+     * @param Request $request
      * @return Response
      * @throws InvalidArgumentException
      */
     #[Route('/cart', name: 'cart_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $cart = $this->cache->get('user_cart', function () {
             return [];
         });
-
+    
         $total = 0;
-
+    
         foreach ($cart as $item) {
             $itemTotal = $item['price'] * $item['quantity'];
             $total += $itemTotal;
+        }
+        
+        // If it's an AJAX request, return JSON
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse([
+                'items' => $cart,
+                'total' => $total
+            ]);
         }
 
         return $this->render('cart/index.html.twig', [
@@ -172,34 +181,65 @@ class CartController extends AbstractController
     /**
      * @param string $itemType
      * @param string $itemId
+     * @param Request $request
      * @return Response
      */
     #[Route('/cart/remove/{itemType}/{itemId}', name: 'cart_remove', methods: ['POST'])]
-    public function remove(string $itemType, string $itemId): Response
+    public function remove(string $itemType, string $itemId, Request $request): Response
     {
         $cart = $this->getCartFromCache();
-
+    
         foreach ($cart as $key => $cartItem) {
             if ($cartItem['type'] === $itemType && $cartItem['item_id'] === $itemId) {
                 unset($cart[$key]);
                 break;
             }
         }
-
+    
         $this->saveCartToCache($cart);
-        return $this->redirectToRoute('cart_index');
+        
+        // Check if it's an AJAX request
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['status' => 'success']);
+        }
+        
+        return $this->redirectToRoute('pizza_index');
     }
-
+    
     /**
-     * @return JsonResponse
-     * @throws InvalidArgumentException
+     * @param string $itemType
+     * @param string $itemId
+     * @param Request $request
+     * @return Response
      */
-    #[Route('/cart/clear', name: 'cart_clear', methods: ['POST'])]
-    public function clearCart(): JsonResponse
+    #[Route('/cart/update/{itemType}/{itemId}', name: 'cart_update', methods: ['POST'])]
+    public function update(string $itemType, string $itemId, Request $request): Response
     {
-        $this->cache->delete('user_cart');
-
-        return new JsonResponse(['status' => 'success']);
+        $cart = $this->getCartFromCache();
+        $action = $request->request->get('action', '');
+        
+        foreach ($cart as $key => $cartItem) {
+            if ($cartItem['type'] === $itemType && $cartItem['item_id'] === $itemId) {
+                if ($action === 'increase') {
+                    $cart[$key]['quantity']++;
+                } elseif ($action === 'decrease' && $cartItem['quantity'] > 1) {
+                    $cart[$key]['quantity']--;
+                } elseif ($action === 'decrease' && $cartItem['quantity'] <= 1) {
+                    // If the quantity goes below 1, remove the item
+                    unset($cart[$key]);
+                }
+                break;
+            }
+        }
+        
+        $this->saveCartToCache($cart);
+        
+        // Check if it's an AJAX request
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['status' => 'success']);
+        }
+        
+        return $this->redirectToRoute('pizza_index');
     }
 
     /**

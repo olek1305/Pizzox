@@ -144,7 +144,9 @@
     "summary": "Order Summary",
     "items_count": "Item Count",
     "subtotal": "Subtotal",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "email_optional": "Optional",
+    "order_now": "Order Now"
   },
   "settings": {
     "title": "Settings",

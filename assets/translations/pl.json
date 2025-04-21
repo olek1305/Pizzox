@@ -144,7 +144,9 @@
     "summary": "Podsumowanie zamówienia",
     "items_count": "Liczba pozycji",
     "subtotal": "Suma częściowa",
-    "checkout": "Przejdź do kasy"
+    "checkout": "Przejdź do kasy",
+    "email_optional": "Opcjonalnie",
+    "order_now": "Zamów teraz"
   },
   "settings": {
     "title": "Ustawienia",
