@@ -77,8 +77,9 @@ class CartController extends AbstractController
         }
 
         $size = $request->request->get('size', 'medium');
-
-        // Check if this pizza with this size already exists in cart
+        $quantity = max(1, (int)$request->request->get('quantity', 1));
+    
+        // Check if this pizza with this size already exists in the cart
         $existingItem = null;
         foreach ($cart as $key => $item) {
             if ($item['type'] === 'pizza' &&
@@ -88,18 +89,18 @@ class CartController extends AbstractController
                 break;
             }
         }
-
+    
         $priceInfo = $this->priceCalculator->getPizzaPriceInfo($pizza, $size);
-
+    
         if ($existingItem !== null) {
-            $cart[$existingItem]['quantity']++;
+            $cart[$existingItem]['quantity'] += $quantity;
         } else {
             $cartItem = [
                 'type' => 'pizza',
                 'item_id' => $pizzaId,
                 'item_name' => $pizza->getName(),
                 'price' => $priceInfo['price'],
-                'quantity' => 1,
+                'quantity' => $quantity,
                 'size' => $size
             ];
 
@@ -134,7 +135,7 @@ class CartController extends AbstractController
 
         $quantity = (int)$request->get('quantity', 1);
 
-        // Check if this addition already exists in cart
+        // Check if this addition already exists in the cart
         $existingItem = null;
         foreach ($cart as $key => $item) {
             if ($item['type'] === 'addition' && $item['item_id'] === $additionId) {

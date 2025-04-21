@@ -34,48 +34,34 @@
           <div class="grid grid-cols-1 gap-6">
             <!-- List of pizzas in this category -->
             <div v-for="pizza in getPizzasByCategory(category.id)" :key="pizza.id"
-                 class="flex flex-col md:flex-row justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-
-              <div class="flex-1">
-                <div class="flex justify-between mb-1">
-                  <h3 class="text-lg font-semibold">{{ pizza.name }}</h3>
-                  <div class="text-right font-medium">
-                    <div v-if="pizza.coupon" class="flex flex-col">
-                      <span class="text-gray-500">{{ pizza.price }} {{ $currency }}</span>
+                 class="relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                 @click="openPizzaModal(pizza)">
+          
+              <div class="flex flex-col md:flex-row justify-between">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold mb-1">{{ pizza.name }}</h3>
+                  <p class="text-sm text-gray-600 mb-2">{{ formatToppings(pizza.toppings) }}</p>
+                  
+                  <!-- Price display -->
+                  <div class="font-medium mb-3">
+                    <div v-if="pizza.coupon">
+                      <span class="text-gray-500 line-through mr-2">{{ formatPrice(pizza.price) }} {{ $currency }}</span>
                       <span v-if="pizza.coupon.type === 'fixed'" class="text-red-600 font-semibold">
-                        {{ pizza.price - pizza.coupon.discount }} {{ $currency }}
+                        {{ formatPrice(pizza.price - pizza.coupon.discount) }} {{ $currency }}
                       </span>
                       <span v-else class="text-red-600 font-semibold">
-                        {{ pizza.price * (1 - pizza.coupon.discount / 100) }} {{ $currency }}
+                        {{ formatPrice(pizza.price * (1 - pizza.coupon.discount / 100)) }} {{ $currency }}
                       </span>
                     </div>
-                    <template v-else>
-                      <span>od {{ formatPrice(getLowestPrice(pizza)) }} {{ $currency }}</span>
-                    </template>
+                    <span v-else>od {{ formatPrice(getLowestPrice(pizza)) }} {{ $currency }}</span>
                   </div>
                 </div>
-
-                <p class="text-sm text-gray-600 mb-3">{{ formatToppings(pizza.toppings) }}</p>
-              </div>
-
-              <div class="flex items-center mt-2 md:mt-0">
-                <form :action="`/cart/add/pizza/${pizza.id}`" method="POST" class="flex space-x-2">
-                  <button v-if="pizza.priceSmall" type="submit" name="size" value="small"
-                          class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
-                    S
-                  </button>
-                  <button type="submit" name="size" value="medium"
-                          class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
-                    M
-                  </button>
-                  <button v-if="pizza.priceLarge" type="submit" name="size" value="large"
-                          class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-700">
-                    L
-                  </button>
-                </form>
-
-                <div v-if="isAdmin" class="ml-4 flex space-x-2">
-                  <a :href="`/pizza/${pizza.id}/edit`" class="text-green-500 hover:underline">{{ $t('action.edit') }}</a>
+          
+                <!-- Admin controls -->
+                <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
+                  <a :href="`/pizza/${pizza.id}/edit`" class="text-green-500 hover:underline mr-3">
+                    {{ $t('action.edit') }}
+                  </a>
                   <form :action="`/pizza/${pizza.id}/delete`" method="POST" class="inline"
                         @submit="onDelete($event, pizza.name)">
                     <button type="submit" class="text-red-500 hover:underline">{{ $t('action.delete') }}</button>
@@ -101,39 +87,30 @@
             <div class="grid grid-cols-1 gap-6">
               <!-- List of additions in this category -->
               <div v-for="addition in getAdditionsByCategory(category.id)" :key="addition.id"
-                   class="flex flex-col md:flex-row justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                <div class="flex-1">
-                  <div class="flex justify-between mb-1">
-                    <h3 class="text-lg font-semibold">{{ addition.name }}</h3>
-                    <div class="text-right font-medium">
-                      <div v-if="addition.coupon" class="flex flex-col">
-                        <span class="text-gray-500">{{ addition.price }} {{ $currency }}</span>
+                   class="relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                   @click="openAdditionModal(addition)">
+                <div class="flex flex-col md:flex-row justify-between">
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold mb-1">{{ addition.name }}</h3>
+                    
+                    <!-- Price display -->
+                    <div class="font-medium mb-3">
+                      <div v-if="addition.coupon">
+                        <span class="text-gray-500 line-through mr-2">{{ formatPrice(addition.price) }} {{ $currency }}</span>
                         <span v-if="addition.coupon.type === 'fixed'" class="text-red-600 font-semibold">
-                            {{ addition.price - addition.coupon.discount }} {{ $currency }}
-                          </span>
+                          {{ formatPrice(addition.price - addition.coupon.discount) }} {{ $currency }}
+                        </span>
                         <span v-else class="text-red-600 font-semibold">
-                            {{ addition.price * (1 - addition.coupon.discount / 100) }} {{ $currency }}
-                          </span>
+                          {{ formatPrice(addition.price * (1 - addition.coupon.discount / 100)) }} {{ $currency }}
+                        </span>
                       </div>
-                      <template v-else>
-                        <span>od {{ formatPrice(getLowestPrice(addition)) }} {{ $currency }}</span>
-                      </template>
+                      <span v-else>{{ formatPrice(addition.price) }} {{ $currency }}</span>
                     </div>
                   </div>
-                </div>
-
-                <div class="flex items-center mt-2 md:mt-0">
-                  <form :action="`/cart/add/addition/${addition.id}`" method="POST" class="flex space-x-2">
-                    <label class="mr-2">
-                      <input type="number" name="quantity" value="1" min="1" class="w-12 border rounded-md px-2 text-center" />
-                    </label>
-                    <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-700">
-                      {{ $t('action.add') }}
-                    </button>
-                  </form>
-
-                  <div v-if="isAdmin" class="ml-4 flex space-x-2">
-                    <a :href="`/addition/${addition.id}/edit`" class="text-blue-500 hover:text-blue-700">
+            
+                  <!-- Admin controls -->
+                  <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
+                    <a :href="`/addition/${addition.id}/edit`" class="text-blue-500 hover:text-blue-700 mr-3">
                       {{ $t('action.edit') }}
                     </a>
                     <form :action="`/addition/${addition.id}/delete`" method="POST" class="inline"
@@ -148,14 +125,26 @@
         </div>
       </div>
     </div>
+    
     <!-- Cart section -->
     <Cart />
+    
+    <!-- Size selection modal -->
+    <SizeModal 
+      :show="showModal"
+      :item="selectedItem"
+      :item-type="selectedItemType"
+      :currency="$currency"
+      @close="closeModal"
+      @add-to-cart="handleAddToCart"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import Cart from "../components/Cart.vue";
+import SizeModal from "../components/SizeModal.vue";
 
 const props = defineProps({
   initialPizzas: {
@@ -178,6 +167,11 @@ const createPizzaPath = ref('/pizza/create');
 const createAdditionPath = ref('/addition/create');
 const settingsPath = ref('/admin/settings');
 const paymentHistoryPath = ref('/payment/history');
+
+// Modal state
+const showModal = ref(false);
+const selectedItem = ref(null);
+const selectedItemType = ref('pizza');
 
 const isAdmin = computed(() => {
   return props.userRoles.includes('ROLE_ADMIN');
@@ -240,6 +234,81 @@ const getLowestPrice = (pizza) => {
   if (pizza.priceLarge) prices.push(parseFloat(pizza.priceLarge));
 
   return prices.length > 0 ? Math.min(...prices) : 0;
+};
+
+// Modal functions
+const openPizzaModal = (pizza) => {
+  selectedItem.value = pizza;
+  selectedItemType.value = 'pizza';
+  showModal.value = true;
+};
+
+const openAdditionModal = (addition) => {
+  selectedItem.value = addition;
+  selectedItemType.value = 'addition';
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+  selectedItem.value = null;
+};
+
+const handleAddToCart = (data) => {
+  const { id, type, quantity, size, formData } = data;
+  const url = type === 'pizza' 
+    ? `/cart/add/pizza/${id}` 
+    : `/cart/add/addition/${id}`;
+  
+  // Create a form element and submit it
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = url;
+  
+  // Always explicitly add quantity (default to 1 if missing)
+  const quantityInput = document.createElement('input');
+  quantityInput.type = 'hidden';
+  quantityInput.name = 'quantity';
+  quantityInput.value = String(quantity || 1);
+  form.appendChild(quantityInput);
+  
+  // For pizza, add the size
+  if (type === 'pizza' && size) {
+    const sizeInput = document.createElement('input');
+    sizeInput.type = 'hidden';
+    sizeInput.name = 'size';
+    sizeInput.value = String(size);
+    form.appendChild(sizeInput);
+  }
+  
+  // Append any additional form data
+  for (const [key, value] of formData.entries()) {
+    // Skip if we already added these inputs directly
+    if ((key === 'quantity') || (key === 'size' && size)) {
+      continue;
+    }
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  }
+  
+  // For debugging, log the form data
+  console.log('Form data:', {
+    url,
+    type,
+    id,
+    quantity: quantity || 1,
+    size
+  });
+  
+  document.body.appendChild(form);
+  form.submit();
+  
+  // Close the modal
+  closeModal();
 };
 
 const onDelete = (event, pizzaName) => {

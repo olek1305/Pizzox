@@ -51,7 +51,13 @@
       "placeholder": "Dodaj składnik (naciśnij spację, aby dodać)",
       "help_text": "Wpisz składnik i naciśnij spację, aby natychmiast go dodać, lub kliknij przycisk Dodaj.",
       "must_be_greater_than_zero": "Musi być większa niż 0"
-    }
+    },
+    "size_selector": "Wybierz rozmiar",
+    "size_small": "Mały",
+    "size_medium": "Średni",
+    "size_large": "Duży",
+    "choose_size": "Wybierz rozmiar",
+    "no_toppings": "Brak składników"
   },
   "action": {
     "label": "Akcja",
@@ -60,7 +66,8 @@
     "save": "Zapisz",
     "delete": "Usuń",
     "logout": "Wyloguj się",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "cancel": "Anuluj"
   },
   "order": {
     "status": {
@@ -125,7 +132,8 @@
     "price": "Cena",
     "action": "Akcja",
     "edit": "Edytuj dodatek",
-    "category": "Kategoria"
+    "category": "Kategoria",
+    "quantity_selector": "Wybierz ilość"
   },
   "cart": {
     "title": "Twój Koszyk",

@@ -51,7 +51,13 @@
       "placeholder": "Add a topping (press space to add)",
       "help_text": "Type a topping and press space to add it instantly, or click the Add button.",
       "must_be_greater_than_zero": "Must be greater than 0"
-    }
+    },
+    "size_selector": "Select Size",
+    "size_small": "Small",
+    "size_medium": "Medium",
+    "size_large": "Large",
+    "choose_size": "Choose Size",
+    "no_toppings": "No toppings"
   },
   "action": {
     "label": "Action",
@@ -60,7 +66,8 @@
     "save": "Save",
     "delete": "Delete",
     "logout": "Logout",
-    "add": "Add"
+    "add": "Add",
+    "cancel": "Cancel"
   },
   "order": {
     "status": {
@@ -125,7 +132,8 @@
     "price": "Price",
     "action": "action",
     "edit": "Edit an addition",
-    "category": "Category"
+    "category": "Category",
+    "quantity_selector": "Select Quantity"
   },
   "cart": {
     "title": "Your Cart",
