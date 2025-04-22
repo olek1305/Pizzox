@@ -134,7 +134,6 @@
       :show="showModal"
       :item="selectedItem"
       :item-type="selectedItemType"
-      :currency="$currency"
       @close="closeModal"
       @add-to-cart="handleAddToCart"
     />

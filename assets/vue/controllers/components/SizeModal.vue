@@ -209,11 +209,7 @@ const props = defineProps({
     type: String,
     default: 'pizza',
     validator: (value) => ['pizza', 'addition'].includes(value),
-  },
-  currency: {
-    type: String,
-    default: 'zł',
-  },
+  }
 });
 
 const emit = defineEmits(['close', 'add-to-cart']);
@@ -313,9 +309,6 @@ const addToCartWithQuantity = () => {
 
   if (props.itemType === 'pizza') {
     const formData = new FormData();
-
-    // Don't append these to formData, but pass them directly as properties
-    // This ensures they won't be lost in the FormData conversion
 
     emit('add-to-cart', {
       id: props.item.id,

@@ -11,6 +11,7 @@ use App\Repository\PizzaRepository;
 use App\Repository\AdditionRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,7 +62,9 @@ final class PizzaController extends AbstractController
             // Create a map for pizzas
             $pizzaPromotionMap = [];
             foreach ($pizzaPromotions as $promotion) {
-                if ($promotion->isValid()) {
+                // Check if the promotion is valid based on the date
+                $now = new \DateTime();
+                if ($promotion->isValid() && $promotion->getExpiresAt() > $now) {
                     $pizzaPromotionMap[$promotion->getItemId()] = $promotion;
                 }
             }
@@ -137,7 +140,7 @@ final class PizzaController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, DocumentManager $dm): Response {
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
-        
+
         // Get settings for price calculation
         $settings = $this->documentManager->getRepository(Setting::class)->findLastOrCreate();
         $priceSettings = [
@@ -177,7 +180,7 @@ final class PizzaController extends AbstractController
                     ], 400);
                 }
                 
-                // Create new pizza
+                // Create a new pizza
                 $pizza = new Pizza();
                 $pizza->setName($data['name']);
                 $pizza->setPrice((float)$data['price']);
@@ -209,7 +212,7 @@ final class PizzaController extends AbstractController
                 
                 return $this->json(['success' => true, 'message' => 'Pizza created successfully!']);
                 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
             }
         }
@@ -334,7 +337,7 @@ final class PizzaController extends AbstractController
                 
                 return $this->json(['success' => true, 'message' => 'Pizza updated successfully!']);
                 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
             }
         }
@@ -393,7 +396,6 @@ final class PizzaController extends AbstractController
     }
 
     /**
-     * @param Request $request
      * @param string $id
      * @return Response
      * @throws InvalidArgumentException
@@ -402,7 +404,7 @@ final class PizzaController extends AbstractController
      */
     #[Route('/pizza/{id}/delete', name: 'pizza_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function delete(Request $request, string $id): Response
+    public function delete(string $id): Response
     {
         $pizza = $this->pizzaRepository->findById($id);
 
@@ -410,7 +412,7 @@ final class PizzaController extends AbstractController
             throw $this->createNotFoundException('Pizza not found');
         }
 
-        // Admin role is already checked by IsGranted attribute
+        // Admin role is already checked by the IsGranted attribute
         $this->documentManager->remove($pizza);
         $this->documentManager->flush();
 

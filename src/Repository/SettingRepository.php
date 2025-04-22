@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Document\Setting;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Throwable;
 
@@ -28,22 +27,5 @@ class SettingRepository extends DocumentRepository
         }
 
         return $setting;
-    }
-
-    /**
-     * @return void
-     * @throws MongoDBException
-     * @throws Throwable
-     */
-    public function cleanupDuplicates(): void
-    {
-        $latestSetting = $this->findLastOrCreate();
-
-        // Remove all settings except the latest one
-        $this->createQueryBuilder()
-            ->remove()
-            ->field('_id')->notEqual($latestSetting->getId())
-            ->getQuery()
-            ->execute();
     }
 }

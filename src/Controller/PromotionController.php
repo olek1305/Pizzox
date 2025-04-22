@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Cache\CacheInterface;
 use Throwable;
 
 #[IsGranted('ROLE_ADMIN')]
@@ -22,9 +23,11 @@ class PromotionController extends AbstractController
 {
     /**
      * @param DocumentManager $documentManager
+     * @param CacheInterface $cache
      */
     public function __construct(
-        private readonly DocumentManager $documentManager
+        private readonly DocumentManager $documentManager,
+        private readonly CacheInterface $cache
     ) {
         //
     }
@@ -79,6 +82,7 @@ class PromotionController extends AbstractController
 
         $expiresAt = new DateTime();
         $expiresAt->modify("+$expiryDays days");
+        $expiresAt->setTime(0, 0);
 
         $code = uniqid($type . '_', true);
         $existingPromotion = $this->documentManager->getRepository(Promotion::class)->findOneBy(['code' => $code]);
@@ -103,6 +107,8 @@ class PromotionController extends AbstractController
         $this->documentManager->flush();
 
         $this->addFlash('success', 'Promotion created successfully! Valid until: ' . $expiresAt->format('Y-m-d'));
+
+        $this->cache->delete('pizzas_data');
 
         return $this->redirectToRoute($type . '_edit', ['id' => $itemId]);
     }

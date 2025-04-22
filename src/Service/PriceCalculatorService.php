@@ -69,13 +69,23 @@ readonly class PriceCalculatorService
         }
 
         // Check if there's an active promotion for this pizza
-        $promotion = $this->documentManager->getRepository(Promotion::class)->findOneBy([
-            'itemType' => 'pizza',
-            'itemId' => $pizza->getId(),
-            'active' => true
-        ]);
+        $promotion = $this->documentManager->getRepository(Promotion::class)
+            ->findBy(
+                [
+                    'itemType' => 'pizza',
+                    'itemId' => $pizza->getId(),
+                    'active' => true
+                ],
+                [
+                    'expiresAt' => 'DESC'
+                ]
+            );
 
-        $originalPrice = number_format((float)$price, 2, '.', '');
+        if ($promotion) {
+            $promotion = $promotion[0];
+        }
+
+        $originalPrice = (float)$price;
         $discountedPrice = $originalPrice;
 
         if ($promotion && $promotion->isValid()) {
@@ -88,12 +98,11 @@ readonly class PriceCalculatorService
                     $discountedPrice = 0;
                 }
             }
-            $discountedPrice = number_format((float)$discountedPrice, 2, '.', '');
         }
 
         return [
-            'original_price' => (float)$originalPrice,
-            'price' => (float)$discountedPrice
+            'original_price' => $originalPrice,
+            'price' => $discountedPrice
         ];
     }
 

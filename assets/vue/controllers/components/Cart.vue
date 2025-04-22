@@ -42,6 +42,9 @@
                   <span class="text-red-600 font-bold">
                     {{ calculatePrice(item.price, item.quantity) }} {{ $currency }}
                   </span>
+                  <span v-if="item.coupon" class="text-xs text-gray-600">
+                    {{ item.coupon.type === 'fixed' ? `-${item.coupon.discount} ${$currency}` : `-${item.coupon.discount}%` }}
+                  </span>
               </div>
             </template>
             <template v-else>
@@ -219,7 +222,7 @@ const calculatePrice = (price, quantity) => {
   if (typeof price === 'object' && price !== null && 'price' in price) {
     return (price.price * quantity).toFixed(2);
   }
-  return (price * quantity).toFixed(2);
+  return ((parseFloat(price) || 0) * quantity).toFixed(2);
 };
 
 // Calculate total cost
@@ -227,14 +230,14 @@ const totalCost = computed(() => {
   if (!cartItems.value || cartItems.value.length === 0) return '0.00';
 
   return cartItems.value.reduce((total, item) => {
-    const itemPrice = typeof item.price === 'object' && item.price !== null && 'price' in item.price
-        ? item.price.price
-        : item.price;
+    let itemPrice;
+    // Simple parse the price directly - this is already the discounted price from the server
+    itemPrice = parseFloat(item.price) || 0;
     return total + (itemPrice * item.quantity);
   }, 0).toFixed(2);
 });
 
-// Submit order to the server
+// Submit an order to the server
 const submitOrder = () => {
   const form = document.createElement('form');
   form.method = 'POST';
@@ -255,7 +258,7 @@ const submitOrder = () => {
   form.submit();
 };
 
-// Remove item from cart asynchronously
+// Remove item from the cart asynchronously
 const removeItem = async (itemType, itemId) => {
   try {
     loading.value = true;
@@ -271,9 +274,9 @@ const removeItem = async (itemType, itemId) => {
         'X-Requested-With': 'XMLHttpRequest'
       }
     });
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to remove item: ${response.status}`);
+      console.error(`Failed to remove item: ${response.status}`);
     }
     
     // Remove the item from the local cart data
@@ -300,7 +303,7 @@ const updateQuantity = async (itemType, itemId, action) => {
   try {
     loading.value = true;
     
-    // Create FormData object for the POST request
+    // Create a FormData object for the POST request
     const formData = new FormData();
     formData.append('action', action);
     
@@ -314,7 +317,7 @@ const updateQuantity = async (itemType, itemId, action) => {
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to update quantity: ${response.status}`);
+      console.error(`Failed to update quantity: ${response.status}`);
     }
     
     // Update local cart data
@@ -328,8 +331,8 @@ const updateQuantity = async (itemType, itemId, action) => {
       } else if (action === 'decrease' && cartItems.value[itemIndex].quantity > 1) {
         cartItems.value[itemIndex].quantity -= 1;
       } else if (action === 'decrease' && cartItems.value[itemIndex].quantity <= 1) {
-        // If quantity would go below 1, remove the item instead
-        removeItem(itemType, itemId);
+        // If the quantity goes below 1, remove the item instead
+        await removeItem(itemType, itemId);
         return;
       }
     }
@@ -347,15 +350,6 @@ const updateQuantity = async (itemType, itemId, action) => {
 // Refresh cart data from the server
 const refreshCart = async () => {
   try {
-    // In a real app, you might want to fetch updated cart data from the server
-    // For now, we're just using the window.cartData which was already manipulated locally
-    
-    // This would be the code to fetch from server if we had an endpoint:
-    // const response = await fetch('/api/cart');
-    // const data = await response.json();
-    // cartItems.value = data.items;
-    
-    // For now we'll just use existing window data that should be updated by the backend
     if (window.cartData) {
       cartItems.value = window.cartData;
     }

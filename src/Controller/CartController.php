@@ -37,15 +37,11 @@ class CartController extends AbstractController
     /**
      * @param Request $request
      * @return Response
-     * @throws InvalidArgumentException
      */
     #[Route('/cart', name: 'cart_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $cart = $this->cache->get('user_cart', function () {
-            return [];
-        });
-    
+        $cart = $this->getCartFromCache();
         $total = 0;
     
         foreach ($cart as $item) {
