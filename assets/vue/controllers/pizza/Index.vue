@@ -165,7 +165,7 @@ const additions = ref([...props.initialAdditions]);
 const createPizzaPath = ref('/pizza/create');
 const createAdditionPath = ref('/addition/create');
 const settingsPath = ref('/admin/settings');
-const paymentHistoryPath = ref('/payment/history');
+const paymentHistoryPath = ref('/admin/payment-history');
 
 // Modal state
 const showModal = ref(false);
