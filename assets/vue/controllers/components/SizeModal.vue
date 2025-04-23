@@ -1,7 +1,7 @@
 <template>
   <transition name="modal-fade">
     <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="absolute inset-0 bg-black bg-opacity-50" @click="closeModal"></div>
+      <div class="absolute inset-0 bg-black/60" @click="closeModal"></div>
       <transition name="modal-slide">
         <div v-if="show" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 z-10">
           <div class="flex justify-between items-center mb-4">
@@ -341,3 +341,13 @@ const formatToppings = (toppings) => {
   return toppings;
 };
 </script>
+
+<style>
+.modal-fade-enter-active, .modal-fade-leave-active {
+  transition: opacity 0.4s ease, filter 0.3s ease;
+}
+.modal-fade-enter-from, .modal-fade-leave-to {
+  opacity: 0;
+  filter: blur(6px);
+}
+</style>
