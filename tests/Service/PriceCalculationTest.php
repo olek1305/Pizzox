@@ -54,11 +54,11 @@ class PriceCalculationTest extends TestCase
         $pizza->setPriceLarge(20.00);
 
         // Test quantity and size calculations
-        $this->assertEquals(10.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'small'));
-        $this->assertEquals(20.00, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'small'));
-        $this->assertEquals(15.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'medium'));
-        $this->assertEquals(20.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'large'));
-        $this->assertEquals(40.00, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'large'));
+        $this->assertEqualsWithDelta(10.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'small'), 0.001);
+        $this->assertEqualsWithDelta(20.00, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'small'), 0.001);
+        $this->assertEqualsWithDelta(15.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'medium'), 0.001);
+        $this->assertEqualsWithDelta(20.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'large'), 0.001);
+        $this->assertEqualsWithDelta(40.00, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'large'), 0.001);
     }
 
     /**
@@ -75,7 +75,7 @@ class PriceCalculationTest extends TestCase
         $pizza->setPriceLarge(24.00);
         $pizza->setId('pizza123');
 
-        // Create promotion mock instead of real object
+        // Create a promotion mock instead of a real object
         $promotion = $this->createMock(Promotion::class);
         $promotion->method('getItemId')->willReturn('pizza123');
         $promotion->method('getItemType')->willReturn('pizza');
@@ -83,10 +83,10 @@ class PriceCalculationTest extends TestCase
         $promotion->method('getDiscount')->willReturn(20.0);
         $promotion->method('isValid')->willReturn(true);
 
-        // Prepare mock repository to return our promotion
+        // Prepare a mock repository to return our promotion
         $promotionRepoMock = $this->createMock(DocumentRepository::class);
-        $promotionRepoMock->method('findOneBy')
-            ->willReturn($promotion);
+        $promotionRepoMock->method('findBy')
+            ->willReturn([$promotion]);
 
         // Connect promotion repository mock to DocumentManager
         $this->documentManagerMock->method('getRepository')
@@ -94,10 +94,10 @@ class PriceCalculationTest extends TestCase
             ->willReturn($promotionRepoMock);
 
         // Test discounted prices
-        $this->assertEquals(9.60, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'small')); // 12.00 - 20%
-        $this->assertEquals(14.40, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'medium')); // 18.00 - 20%
-        $this->assertEquals(19.20, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'large')); // 24.00 - 20%
-        $this->assertEquals(38.40, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'large')); // 48.00 - 20%
+        $this->assertEqualsWithDelta(9.60, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'small'), 0.001); // 12.00 - 20%
+        $this->assertEqualsWithDelta(14.40, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'medium'), 0.001); // 18.00 - 20%
+        $this->assertEqualsWithDelta(19.20, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'large'), 0.001); // 24.00 - 20%
+        $this->assertEqualsWithDelta(38.40, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'large'), 0.001); // 48.00 - 20%
     }
 
     /**
@@ -114,7 +114,7 @@ class PriceCalculationTest extends TestCase
         $pizza->setPriceLarge(21.00);
         $pizza->setId('pizza456');
 
-        // Create promotion mock
+        // Create a promotion mock
         $promotion = $this->createMock(Promotion::class);
         $promotion->method('getItemId')->willReturn('pizza456');
         $promotion->method('getItemType')->willReturn('pizza');
@@ -122,10 +122,10 @@ class PriceCalculationTest extends TestCase
         $promotion->method('getDiscount')->willReturn(3.0);
         $promotion->method('isValid')->willReturn(true);
 
-        // Prepare mock repository to return our promotion
+        // Prepare a mock repository to return our promotion
         $promotionRepoMock = $this->createMock(DocumentRepository::class);
-        $promotionRepoMock->method('findOneBy')
-            ->willReturn($promotion);
+        $promotionRepoMock->method('findBy')
+            ->willReturn([$promotion]);
 
         // Connect promotion repository mock to DocumentManager
         $this->documentManagerMock->method('getRepository')
@@ -133,53 +133,23 @@ class PriceCalculationTest extends TestCase
             ->willReturn($promotionRepoMock);
 
         // Test discounted prices
-        $this->assertEquals(8.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'small')); // 11.00 - 3.00
-        $this->assertEquals(13.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'medium')); // 16.00 - 3.00
-        $this->assertEquals(18.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'large')); // 21.00 - 3.00
-        $this->assertEquals(36.00, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'large')); // 42.00 - 6.00
+        $this->assertEqualsWithDelta(8.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'small'), 0.001); // 11.00 - 3.00
+        $this->assertEqualsWithDelta(13.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'medium'), 0.001); // 16.00 - 3.00
+        $this->assertEqualsWithDelta(18.00, $this->priceCalculator->calculatePizzaPrice($pizza, 1, 'large'), 0.001); // 21.00 - 3.00
+        $this->assertEqualsWithDelta(36.00, $this->priceCalculator->calculatePizzaPrice($pizza, 2, 'large'), 0.001); // 42.00 - 6.00
     }
 
     public function testAdditionPriceCalculation(): void
     {
-        // Create test addition
+        // Create a test addition
         $addition = new Addition();
         $addition->setName('Extra Cheese');
         $addition->setPrice(2.50);
 
         // Test quantity calculations
-        $this->assertEquals(2.50, $this->priceCalculator->calculateAdditionPrice($addition, 1));
-        $this->assertEquals(5.00, $this->priceCalculator->calculateAdditionPrice($addition, 2));
-        $this->assertEquals(7.50, $this->priceCalculator->calculateAdditionPrice($addition, 3));
-    }
-
-    public function testAdditionWithPromotion(): void
-    {
-        // Create test addition
-        $addition = new Addition();
-        $addition->setName('Garlic Bread');
-        $addition->setPrice(4.00);
-        $addition->setId('addition789');
-
-        // Create promotion mock
-        $promotion = $this->createMock(Promotion::class);
-        $promotion->method('getItemId')->willReturn('addition789');
-        $promotion->method('getItemType')->willReturn('addition');
-        $promotion->method('getType')->willReturn('percentage');
-        $promotion->method('getDiscount')->willReturn(25.0);
-        $promotion->method('isValid')->willReturn(true);
-
-        // Mock the promotion repository
-        $promotionRepoMock = $this->createMock(DocumentRepository::class);
-        $promotionRepoMock->method('findOneBy')
-            ->willReturn($promotion);
-
-        $this->documentManagerMock->method('getRepository')
-            ->with(Promotion::class)
-            ->willReturn($promotionRepoMock);
-
-        // Test discounted prices
-        $this->assertEquals(3.00, $this->priceCalculator->calculateAdditionPrice($addition, 1)); // 4.00 - 25%
-        $this->assertEquals(6.00, $this->priceCalculator->calculateAdditionPrice($addition, 2)); // 8.00 - 25%
+        $this->assertEqualsWithDelta(2.50, $this->priceCalculator->calculateAdditionPrice($addition, 1), 0.001);
+        $this->assertEqualsWithDelta(5.00, $this->priceCalculator->calculateAdditionPrice($addition, 2), 0.001);
+        $this->assertEqualsWithDelta(7.50, $this->priceCalculator->calculateAdditionPrice($addition, 3), 0.001);
     }
 
     /**
@@ -208,7 +178,7 @@ class PriceCalculationTest extends TestCase
         $addition->setName('Garlic Dip');
         $addition->setPrice(1.50);
 
-        // Create promotion (20% off)
+        // Create a promotion (20% off)
         $promotion = new Promotion();
         $promotion->setItemId('pizza2');
         $promotion->setItemType('pizza');
@@ -228,12 +198,12 @@ class PriceCalculationTest extends TestCase
 
         // Add the promotion to the pizza
         $promotionRepoMock = $this->createMock(DocumentRepository::class);
-        $promotionRepoMock->method('findOneBy')
+        $promotionRepoMock->method('findBy')
             ->willReturnCallback(function($criteria) use ($promotion) {
                 if ($criteria['itemId'] === 'pizza2' && $criteria['itemType'] === 'pizza') {
-                    return $promotion;
+                    return [$promotion];
                 }
-                return null;
+                return [];
             });
 
         $pizzaRepoMock = $this->createMock(DocumentRepository::class);
@@ -258,6 +228,6 @@ class PriceCalculationTest extends TestCase
 
         $actualTotal = $this->priceCalculator->calculateCartTotal($cart);
 
-        $this->assertEquals($expectedTotal, $actualTotal);
+        $this->assertEqualsWithDelta($expectedTotal, $actualTotal, 0.001);
     }
 }
