@@ -9,6 +9,7 @@ use App\Document\Setting;
 use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
 use App\Repository\AdditionRepository;
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
@@ -63,7 +64,7 @@ final class PizzaController extends AbstractController
             $pizzaPromotionMap = [];
             foreach ($pizzaPromotions as $promotion) {
                 // Check if the promotion is valid based on the date
-                $now = new \DateTime();
+                $now = new DateTime();
                 if ($promotion->isValid() && $promotion->getExpiresAt() > $now) {
                     $pizzaPromotionMap[$promotion->getItemId()] = $promotion;
                 }
@@ -141,6 +142,14 @@ final class PizzaController extends AbstractController
     public function create(Request $request, DocumentManager $dm): Response {
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
 
+        // Format categories for Vue component
+        $categoriesForVue = array_map(function($category) {
+            return [
+                'id' => $category->getId(),
+                'name' => $category->getName()
+            ];
+        }, $categories);
+
         // Get settings for price calculation
         $settings = $this->documentManager->getRepository(Setting::class)->findLastOrCreate();
         $priceSettings = [
@@ -179,8 +188,7 @@ final class PizzaController extends AbstractController
                         'validationErrors' => $validationErrors
                     ], 400);
                 }
-                
-                // Create a new pizza
+
                 $pizza = new Pizza();
                 $pizza->setName($data['name']);
                 $pizza->setPrice((float)$data['price']);
@@ -209,21 +217,13 @@ final class PizzaController extends AbstractController
                 $dm->flush();
                 
                 $this->cache->delete('pizzas_data');
-                
-                return $this->json(['success' => true, 'message' => 'Pizza created successfully!']);
-                
+
+                $this->addFlash('success', 'Pizza created successfully!');
+                return $this->redirectToRoute('pizza_index');
             } catch (Exception $e) {
                 return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
             }
         }
-        
-        // Format categories for Vue component
-        $categoriesForVue = array_map(function($category) {
-            return [
-                'id' => $category->getId(),
-                'name' => $category->getName()
-            ];
-        }, $categories);
         
         // For regular GET requests, render the template with a Vue component
         return $this->render('pizza/create.html.twig', [

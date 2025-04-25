@@ -122,9 +122,15 @@
           </div>
           <small class="text-gray-500 mt-1 block">{{ $t('pizza.topping_input.help_text') }}</small>
         </div>
-      
+
         <div class="flex justify-end mt-6">
-          <button type="button" @click="submitForm" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
+          <button
+              type="button"
+              @click="submitForm"
+              :disabled="!isFormValid"
+              class="px-4 py-2 text-white rounded-lg hover:bg-blue-700"
+              :class="isFormValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'"
+          >
             {{ $t('action.save') }}
           </button>
         </div>
@@ -134,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from 'vue';
+import {ref, nextTick, watch, computed} from 'vue';
 
 const props = defineProps({
   categories: {
@@ -217,12 +223,12 @@ const handlePriceChange = () => {
   
   const basePrice = parseFloat(pizzaPrice.value);
   
-  // Update small price if that size is selected
+  // Update a small price if that size is selected
   if (hasSmallSize.value) {
     smallPrice.value = calculatePrice(basePrice, 'small').toFixed(2);
   }
   
-  // Update large price if that size is selected
+  // Update a large price if that size is selected
   if (hasLargeSize.value) {
     largePrice.value = calculatePrice(basePrice, 'large').toFixed(2);
   }
@@ -270,6 +276,15 @@ const validatePizzaPrice = () => {
   priceError.value = '';
   return true;
 };
+
+const isFormValid = computed(() => {
+  return (
+      pizzaName.value.trim() !== '' &&
+      parseFloat(pizzaPrice.value) > 0 &&
+      selectedCategoryId.value !== '' &&
+      toppings.value.length > 0
+  );
+});
 
 // Form submission via fetch API
 const submitForm = async () => {

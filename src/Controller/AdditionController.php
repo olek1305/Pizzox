@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,25 +49,73 @@ final class AdditionController extends AbstractController
     public function create(Request $request, DocumentManager $dm): Response
     {
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
-        $addition = new Addition();
 
-        $form = $this->createForm(AdditionType::class, $addition, [
-            'categories' => $categories
-        ]);
-        $form->handleRequest($request);
+        // Format categories for Vue component
+        $categoriesForVue = array_map(function($category) {
+            return [
+                'id' => $category->getId(),
+                'name' => $category->getName()
+            ];
+        }, $categories);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $dm->persist($addition);
-            $dm->flush();
+        // Handle JSON request from Vue component
+        if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
+            try {
+                // Get JSON data from request
+                $data = json_decode($request->getContent(), true);
 
-            $this->cache->delete('additions_data');
+                if (!$data) {
+                    return $this->json(['error' => 'Invalid JSON data'], 400);
+                }
 
-            $this->addFlash('success', 'Addition created successfully!');
-            return $this->redirectToRoute('pizza_index');
+                // Input validation
+                $validationErrors = [];
+
+                // Validate name
+                if (!isset($data['name']) || trim($data['name']) === '') {
+                    $validationErrors['name'] = 'Addition name is required';
+                }
+
+                // Validate price - this is critical for addition
+                if (!isset($data['price']) || (float)$data['price'] <= 0) {
+                    $validationErrors['price'] = 'Addition price must be greater than 0';
+                }
+
+                // If validation fails, return error response
+                if (!empty($validationErrors)) {
+                    return $this->json([
+                        'error' => 'Validation failed',
+                        'validationErrors' => $validationErrors
+                    ], 400);
+                }
+
+                $addition = new Addition();
+                $addition->setName($data['name']);
+                $addition->setPrice((float)$data['price']);
+
+                // Handle category
+                if (!empty($data['category'])) {
+                    $category = $this->documentManager->getRepository(Category::class)->find($data['category']);
+                    if ($category) {
+                        $addition->setCategory($category);
+                    }
+                }
+
+                // Save to a database
+                $dm->persist($addition);
+                $dm->flush();
+
+                $this->cache->delete('additions_data');
+
+                $this->addFlash('success', 'Addition created successfully!');
+                return $this->redirectToRoute('pizza_index');
+            } catch (Exception $e) {
+                return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+            }
         }
 
         return $this->render('addition/create.html.twig', [
-            'form' => $form->createView(),
+            'categories' => $categoriesForVue
         ]);
     }
 

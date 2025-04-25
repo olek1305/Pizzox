@@ -1,42 +1,3 @@
-form:
-  pizza:
-    name:
-      label: 'Nazwa pizzy'
-      placeholder: 'Wprowadź nazwę pizzy'
-    price:
-      label: 'Cena'
-      placeholder: 'Wprowadź cenę'
-    size:
-      label: 'Rozmiar'
-      placeholder: 'Wprowadź rozmiar pizzy'
-    toppings:
-      label: 'Dodatki'
-      placeholder: 'Dodaj dodatek'
-    category:
-      label: 'Kategoria'
-      placeholder: 'Wybierz nazwę kategorii'
-      no_category: 'Brak Kategorii'
-
-pizza:
-  list_title: "Lista Pizzy"
-  id: "ID"
-  name: "Nazwa Pizzy"
-  price: "Cena"
-  size: "Rozmiar"
-  sizes: "Rozmiary"
-  no_pizzas: "Brak pizz"
-  create: "Utwórz pizzę"
-  toppings: "Dodatki"
-  no_category: 'Brak Kategorii'
-  category: 'Kategoria'
-
-action:
-  edit: "Edytuj"
-  back_to_list: 'Wróć do Listy Pizz'
-  save: "Zapisz"
-  delete: "Usuń"
-  logout: "Wyloguj się"
-
 order:
   status:
     pending: "W oczekiwaniu"
@@ -90,20 +51,6 @@ category:
   inactive_categories: "Nieaktywne Kategorie"
   create: "Utwórz kategorię"
   index: "Indeks kategorii"
-
-addition:
-  create: "Utwórz dodatek"
-  name: "Dodatek"
-  price: "Cena"
-  action: "Akcja"
-  edit: "Edytuj dodatek"
-  category: 'Kategoria'
-
-cart:
-  title: "Twój Koszyk"
-  empty: "Twój koszyk jest pusty."
-  total: "Razem"
-  go_to_cart: "Przejdź do koszyka"
 
 settings:
   title: 'Ustawienia'
