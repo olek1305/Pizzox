@@ -40,7 +40,9 @@
               <div class="flex flex-col md:flex-row justify-between">
                 <div class="flex-1">
                   <h3 class="text-lg font-semibold mb-1">{{ pizza.name }}</h3>
-                  <p class="text-sm text-gray-600 mb-2">{{ formatToppings(pizza.toppings) }}</p>
+                  <p class="text-sm text-gray-600 mb-2">
+                    {{ pizza.toppings && pizza.toppings.length > 0 ? pizza.toppings.join(', ') : $t('pizza.no_toppings') }}
+                  </p>
                   
                   <!-- Price display -->
                   <div class="font-medium mb-3">
@@ -203,16 +205,6 @@ const additionsCategories = computed(() => {
 
   return categories;
 })
-
-const formatToppings = (toppings) => {
-  if (!toppings || toppings.length === 0) {
-    return $t('pizza.no_toppings');
-  }
-
-  if (Array.isArray(toppings)) {
-    return toppings.join(', ');
-  }
-};
 
 const formatPrice = (price) => {
   return Number(price).toFixed(2);
