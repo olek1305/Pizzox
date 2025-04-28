@@ -139,7 +139,8 @@ final class PizzaController extends AbstractController
      */
     #[Route('/pizza/create', name: 'pizza_create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function create(Request $request, DocumentManager $dm): Response {
+    public function create(Request $request, DocumentManager $dm): Response
+    {
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
 
         // Format categories for Vue component
