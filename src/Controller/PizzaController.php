@@ -157,30 +157,30 @@ final class PizzaController extends AbstractController
             'smallModifier' => $settings->getSmallSizeModifier(),
             'largeModifier' => $settings->getLargeSizeModifier(),
         ];
-        
+
         // Handle JSON request from Vue component
         if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
             try {
                 // Get JSON data from request
                 $data = json_decode($request->getContent(), true);
-                
+
                 if (!$data) {
                     return $this->json(['error' => 'Invalid JSON data'], 400);
                 }
-                
+
                 // Input validation
                 $validationErrors = [];
-                
+
                 // Validate name
                 if (!isset($data['name']) || trim($data['name']) === '') {
                     $validationErrors['name'] = 'Pizza name is required';
                 }
-                
+
                 // Validate price - this is critical for medium pizza
                 if (!isset($data['price']) || (float)$data['price'] <= 0) {
                     $validationErrors['price'] = 'Medium pizza price must be greater than 0';
                 }
-                
+
                 // If validation fails, return error response
                 if (!empty($validationErrors)) {
                     return $this->json([
@@ -192,7 +192,7 @@ final class PizzaController extends AbstractController
                 $pizza = new Pizza();
                 $pizza->setName($data['name']);
                 $pizza->setPrice((float)$data['price']);
-                
+
                 // Handle price fields - set to null if empty or zero
                 if (isset($data['priceSmall'])) {
                     if ($data['priceSmall'] === 0) {
@@ -211,11 +211,11 @@ final class PizzaController extends AbstractController
                         $pizza->setCategory($category);
                     }
                 }
-                
+
                 // Save to a database
                 $dm->persist($pizza);
                 $dm->flush();
-                
+
                 $this->cache->delete('pizzas_data');
 
                 $this->addFlash('success', 'Pizza created successfully!');
@@ -224,7 +224,7 @@ final class PizzaController extends AbstractController
                 return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
             }
         }
-        
+
         // For regular GET requests, render the template with a Vue component
         return $this->render('pizza/create.html.twig', [
             'categories' => $categoriesForVue,
@@ -254,30 +254,30 @@ final class PizzaController extends AbstractController
             }
             throw $this->createNotFoundException('Pizza not found');
         }
-        
+
         // Handle JSON request from Vue component
         if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
             try {
                 // Get JSON data from request
                 $data = json_decode($request->getContent(), true);
-                
+
                 if (!$data) {
                     return $this->json(['error' => 'Invalid JSON data'], 400);
                 }
-                
+
                 // Input validation
                 $validationErrors = [];
-                
+
                 // Validate name
                 if (!isset($data['name']) || trim($data['name']) === '') {
                     $validationErrors['name'] = 'Pizza name is required';
                 }
-                
+
                 // Validate price - this is critical for medium pizza
                 if (!isset($data['price']) || (float)$data['price'] <= 0) {
                     $validationErrors['price'] = 'Medium pizza price must be greater than 0';
                 }
-                
+
                 // If validation fails, return error response
                 if (!empty($validationErrors)) {
                     return $this->json([
@@ -285,12 +285,12 @@ final class PizzaController extends AbstractController
                         'validationErrors' => $validationErrors
                     ], 400);
                 }
-                
+
                 // Update pizza data
                 if (isset($data['name'])) {
                     $pizza->setName($data['name']);
                 }
-                
+
                 if (isset($data['price'])) {
                     $price = (float)$data['price'];
                     // Double-check to ensure price is always positive
@@ -304,7 +304,7 @@ final class PizzaController extends AbstractController
                     }
                     $pizza->setPrice($price);
                 }
-                
+
                 // Handle price fields - set to null if empty or zero
                 if (isset($data['priceSmall'])) {
                     if ($data['priceSmall'] === 0) {
@@ -328,38 +328,39 @@ final class PizzaController extends AbstractController
                         $pizza->setCategory(null);
                     }
                 }
-                
+
                 // Save changes
                 $dm->flush();
-                
+
                 $this->cache->delete('pizzas_data');
                 $this->cache->delete('user_cart');
-                
-                return $this->json(['success' => true, 'message' => 'Pizza updated successfully!']);
-                
+
+                $this->addFlash('success', 'Pizza updated successfully!');
+                return $this->redirectToRoute('pizza_index');
+
             } catch (Exception $e) {
                 return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
             }
         }
-    
+
         // Handle traditional form submission
         $form = $this->createForm(PizzaType::class, $pizza, [
             'categories' => $categories,
         ]);
-    
+
         $form->handleRequest($request);
-    
+
         // Handle form component submission
         if ($form->isSubmitted() && $form->isValid()) {
             $dm->flush();
-    
+
             $this->cache->delete('pizzas_data');
             $this->cache->delete('user_cart');
-    
+
             $this->addFlash('success', 'Pizza updated successfully!');
             return $this->redirectToRoute('pizza_index');
         }
-    
+
         // Format categories for Vue component
         $categoriesForVue = array_map(function($category) {
             return [
@@ -367,7 +368,7 @@ final class PizzaController extends AbstractController
                 'name' => $category->getName()
             ];
         }, $categories);
-    
+
         // Ensure category data is properly formatted for the Vue component
         $pizzaData = [
             'id' => $pizza->getId(),
@@ -378,7 +379,7 @@ final class PizzaController extends AbstractController
             'toppings' => $pizza->getToppings(),
             'category' => null
         ];
-        
+
         // Add a category if it exists
         $pizzaCategory = $pizza->getCategory();
         if ($pizzaCategory) {
@@ -387,7 +388,7 @@ final class PizzaController extends AbstractController
                 'name' => $pizzaCategory->getName()
             ];
         }
-            
+
         return $this->render('pizza/edit.html.twig', [
             'form'  => $form->createView(),
             'pizza' => $pizzaData,
