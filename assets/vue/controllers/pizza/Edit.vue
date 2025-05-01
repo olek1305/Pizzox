@@ -280,22 +280,23 @@ const submitForm = async () => {
       },
       body: JSON.stringify(formData)
     });
-    
+
     const result = await response.json();
-    
+
     if (response.ok) {
-      window.location.href = '/pizza';
+      if (result.flash) {
+        window.flashMessages = result.flash;
+      }
+
+      window.location.href = result.redirect || '/pizza';
     } else {
       if (result.validationErrors) {
-        // Display validation errors from the server
         formErrors.value = result.validationErrors;
-        
-        // Specifically, set price error if returned by server
         if (result.validationErrors.price) {
           priceError.value = result.validationErrors.price;
         }
       } else {
-        alert(result.error || 'An error occurred while saving the pizza.');
+        alert(result?.error || 'An error occurred while saving the pizza.');
       }
     }
   } catch (error) {

@@ -221,6 +221,18 @@
     "create": "Create Promotion",
     "calendar_to_expire": "Calendar to expire"
   },
+  "flash": {
+    "pizza": {
+      "created": "Pizza created successfully!",
+      "updated": "Pizza updated successfully!",
+      "deleted": "Pizza deleted successfully!"
+    },
+    "addition": {
+      "created": "The addition has been successfully added!",
+      "updated": "The addition has been successfully updated!",
+      "deleted": "The addition has been successfully deleted!"
+    }
+  },
   "show": "Show",
   "edit": "Edit",
   "deactivate": "Deactivate",

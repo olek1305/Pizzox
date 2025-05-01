@@ -28,7 +28,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="mb-4">
           <label for="pizza_name" class="block text-sm font-medium text-gray-700 mb-1">{{ $t('pizza.name') }}</label>
           <input type="text" id="pizza_name" v-model="pizzaName" required
@@ -37,7 +37,7 @@
             {{ formErrors.name }}
           </div>
         </div>
-      
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
             <label for="pizza_price" class="block text-sm font-medium text-gray-700 mb-1">
@@ -67,7 +67,7 @@
             </label>
           </div>
         </div>
-        
+
         <!-- Additional price fields that appear conditionally -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div v-if="hasSmallSize">
@@ -76,7 +76,7 @@
                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
             <small class="text-gray-500">{{ $t('pizza.small_price_help') }}</small>
           </div>
-          
+
           <div v-if="hasLargeSize">
             <label for="pizza_price_large" class="block text-sm font-medium text-gray-700 mb-1">{{ $t('pizza.price_large') }}</label>
             <input type="number" id="pizza_price_large" v-model="largePrice" step="0.01" min="0"
@@ -84,7 +84,7 @@
             <small class="text-gray-500">{{ $t('pizza.large_price_help') }}</small>
           </div>
         </div>
-      
+
         <div class="mb-4">
           <label for="pizza_category" class="block text-sm font-medium text-gray-700 mb-1">{{ $t('pizza.category') }}</label>
           <select id="pizza_category" v-model="selectedCategoryId"
@@ -95,12 +95,12 @@
             </option>
           </select>
         </div>
-      
+
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('pizza.toppings') }}</label>
           <div class="flex flex-wrap gap-2 mb-3">
             <template v-if="toppings.length > 0">
-              <div v-for="(topping, index) in toppings" :key="index" 
+              <div v-for="(topping, index) in toppings" :key="index"
                    class="flex items-center bg-gray-100 px-2 py-1 rounded-md">
                 <span class="text-gray-800">{{ topping }}</span>
                 <button type="button" @click="removeToppingAt(index)"
@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import {ref, nextTick, watch, computed} from 'vue';
+import { ref, nextTick, watch, computed } from 'vue';
 
 const props = defineProps({
   categories: {
@@ -201,7 +201,7 @@ watch(hasLargeSize, (newValue) => {
 // Function to calculate price based on modifiers
 const calculatePrice = (basePrice, size) => {
   const { calculationType, smallModifier, largeModifier } = props.priceSettings;
-  
+
   if (calculationType === 'fixed') {
     if (size === 'small') return Math.max(0, basePrice - smallModifier);
     if (size === 'large') return basePrice + largeModifier;
@@ -216,18 +216,18 @@ const calculatePrice = (basePrice, size) => {
 // Handle price change and update dependent prices
 const handlePriceChange = () => {
   validatePizzaPrice();
-  
+
   if (!pizzaPrice.value || parseFloat(pizzaPrice.value) <= 0) {
     return;
   }
-  
+
   const basePrice = parseFloat(pizzaPrice.value);
-  
+
   // Update a small price if that size is selected
   if (hasSmallSize.value) {
     smallPrice.value = calculatePrice(basePrice, 'small').toFixed(2);
   }
-  
+
   // Update a large price if that size is selected
   if (hasLargeSize.value) {
     largePrice.value = calculatePrice(basePrice, 'large').toFixed(2);
@@ -252,7 +252,7 @@ const addTopping = () => {
 const handleToppingSpace = (event) => {
   // Prevent the default space behavior
   event.preventDefault();
-  
+
   // If there is text before the space, add it as a topping
   if (newTopping.value.trim()) {
     addTopping();
@@ -318,22 +318,23 @@ const submitForm = async () => {
       },
       body: JSON.stringify(formData)
     });
-    
+
     const result = await response.json();
-    
+
     if (response.ok) {
-      window.location.href = '/pizza';
+      if (result.flash) {
+        window.flashMessages = result.flash;
+      }
+
+      window.location.href = result.redirect || '/pizza';
     } else {
       if (result.validationErrors) {
-        // Display validation errors from the server
         formErrors.value = result.validationErrors;
-        
-        // Specifically, set price error if returned by server
         if (result.validationErrors.price) {
           priceError.value = result.validationErrors.price;
         }
       } else {
-        alert(result.error || 'An error occurred while saving the pizza.');
+        alert(result?.error || 'An error occurred while saving the pizza.');
       }
     }
   } catch (error) {

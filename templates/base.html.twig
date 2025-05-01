@@ -2,7 +2,7 @@
 <html lang="{{ app.request.locale|split('_')[0] }}">
     <head>
         <meta charset="UTF-8">
-        <meta name="csrf-token" content="{{ csrf_token('') }}">
+        <meta name="csrf-token" content="{{ csrf_token('admin') }}">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
@@ -13,13 +13,14 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
 
+        {# Set up global variables for Vue components #}
         <script>
             {% set cart = cart_service.getCart() %}
-            // Set up global variables for Vue components
             window.isAdmin = {{ is_granted('ROLE_ADMIN') ? 'true' : 'false' }};
-            window.csrf_tokens = { 'form_id': '{{ csrf_token('form_id') }}' };
+            window.csrf_tokens = { 'admin': '{{ csrf_token('admin') }}' };
             window.cartData = {{ cart|json_encode|raw }};
             window.cartCurrency = {{ currency|json_encode|raw }};
+            window.flashMessages = {{ app.session.flashbag.all()|json_encode|raw }};
         </script>
     </head>
     <body>

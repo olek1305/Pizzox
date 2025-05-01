@@ -221,6 +221,18 @@
     "create": "Utwórz promocję",
     "calendar_to_expire": "Kalendarz wygaśnięcia"
   },
+  "flash": {
+    "pizza": {
+      "created": "Pizza została dodana pomyślnie!",
+      "updated": "Pizza została zaktualizowana pomyślnie!",
+      "deleted": "Pizza została usunięta!"
+    },
+    "addition": {
+      "created": "Dodatek został dodany pomyślnie!",
+      "updated": "Dodatek został zaktualizowany pomyślnie!",
+      "deleted": "Dodatek został usunięty!"
+    }
+  },
   "show": "Pokaż",
   "edit": "Edytuj",
   "deactivate": "Dezaktywuj",

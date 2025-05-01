@@ -4,13 +4,11 @@ namespace App\Controller;
 
 use App\Document\Addition;
 use App\Document\Category;
-use App\Form\AdditionType;
 use App\Repository\AdditionRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,37 +49,31 @@ final class AdditionController extends AbstractController
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
 
         // Format categories for Vue component
-        $categoriesForVue = array_map(function($category) {
+        $categoriesForVue = array_map(function ($category) {
             return [
                 'id' => $category->getId(),
                 'name' => $category->getName()
             ];
         }, $categories);
 
-        // Handle JSON request from Vue component
         if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
             try {
-                // Get JSON data from request
                 $data = json_decode($request->getContent(), true);
 
                 if (!$data) {
                     return $this->json(['error' => 'Invalid JSON data'], 400);
                 }
 
-                // Input validation
                 $validationErrors = [];
 
-                // Validate name
                 if (!isset($data['name']) || trim($data['name']) === '') {
                     $validationErrors['name'] = 'Addition name is required';
                 }
 
-                // Validate price - this is critical for addition
                 if (!isset($data['price']) || (float)$data['price'] <= 0) {
                     $validationErrors['price'] = 'Addition price must be greater than 0';
                 }
 
-                // If validation fails, return error response
                 if (!empty($validationErrors)) {
                     return $this->json([
                         'error' => 'Validation failed',
@@ -93,7 +85,6 @@ final class AdditionController extends AbstractController
                 $addition->setName($data['name']);
                 $addition->setPrice((float)$data['price']);
 
-                // Handle category
                 if (!empty($data['category'])) {
                     $category = $this->documentManager->getRepository(Category::class)->find($data['category']);
                     if ($category) {
@@ -101,15 +92,16 @@ final class AdditionController extends AbstractController
                     }
                 }
 
-                // Save to a database
                 $dm->persist($addition);
                 $dm->flush();
 
                 $this->cache->delete('additions_data');
 
-                $this->addFlash('success', 'Addition created successfully!');
-                return $this->redirectToRoute('pizza_index');
-            } catch (Exception $e) {
+                $this->addFlash('success', 'flash.addition.created');
+                return $this->json([
+                    'redirect' => $this->generateUrl('pizza_index'),
+                ]);
+            } catch (\Exception $e) {
                 return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
             }
         }
@@ -138,27 +130,82 @@ final class AdditionController extends AbstractController
         $categories = $this->documentManager->getRepository(Category::class)->findAll();
 
         if (!$addition) {
+            if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
+                return $this->json(['error' => 'Addition not found'], 404);
+            }
             throw $this->createNotFoundException('Addition not found');
         }
 
-        $form = $this->createForm(AdditionType::class, $addition, [
-            'categories' => $categories,
-        ]);
+        // Format categories for Vue component
+        $categoriesForVue = array_map(function ($category) {
+            return [
+                'id' => $category->getId(),
+                'name' => $category->getName(),
+            ];
+        }, $categories);
 
-        $form->handleRequest($request);
+        // Handle JSON request from Vue component
+        if ($request->isXmlHttpRequest() || $request->getContentTypeFormat() === 'json') {
+            try {
+                $data = json_decode($request->getContent(), true);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $dm->flush();
+                if (!$data) {
+                    return $this->json(['error' => 'Invalid JSON data'], 400);
+                }
 
-            $this->cache->delete('additions_data');
+                // Input validation
+                $validationErrors = [];
 
-            $this->addFlash('success', 'Addition updated successfully!');
-            return $this->redirectToRoute('pizza_index');
+                if (!isset($data['name']) || trim($data['name']) === '') {
+                    $validationErrors['name'] = 'Addition name is required';
+                }
+
+                if (!isset($data['price']) || (float)$data['price'] <= 0) {
+                    $validationErrors['price'] = 'Price must be greater than 0';
+                }
+
+                if (!empty($validationErrors)) {
+                    return $this->json([
+                        'error' => 'Validation failed',
+                        'validationErrors' => $validationErrors
+                    ], 400);
+                }
+
+                // Update values
+                $addition->setName($data['name']);
+                $addition->setPrice((float)$data['price']);
+
+                if (isset($data['category']) && $data['category']) {
+                    $category = $this->documentManager->getRepository(Category::class)->find($data['category']);
+                    if ($category) {
+                        $addition->setCategory($category);
+                    }
+                } else {
+                    $addition->setCategory(null);
+                }
+
+                $dm->flush();
+
+                $this->cache->delete('additions_data');
+
+                $this->addFlash('success', 'flash.addition.updated');
+                return $this->json([
+                    'redirect' => $this->generateUrl('pizza_index'),
+                ]);
+            } catch (\Exception $e) {
+                return $this->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+            }
         }
 
+        // GET request - return form page with Vue props
         return $this->render('addition/edit.html.twig', [
-            'form' => $form->createView(),
-            'addition' => $addition,
+            'addition' => [
+                'id' => $addition->getId(),
+                'name' => $addition->getName(),
+                'price' => $addition->getPrice(),
+                'category' => $addition->getCategory()?->getId()
+            ],
+            'categories' => $categoriesForVue
         ]);
     }
 
@@ -188,7 +235,7 @@ final class AdditionController extends AbstractController
         $this->cache->delete('additions_data');
         $this->cache->delete('user_cart');
 
-        $this->addFlash('success', 'Addition deleted successfully!');
+        $this->addFlash('success', 'flash.addition.deleted');
         return $this->redirectToRoute('pizza_index');
     }
 }
