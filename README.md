@@ -22,7 +22,7 @@ Create an admin account using the command:
 Mongo Express:
 - http://localhost:8081/
 - Login: admin
-- Password: pass
+- Password: admin
 
 Command to generate a translation:
 - docker-compose exec --user appuser app php bin/console assets:install
