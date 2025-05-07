@@ -233,6 +233,9 @@
       "deleted": "The addition has been successfully deleted!"
     }
   },
+  "footer": {
+    "all_rights_reserved": "All rights reserved"
+  },
   "show": "Show",
   "edit": "Edit",
   "deactivate": "Deactivate",

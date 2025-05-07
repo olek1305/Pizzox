@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full lg:w-[20%] min-h-screen fixed top-0 right-0 bg-gray-100
+  <div class="w-full lg:w-[20%] min-h-screen fixed top-0 right-0 bg-white
     overflow-y-auto transition-transform duration-300 pt-14">
     <h1 class="text-3xl font-bold py-8 text-center">{{ $t('cart.title') }}</h1>
 
@@ -7,7 +7,7 @@
       <p class="text-xl text-gray-500">{{ $t('cart.empty') }}</p>
     </div>
 
-    <div v-else-if="cartItems && cartItems.length > 0" class="bg-white shadow-md w-full">
+    <div v-else-if="cartItems && cartItems.length > 0" class="shadow-md w-full">
       <!-- Cart items -->
       <div v-for="(item, index) in cartItems" :key="index" class="p-4 text-sm">
         <div class="flex flex-wrap items-center">

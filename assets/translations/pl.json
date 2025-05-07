@@ -233,6 +233,9 @@
       "deleted": "Dodatek został usunięty!"
     }
   },
+  "footer": {
+    "all_rights_reserved": "Wszelkie prawa zastrzeżone"
+  },
   "show": "Pokaż",
   "edit": "Edytuj",
   "deactivate": "Dezaktywuj",

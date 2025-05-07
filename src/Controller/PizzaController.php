@@ -6,9 +6,9 @@ use App\Document\Category;
 use App\Document\Promotion;
 use App\Document\Pizza;
 use App\Document\Setting;
-use App\Form\PizzaType;
 use App\Repository\PizzaRepository;
 use App\Repository\AdditionRepository;
+use App\Repository\SettingRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -31,26 +31,27 @@ final class PizzaController extends AbstractController
      * @param AdditionRepository $additionRepository
      * @param DocumentManager $documentManager
      * @param CacheInterface $cache
+     * @param SettingRepository $settingRepository
      */
     public function __construct(
         private readonly PizzaRepository    $pizzaRepository,
         private readonly AdditionRepository $additionRepository,
         private readonly DocumentManager    $documentManager,
-        private readonly CacheInterface     $cache
+        private readonly CacheInterface     $cache,
+        private readonly SettingRepository  $settingRepository,
     ) {
         //
     }
 
     /**
      * @return Response
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException|Throwable
      */
     #[Route('/pizza', name: 'pizza_index', methods: ['GET'])]
     public function index(): Response
     {
         $pizzaData = $this->cache->get('pizzas_data', function (ItemInterface $item) {
             $item->expiresAfter(3600);
-
             $pizzas = $this->pizzaRepository->findAllOrderedByName();
             $pizzaData = [];
 
@@ -123,9 +124,20 @@ final class PizzaController extends AbstractController
             return $additionData;
         });
 
+        // Get footer settings from the database
+        $settings = $this->settingRepository->findLastOrCreate();
+        $footerSettings = [
+            'restaurantName' => $settings->getRestaurantName(),
+            'restaurantAddress' => $settings->getRestaurantAddress(),
+            'latitude' => $settings->getLatitude(),
+            'longitude' => $settings->getLongitude(),
+            'mapboxToken' => $settings->getMapboxToken()
+        ];
+
         return $this->render('pizza/index.html.twig', [
             'pizzaData' => $pizzaData,
             'additionData' => $additionData,
+            'footerSettings' => $footerSettings
         ]);
     }
 

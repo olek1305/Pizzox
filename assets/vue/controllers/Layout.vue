@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Navigation Bar -->
-    <nav class="bg-blue-600 p-4 fixed top-0 left-0 right-0 z-50 transition-transform duration-300"
+    <nav class="bg-gray-700 text-secondary-800 p-4 fixed top-0 left-0 right-0 z-50 transition-transform duration-300"
          :class="{ '-translate-y-full': isNavHidden }">
       <div class="flex justify-between items-center">
         <a :href="`/pizza`" class="text-white font-bold text-lg">Pizza</a>

@@ -139,6 +139,17 @@
       @close="closeModal"
       @add-to-cart="handleAddToCart"
     />
+
+    <!-- Footer section -->
+    <div class="w-full lg:w-[80%] text-center">
+      <Footer
+          :restaurant-name="footerSettings.restaurantName"
+          :restaurant-address="footerSettings.restaurantAddress"
+          :latitude="footerSettings.latitude"
+          :longitude="footerSettings.longitude"
+          :mapbox-token="footerSettings.mapboxToken"
+      />
+    </div>
   </div>
 </template>
 
@@ -146,6 +157,7 @@
 import { ref, computed } from 'vue';
 import Cart from "../components/Cart.vue";
 import SizeModal from "../components/SizeModal.vue";
+import Footer from "../components/Footer.vue";
 
 const props = defineProps({
   initialPizzas: {
@@ -158,6 +170,10 @@ const props = defineProps({
   },
   userRoles: {
     type: Array,
+    required: true
+  },
+  footerSettings: {
+    type: Object,
     required: true
   }
 });
