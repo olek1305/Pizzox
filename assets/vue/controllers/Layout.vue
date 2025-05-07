@@ -17,13 +17,13 @@
             <button
                 @click="changeLocale('en')"
                 :class="{'font-bold': currentLocale === 'en'}"
-                class="text-white mx-1 px-2 py-1 rounded hover:bg-blue-700 bg-blue-600"
+                class="lang-btn mx-1 px-2 py-1 rounded relative overflow-hidden"
             >EN
             </button>
             <button
                 @click="changeLocale('pl')"
                 :class="{'font-bold': currentLocale === 'pl'}"
-                class="text-white mx-1 px-2 py-1 rounded hover:bg-blue-700 bg-blue-600"
+                class="lang-btn mx-1 px-2 py-1 rounded relative overflow-hidden"
             >PL
             </button>
           </div>
@@ -116,3 +116,105 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
 </script>
+
+<style scoped>
+.lang-btn {
+  position: relative;
+  color: white;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.lang-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  transform-origin: bottom;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.lang-btn:hover {
+  color: black;
+}
+
+.lang-btn:hover::before {
+  transform: scaleY(1);
+}
+</style>
+
+<style>
+/* Admin button animations with left-to-right fill */
+.admin-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.admin-btn span {
+  position: relative;
+  z-index: 2;
+}
+
+.admin-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15); /* Slightly darker shade */
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.admin-btn:hover::before {
+  transform: scaleX(1);
+}
+
+/* Pizza and Addition list item animations - improved visibility */
+.list-item-animate {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.list-item-animate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(59, 130, 246, 0.1); /* Light blue with low opacity */
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.list-item-animate:hover {
+  border-color: #3b82f6; /* Tailwind's blue-500 */
+}
+
+.list-item-animate:hover::before {
+  transform: scaleX(1);
+}
+
+/* Ensure text remains clearly visible during animation */
+.list-item-animate h3,
+.list-item-animate p,
+.list-item-animate div,
+.list-item-animate span {
+  position: relative;
+  z-index: 1; /* Ensure text stays above the animation layer */
+}
+</style>

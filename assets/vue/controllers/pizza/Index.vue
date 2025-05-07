@@ -4,17 +4,17 @@
       <!-- Admin buttons section -->
       <div class="flex justify-center items-center mb-4 mt-4" v-if="isAdmin">
         <div class="flex space-x-3">
-          <a :href="createPizzaPath" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
-            {{ $t('pizza.create') }}
+          <a :href="createPizzaPath" class="admin-btn px-4 py-2 bg-green-500 text-white rounded-lg">
+            <span>{{ $t('pizza.create') }}</span>
           </a>
-          <a :href="createAdditionPath" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">
-            {{ $t('addition.create') }}
+          <a :href="createAdditionPath" class="admin-btn px-4 py-2 bg-blue-500 text-white rounded-lg">
+            <span>{{ $t('addition.create') }}</span>
           </a>
-          <a :href="settingsPath" class="px-4 py-2 bg-red-400 text-white rounded-lg hover:bg-blue-700">
-            {{ $t('settings.title') }}
+          <a :href="settingsPath" class="admin-btn px-4 py-2 bg-red-400 text-white rounded-lg">
+            <span>{{ $t('settings.title') }}</span>
           </a>
-          <a :href="paymentHistoryPath" class="px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-blue-700">
-            {{ $t('paymentHistory') }}
+          <a :href="paymentHistoryPath" class="admin-btn px-4 py-2 bg-red-700 text-white rounded-lg">
+            <span>{{ $t('paymentHistory') }}</span>
           </a>
         </div>
       </div>
@@ -34,7 +34,7 @@
           <div class="grid grid-cols-1 gap-6">
             <!-- List of pizzas in this category -->
             <div v-for="pizza in getPizzasByCategory(category.id)" :key="pizza.id"
-                 class="relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                 class="list-item-animate relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
                  @click="openPizzaModal(pizza)">
           
               <div class="flex flex-col md:flex-row justify-between">
@@ -61,7 +61,7 @@
           
                 <!-- Admin controls -->
                 <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
-                  <a :href="`/pizza/${pizza.id}/edit`" class="text-green-500 hover:underline mr-3">
+                  <a :href="`/pizza/${pizza.id}/edit`" class="text-blue-500 hover:text-blue-700 hover:underline mr-3">
                     {{ $t('action.edit') }}
                   </a>
                   <form :action="`/pizza/${pizza.id}/delete`" method="POST" class="inline"
@@ -89,7 +89,7 @@
             <div class="grid grid-cols-1 gap-6">
               <!-- List of additions in this category -->
               <div v-for="addition in getAdditionsByCategory(category.id)" :key="addition.id"
-                   class="relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                   class="list-item-animate relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
                    @click="openAdditionModal(addition)">
                 <div class="flex flex-col md:flex-row justify-between">
                   <div class="flex-1">
@@ -301,15 +301,6 @@ const handleAddToCart = (data) => {
     input.value = value;
     form.appendChild(input);
   }
-  
-  // For debugging, log the form data
-  console.log('Form data:', {
-    url,
-    type,
-    id,
-    quantity: quantity || 1,
-    size
-  });
   
   document.body.appendChild(form);
   form.submit();

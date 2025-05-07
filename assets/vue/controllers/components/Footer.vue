@@ -3,14 +3,14 @@
     <div class="container mx-auto px-4">
       <div class="flex flex-wrap justify-between">
         <!-- Restaurant Info -->
-        <div class="text-center my-auto">
+        <div class="text-center m-auto">
           <h3 class="text-xl font-bold mb-3">{{ restaurantName }}</h3>
           <p class="mb-4">{{ restaurantAddress }}</p>
           <p class="text-sm">&copy; {{ currentYear }} {{ restaurantName }}. {{ $t('footer.all_rights_reserved') || 'All rights reserved' }}</p>
         </div>
 
         <!-- Map -->
-        <div class="w-full md:w-1/2 h-48">
+        <div class="w-full md:w-1/2 h-48 m-auto">
           <div id="map" class="h-full rounded-lg"></div>
         </div>
       </div>
