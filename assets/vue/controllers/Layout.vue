@@ -148,6 +148,7 @@ onUnmounted(() => {
 }
 </style>
 
+<!-- Global Animation Buttons -->
 <style>
 /* Admin button animations with left-to-right fill */
 .admin-btn {
