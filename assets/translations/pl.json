@@ -25,7 +25,7 @@
     }
   },
   "pizza": {
-    "list_title": "Lista Pizzy",
+    "label": "Pizza",
     "id": "ID",
     "name": "Nazwa Pizzy",
     "price_large": "Cena dużej pizzy",
@@ -247,5 +247,6 @@
   "save": "Zapisz",
   "saves": "Zapisz zmiany",
   "backSettings": "Powrót do ustawień",
-  "as_the_default": "Jako domyślny"
+  "as_the_default": "Jako domyślny",
+  "only_promotion": "Tylko z promocją"
 }

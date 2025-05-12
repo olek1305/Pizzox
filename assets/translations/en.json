@@ -25,7 +25,7 @@
     }
   },
   "pizza": {
-    "list_title": "Pizza List",
+    "label": "Pizza",
     "id": "ID",
     "name": "Pizza Name",
     "price_large": "Large Pizza Price",
@@ -247,5 +247,6 @@
   "save": "Save",
   "saves": "Save Changes",
   "backSettings": "Back to Settings",
-  "as_the_default": "As the default"
+  "as_the_default": "As the default",
+  "only_promotion": "only promotion"
 }

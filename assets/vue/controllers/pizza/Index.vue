@@ -19,16 +19,53 @@
         </div>
       </div>
 
+      <div class="mb-4 px-6 py-4 bg-white rounded shadow flex flex-wrap gap-4 justify-center items-center">
+        <select v-model="filter.category" class="border bg-white p-2 rounded">
+          <option :value="null">Wszystkie kategorie</option>
+          <option
+              v-for="cat in pizzaCategories"
+              :key="cat.id"
+              :value="cat.id"
+          >
+            {{ cat.name }}
+          </option>
+        </select>
+        <input
+            v-model.number="filter.priceMin"
+            type="number"
+            min="1"
+            placeholder="Cena od"
+            class="border p-2 rounded w-24 focus:ring-2 focus:ring-blue-400 transition-shadow duration-300"
+        />
+        <input
+            v-model.number="filter.priceMax"
+            type="number"
+            min="1"
+            placeholder="Cena do"
+            class="border p-2 rounded w-24"
+        />
+        <label class="inline-flex items-center">
+          <input
+              v-model="filter.promotionOnly"
+              type="checkbox"
+              class="mr-2 accent-blue-500 h-5 w-5 transition-transform duration-200 scale-90 checked:scale-125"
+          />
+          <span class="font-medium text-gray-700 transition-colors duration-200 select-none">
+            {{ $t('only_promotion') }}
+          </span>
+        </label>
+      </div>
+
       <!-- Pizza list section -->
+
       <div v-if="pizzas.length === 0" class="bg-white shadow-md text-center text-gray-600 p-12">
-        <h1 class="text-3xl font-bold">{{ $t('pizza.list_title') }}</h1>
+        <h1 v-if="hasVisiblePizzas" class="text-3xl font-bold mb-6 text-center">{{ $t('pizza.label') }}</h1>
         {{ $t('pizza.no_pizzas') }}
       </div>
       <div v-else class="bg-white shadow-md overflow-hidden p-8">
-        <h1 class="text-3xl font-bold mb-6 text-center">{{ $t('pizza.list_title') }}</h1>
-
+        <h1 v-if="hasVisiblePizzas" class="text-3xl font-bold mb-6 text-center">{{ $t('pizza.label') }}</h1>
         <!-- Display by category for pizzas -->
-        <div v-for="category in pizzaCategories" :key="category.id" class="mb-8">
+        <div v-for="category in visiblePizzaCategories" :key="category.id" class="mb-8">
           <h2 class="text-xl font-semibold mb-4 pb-2 border-b-2 border-gray-200">{{ category.name }}</h2>
 
           <div class="grid grid-cols-1 gap-6">
@@ -36,18 +73,20 @@
             <div v-for="pizza in getPizzasByCategory(category.id)" :key="pizza.id"
                  class="list-item-animate relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
                  @click="openPizzaModal(pizza)">
-          
+
               <div class="flex flex-col md:flex-row justify-between">
                 <div class="flex-1">
                   <h3 class="text-lg font-semibold mb-1">{{ pizza.name }}</h3>
                   <p class="text-sm text-gray-600 mb-2">
                     {{ pizza.toppings && pizza.toppings.length > 0 ? pizza.toppings.join(', ') : $t('pizza.no_toppings') }}
                   </p>
-                  
+
                   <!-- Price display -->
                   <div class="font-medium mb-3">
                     <div v-if="pizza.coupon">
-                      <span class="text-gray-500 line-through mr-2">{{ formatPrice(pizza.price) }} {{ $currency }}</span>
+                      <span class="text-gray-500 line-through mr-2">{{ formatPrice(pizza.price) }}
+                          {{ $currency }}
+                      </span>
                       <span v-if="pizza.coupon.type === 'fixed'" class="text-red-600 font-semibold">
                         {{ formatPrice(pizza.price - pizza.coupon.discount) }} {{ $currency }}
                       </span>
@@ -58,7 +97,7 @@
                     <span v-else>od {{ formatPrice(getLowestPrice(pizza)) }} {{ $currency }}</span>
                   </div>
                 </div>
-          
+
                 <!-- Admin controls -->
                 <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
                   <a :href="`/pizza/${pizza.id}/edit`" class="text-blue-500 hover:text-blue-700 hover:underline mr-3">
@@ -75,15 +114,16 @@
         </div>
 
         <!-- Additions section -->
-        <h1 class="text-3xl font-bold mb-6 text-center">{{ $t('addition.label') }}</h1>
-
+        <h1 v-if="hasVisibleAdditions" class="text-3xl font-bold mb-6 text-center">
+          {{ $t('addition.label') }}
+        </h1>
         <div v-if="!additions || additions.length === 0" class="text-center text-gray-600">
           {{ $t('addition.no_additions') }}
         </div>
 
         <div v-else>
           <!-- Display by category -->
-          <div v-for="category in additionsCategories" :key="category.id" class="mb-8">
+          <div v-for="category in visibleAdditionsCategories" :key="category.id" class="mb-8">
             <h2 class="text-xl font-semibold mb-4 pb-2 border-b-2 border-gray-200">{{ category.name }}</h2>
 
             <div class="grid grid-cols-1 gap-6">
@@ -94,11 +134,13 @@
                 <div class="flex flex-col md:flex-row justify-between">
                   <div class="flex-1">
                     <h3 class="text-lg font-semibold mb-1">{{ addition.name }}</h3>
-                    
+
                     <!-- Price display -->
                     <div class="font-medium mb-3">
                       <div v-if="addition.coupon">
-                        <span class="text-gray-500 line-through mr-2">{{ formatPrice(addition.price) }} {{ $currency }}</span>
+                        <span class="text-gray-500 line-through mr-2">{{ formatPrice(addition.price) }} {{
+                            $currency
+                          }}</span>
                         <span v-if="addition.coupon.type === 'fixed'" class="text-red-600 font-semibold">
                           {{ formatPrice(addition.price - addition.coupon.discount) }} {{ $currency }}
                         </span>
@@ -109,7 +151,7 @@
                       <span v-else>{{ formatPrice(addition.price) }} {{ $currency }}</span>
                     </div>
                   </div>
-            
+
                   <!-- Admin controls -->
                   <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
                     <a :href="`/addition/${addition.id}/edit`" class="text-blue-500 hover:text-blue-700 mr-3">
@@ -127,17 +169,17 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Cart section -->
-    <Cart />
-    
+    <Cart/>
+
     <!-- Size selection modal -->
-    <SizeModal 
-      :show="showModal"
-      :item="selectedItem"
-      :item-type="selectedItemType"
-      @close="closeModal"
-      @add-to-cart="handleAddToCart"
+    <SizeModal
+        :show="showModal"
+        :item="selectedItem"
+        :item-type="selectedItemType"
+        @close="closeModal"
+        @add-to-cart="handleAddToCart"
     />
 
     <!-- Footer section -->
@@ -154,7 +196,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import {ref, computed} from 'vue';
 import Cart from "../components/Cart.vue";
 import SizeModal from "../components/SizeModal.vue";
 import Footer from "../components/Footer.vue";
@@ -184,6 +226,13 @@ const createPizzaPath = ref('/pizza/create');
 const createAdditionPath = ref('/addition/create');
 const settingsPath = ref('/admin/settings');
 const paymentHistoryPath = ref('/admin/payment-history');
+
+const filter = ref({
+  category: null,
+  promotionOnly: false,
+  priceMin: null,
+  priceMax: null,
+});
 
 // Modal state
 const showModal = ref(false);
@@ -226,13 +275,22 @@ const formatPrice = (price) => {
   return Number(price).toFixed(2);
 };
 
-const getPizzasByCategory = (categoryId) => {
-  return pizzas.value.filter(pizza => pizza.category && pizza.category.id === categoryId);
-};
-
-const getAdditionsByCategory = (categoryId) => {
-  return additions.value.filter(addition => addition.category && addition.category.id === categoryId);
+function getPizzasByCategory(categoryId) {
+  return filteredPizzas.value.filter(pizza => pizza.category?.id === categoryId);
 }
+
+function getAdditionsByCategory(categoryId) {
+  return filteredAdditions.value.filter(addition => addition.category?.id === categoryId);
+}
+
+const hasVisiblePizzas = computed(() =>
+    visiblePizzaCategories.value.length > 0
+);
+
+const hasVisibleAdditions = computed(() =>
+    visibleAdditionsCategories.value.length > 0
+);
+
 
 const getLowestPrice = (pizza) => {
   const prices = [];
@@ -262,23 +320,23 @@ const closeModal = () => {
 };
 
 const handleAddToCart = (data) => {
-  const { id, type, quantity, size, formData } = data;
-  const url = type === 'pizza' 
-    ? `/cart/add/pizza/${id}` 
-    : `/cart/add/addition/${id}`;
-  
+  const {id, type, quantity, size, formData} = data;
+  const url = type === 'pizza'
+      ? `/cart/add/pizza/${id}`
+      : `/cart/add/addition/${id}`;
+
   // Create a form element and submit it
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = url;
-  
+
   // Always explicitly add quantity (default to 1 if missing)
   const quantityInput = document.createElement('input');
   quantityInput.type = 'hidden';
   quantityInput.name = 'quantity';
   quantityInput.value = String(quantity || 1);
   form.appendChild(quantityInput);
-  
+
   // For pizza, add the size
   if (type === 'pizza' && size) {
     const sizeInput = document.createElement('input');
@@ -287,24 +345,24 @@ const handleAddToCart = (data) => {
     sizeInput.value = String(size);
     form.appendChild(sizeInput);
   }
-  
+
   // Append any additional form data
   for (const [key, value] of formData.entries()) {
     // Skip if we already added these inputs directly
     if ((key === 'quantity') || (key === 'size' && size)) {
       continue;
     }
-    
+
     const input = document.createElement('input');
     input.type = 'hidden';
     input.name = key;
     input.value = value;
     form.appendChild(input);
   }
-  
+
   document.body.appendChild(form);
   form.submit();
-  
+
   // Close the modal
   closeModal();
 };
@@ -322,4 +380,35 @@ const onDeleteAddition = (event, additionName) => {
     event.preventDefault();
   }
 };
+
+/* Start filter section */
+const filteredPizzas = useFiltered(pizzas);
+const filteredAdditions = useFiltered(additions);
+
+const visiblePizzaCategories = computed(() =>
+    pizzaCategories.value.filter(cat => getPizzasByCategory(cat.id).length > 0)
+);
+
+const visibleAdditionsCategories = computed(() =>
+    additionsCategories.value.filter(cat => getAdditionsByCategory(cat.id).length > 0)
+);
+
+
+function useFiltered(listRef) {
+  return computed(() =>
+      listRef.value.filter(item => {
+        if (filter.value.category && item.category?.id !== filter.value.category)
+          return false;
+        if (filter.value.promotionOnly && !item.coupon)
+          return false;
+        // Price from
+        if (filter.value.priceMin && getLowestPrice(item) < filter.value.priceMin)
+          return false;
+        // Price to
+        return !(filter.value.priceMax && getLowestPrice(item) > filter.value.priceMax);
+
+      })
+  );
+}
+/* End filter section */
 </script>
