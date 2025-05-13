@@ -248,5 +248,8 @@
   "saves": "Zapisz zmiany",
   "backSettings": "Powrót do ustawień",
   "as_the_default": "Jako domyślny",
-  "only_promotion": "Tylko z promocją"
+  "only_promotion": "Tylko z promocją",
+  "all_categories": "Wszystkie kategorie",
+  "price_from": "Cena od",
+  "price_to": "Cena do"
 }

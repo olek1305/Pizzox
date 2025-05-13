@@ -248,5 +248,8 @@
   "saves": "Save Changes",
   "backSettings": "Back to Settings",
   "as_the_default": "As the default",
-  "only_promotion": "only promotion"
+  "only_promotion": "only promotion",
+  "all_categories": "All categories",
+  "price_from": "Price from",
+  "price_to": "Price to"
 }

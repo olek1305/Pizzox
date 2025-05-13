@@ -1,179 +1,43 @@
 <template>
-  <div class="flex flex-wrap">
-    <div class="w-full lg:w-[80%]">
-      <!-- Admin buttons section -->
-      <div class="flex justify-center items-center mb-4 mt-4" v-if="isAdmin">
-        <div class="flex space-x-3">
-          <a :href="createPizzaPath" class="admin-btn px-4 py-2 bg-green-500 text-white rounded-lg">
-            <span>{{ $t('pizza.create') }}</span>
-          </a>
-          <a :href="createAdditionPath" class="admin-btn px-4 py-2 bg-blue-500 text-white rounded-lg">
-            <span>{{ $t('addition.create') }}</span>
-          </a>
-          <a :href="settingsPath" class="admin-btn px-4 py-2 bg-red-400 text-white rounded-lg">
-            <span>{{ $t('settings.title') }}</span>
-          </a>
-          <a :href="paymentHistoryPath" class="admin-btn px-4 py-2 bg-red-700 text-white rounded-lg">
-            <span>{{ $t('paymentHistory') }}</span>
-          </a>
-        </div>
-      </div>
+<div class="flex flex-wrap">
+  <div class="w-full lg:w-[80%]">
+    <AdminButton :is-admin="isAdmin"/>
 
-      <div class="mb-4 px-6 py-4 bg-white rounded shadow flex flex-wrap gap-4 justify-center items-center">
-        <select v-model="filter.category" class="border bg-white p-2 rounded">
-          <option :value="null">Wszystkie kategorie</option>
-          <option
-              v-for="cat in pizzaCategories"
-              :key="cat.id"
-              :value="cat.id"
-          >
-            {{ cat.name }}
-          </option>
-        </select>
-        <input
-            v-model.number="filter.priceMin"
-            type="number"
-            min="1"
-            placeholder="Cena od"
-            class="border p-2 rounded w-24 focus:ring-2 focus:ring-blue-400 transition-shadow duration-300"
-        />
-        <input
-            v-model.number="filter.priceMax"
-            type="number"
-            min="1"
-            placeholder="Cena do"
-            class="border p-2 rounded w-24"
-        />
-        <label class="inline-flex items-center">
-          <input
-              v-model="filter.promotionOnly"
-              type="checkbox"
-              class="mr-2 accent-blue-500 h-5 w-5 transition-transform duration-200 scale-90 checked:scale-125"
-          />
-          <span class="font-medium text-gray-700 transition-colors duration-200 select-none">
-            {{ $t('only_promotion') }}
-          </span>
-        </label>
-      </div>
+    <FiltersPanel
+        :pizza-categories="pizzaCategories"
+        :filter="filter"
+        :is-loading="isLoading"
+    />
 
-      <!-- Pizza list section -->
+    <PizzaList
+        :pizzas="pizzas"
+        :pizza-categories="pizzaCategories"
+        :visible-pizza-categories="visiblePizzaCategories"
+        :is-admin="isAdmin"
+        :get-pizzas-by-category="getPizzasByCategory"
+        :has-visible-pizzas="hasVisiblePizzas"
+        :format-price="formatPrice"
+        :get-lowest-price="getLowestPrice"
+        :is-loading="isLoading"
+        @openModal="openPizzaModal"
+        @delete="onDelete"
+    />
 
-      <div v-if="pizzas.length === 0" class="bg-white shadow-md text-center text-gray-600 p-12">
-        <h1 v-if="hasVisiblePizzas" class="text-3xl font-bold mb-6 text-center">{{ $t('pizza.label') }}</h1>
-        {{ $t('pizza.no_pizzas') }}
-      </div>
-      <div v-else class="bg-white shadow-md overflow-hidden p-8">
-        <h1 v-if="hasVisiblePizzas" class="text-3xl font-bold mb-6 text-center">{{ $t('pizza.label') }}</h1>
-        <!-- Display by category for pizzas -->
-        <div v-for="category in visiblePizzaCategories" :key="category.id" class="mb-8">
-          <h2 class="text-xl font-semibold mb-4 pb-2 border-b-2 border-gray-200">{{ category.name }}</h2>
+    <AdditionList
+        :additions="additions"
+        :additions-categories="additionsCategories"
+        :visible-additions-categories="visibleAdditionsCategories"
+        :is-admin="isAdmin"
+        :get-additions-by-category="getAdditionsByCategory"
+        :has-visible-additions="hasVisibleAdditions"
+        :format-price="formatPrice"
+        :is-loading="isLoading"
+        @openModal="openAdditionModal"
+        @delete="onDeleteAddition"
+    />
 
-          <div class="grid grid-cols-1 gap-6">
-            <!-- List of pizzas in this category -->
-            <div v-for="pizza in getPizzasByCategory(category.id)" :key="pizza.id"
-                 class="list-item-animate relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-                 @click="openPizzaModal(pizza)">
-
-              <div class="flex flex-col md:flex-row justify-between">
-                <div class="flex-1">
-                  <h3 class="text-lg font-semibold mb-1">{{ pizza.name }}</h3>
-                  <p class="text-sm text-gray-600 mb-2">
-                    {{ pizza.toppings && pizza.toppings.length > 0 ? pizza.toppings.join(', ') : $t('pizza.no_toppings') }}
-                  </p>
-
-                  <!-- Price display -->
-                  <div class="font-medium mb-3">
-                    <div v-if="pizza.coupon">
-                      <span class="text-gray-500 line-through mr-2">{{ formatPrice(pizza.price) }}
-                          {{ $currency }}
-                      </span>
-                      <span v-if="pizza.coupon.type === 'fixed'" class="text-red-600 font-semibold">
-                        {{ formatPrice(pizza.price - pizza.coupon.discount) }} {{ $currency }}
-                      </span>
-                      <span v-else class="text-red-600 font-semibold">
-                        {{ formatPrice(pizza.price * (1 - pizza.coupon.discount / 100)) }} {{ $currency }}
-                      </span>
-                    </div>
-                    <span v-else>od {{ formatPrice(getLowestPrice(pizza)) }} {{ $currency }}</span>
-                  </div>
-                </div>
-
-                <!-- Admin controls -->
-                <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
-                  <a :href="`/pizza/${pizza.id}/edit`" class="text-blue-500 hover:text-blue-700 hover:underline mr-3">
-                    {{ $t('action.edit') }}
-                  </a>
-                  <form :action="`/pizza/${pizza.id}/delete`" method="POST" class="inline"
-                        @submit="onDelete($event, pizza.name)">
-                    <button type="submit" class="text-red-500 hover:underline">{{ $t('action.delete') }}</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additions section -->
-        <h1 v-if="hasVisibleAdditions" class="text-3xl font-bold mb-6 text-center">
-          {{ $t('addition.label') }}
-        </h1>
-        <div v-if="!additions || additions.length === 0" class="text-center text-gray-600">
-          {{ $t('addition.no_additions') }}
-        </div>
-
-        <div v-else>
-          <!-- Display by category -->
-          <div v-for="category in visibleAdditionsCategories" :key="category.id" class="mb-8">
-            <h2 class="text-xl font-semibold mb-4 pb-2 border-b-2 border-gray-200">{{ category.name }}</h2>
-
-            <div class="grid grid-cols-1 gap-6">
-              <!-- List of additions in this category -->
-              <div v-for="addition in getAdditionsByCategory(category.id)" :key="addition.id"
-                   class="list-item-animate relative p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-                   @click="openAdditionModal(addition)">
-                <div class="flex flex-col md:flex-row justify-between">
-                  <div class="flex-1">
-                    <h3 class="text-lg font-semibold mb-1">{{ addition.name }}</h3>
-
-                    <!-- Price display -->
-                    <div class="font-medium mb-3">
-                      <div v-if="addition.coupon">
-                        <span class="text-gray-500 line-through mr-2">{{ formatPrice(addition.price) }} {{
-                            $currency
-                          }}</span>
-                        <span v-if="addition.coupon.type === 'fixed'" class="text-red-600 font-semibold">
-                          {{ formatPrice(addition.price - addition.coupon.discount) }} {{ $currency }}
-                        </span>
-                        <span v-else class="text-red-600 font-semibold">
-                          {{ formatPrice(addition.price * (1 - addition.coupon.discount / 100)) }} {{ $currency }}
-                        </span>
-                      </div>
-                      <span v-else>{{ formatPrice(addition.price) }} {{ $currency }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Admin controls -->
-                  <div v-if="isAdmin" class="flex items-center mt-2 md:mt-0 md:ml-4" @click.stop>
-                    <a :href="`/addition/${addition.id}/edit`" class="text-blue-500 hover:text-blue-700 mr-3">
-                      {{ $t('action.edit') }}
-                    </a>
-                    <form :action="`/addition/${addition.id}/delete`" method="POST" class="inline"
-                          @submit="onDeleteAddition($event, addition.name)">
-                      <button type="submit" class="text-red-500 hover:underline">{{ $t('action.delete') }}</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cart section -->
     <Cart/>
 
-    <!-- Size selection modal -->
     <SizeModal
         :show="showModal"
         :item="selectedItem"
@@ -182,24 +46,26 @@
         @add-to-cart="handleAddToCart"
     />
 
-    <!-- Footer section -->
-    <div class="w-full lg:w-[80%] text-center">
-      <Footer
-          :restaurant-name="footerSettings.restaurantName"
-          :restaurant-address="footerSettings.restaurantAddress"
-          :latitude="footerSettings.latitude"
-          :longitude="footerSettings.longitude"
-          :mapbox-token="footerSettings.mapboxToken"
-      />
-    </div>
+    <Footer
+        :restaurant-name="footerSettings.restaurantName"
+        :restaurant-address="footerSettings.restaurantAddress"
+        :latitude="footerSettings.latitude"
+        :longitude="footerSettings.longitude"
+        :mapbox-token="footerSettings.mapboxToken"
+    />
   </div>
+</div>
 </template>
 
 <script setup>
-import {ref, computed} from 'vue';
+import {ref, computed, watch} from 'vue';
 import Cart from "../components/Cart.vue";
 import SizeModal from "../components/SizeModal.vue";
 import Footer from "../components/Footer.vue";
+import PizzaList from "./components/PizzaList.vue";
+import AdditionList from "./components/AdditionList.vue";
+import FiltersPanel from "./components/FiltersPanel.vue";
+import AdminButton from "./components/AdminButton.vue";
 
 const props = defineProps({
   initialPizzas: {
@@ -222,10 +88,7 @@ const props = defineProps({
 
 const pizzas = ref([...props.initialPizzas]);
 const additions = ref([...props.initialAdditions]);
-const createPizzaPath = ref('/pizza/create');
-const createAdditionPath = ref('/addition/create');
-const settingsPath = ref('/admin/settings');
-const paymentHistoryPath = ref('/admin/payment-history');
+const isLoading = ref(false);
 
 const filter = ref({
   category: null,
@@ -394,9 +257,9 @@ const visibleAdditionsCategories = computed(() =>
 );
 
 
-function useFiltered(listRef) {
+function useFiltered(items) {
   return computed(() =>
-      listRef.value.filter(item => {
+      items.value.filter(item => {
         if (filter.value.category && item.category?.id !== filter.value.category)
           return false;
         if (filter.value.promotionOnly && !item.coupon)
@@ -406,9 +269,27 @@ function useFiltered(listRef) {
           return false;
         // Price to
         return !(filter.value.priceMax && getLowestPrice(item) > filter.value.priceMax);
-
       })
   );
 }
 /* End filter section */
+
+let filterTimeout = null;
+function handleFilterChange() {
+  isLoading.value = true;
+
+  if (filterTimeout) {
+    clearTimeout(filterTimeout);
+  }
+
+  filterTimeout = setTimeout(() => {
+    isLoading.value = false;
+  }, 500);
+}
+
+watch(filter, () => {
+  handleFilterChange();
+}, { deep: true });
+
+
 </script>

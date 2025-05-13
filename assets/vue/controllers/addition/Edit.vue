@@ -9,7 +9,7 @@
     </div>
 
     <div class="bg-white shadow-md rounded-lg p-6">
-      <h1 class="text-3xl font-bold mb-6">{{ $t('addition.create') }}</h1>
+      <h1 class="text-3xl font-bold mb-6">{{ $t('addition.show') }}</h1>
 
       <!-- Addition Create Form -->
       <div class="mb-8">

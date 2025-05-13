@@ -1,4 +1,4 @@
-<template>
+<template class="w-full lg:w-[80%] text-center">
   <footer class="bg-gray-700 text-white py-4">
     <div class="container mx-auto px-4">
       <div class="flex flex-wrap justify-between">
