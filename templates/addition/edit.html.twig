@@ -1,9 +1,12 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}{{ 'addition.show'|trans }}{% endblock %}
+
 {% block body %}
     <div class="container mx-auto p-12">
         <div {{ vue_component('addition/Edit', {
-            'categories': categories
+            'categories': categories,
+            'addition': addition
         }) }}></div>
     </div>
 {% endblock %}

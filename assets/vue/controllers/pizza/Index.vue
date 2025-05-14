@@ -101,10 +101,7 @@ const filter = ref({
 const showModal = ref(false);
 const selectedItem = ref(null);
 const selectedItemType = ref('pizza');
-
-const isAdmin = computed(() => {
-  return props.userRoles.includes('ROLE_ADMIN');
-});
+const isAdmin = computed(() => window.isAdmin === true);
 
 const pizzaCategories = computed(() => {
   const categories = [];
@@ -245,9 +242,6 @@ const onDeleteAddition = (event, additionName) => {
 };
 
 /* Start filter section */
-const filteredPizzas = useFiltered(pizzas);
-const filteredAdditions = useFiltered(additions);
-
 const visiblePizzaCategories = computed(() =>
     pizzaCategories.value.filter(cat => getPizzasByCategory(cat.id).length > 0)
 );
@@ -272,6 +266,9 @@ function useFiltered(items) {
       })
   );
 }
+
+const filteredPizzas = useFiltered(pizzas);
+const filteredAdditions = useFiltered(additions);
 /* End filter section */
 
 let filterTimeout = null;

@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <div class="flex justify-center items-center mb-4">
@@ -9,26 +10,10 @@
     </div>
 
     <div class="bg-white shadow-md rounded-lg p-6">
-      <h1 class="text-3xl font-bold mb-6">{{ $t('addition.show') }}</h1>
+      <h1 class="text-3xl font-bold mb-6">{{ $t('addition.edit') }}</h1>
 
-      <!-- Addition Create Form -->
+      <!-- Addition Edit Form -->
       <div class="mb-8">
-        <!-- Warning about price -->
-        <div class="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <p class="text-sm text-yellow-700">
-                <strong>{{ $t('addition.price_warning.title') }}</strong> {{ $t('addition.price_warning.message') }}
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div class="mb-4">
           <label for="addition_name" class="block text-sm font-medium text-gray-700 mb-1">{{ $t('addition.name') }}</label>
           <input type="text" id="addition_name" v-model="additionName" required
@@ -77,12 +62,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 const props = defineProps({
   categories: {
     type: Array,
     default: () => []
+  },
+  addition: {
+    type: Object,
+    required: true
   }
 });
 
@@ -92,6 +81,13 @@ const additionPrice = ref('');
 const selectedCategoryId = ref('');
 const priceError = ref('');
 const formErrors = ref({});
+
+// Initialize a form with existing addition data
+onMounted(() => {
+  additionName.value = props.addition.name || '';
+  additionPrice.value = props.addition.price || '';
+  selectedCategoryId.value = props.addition.category || '';
+});
 
 // Validate addition price
 const validateAdditionPrice = () => {
@@ -106,8 +102,7 @@ const validateAdditionPrice = () => {
 const isFormValid = computed(() => {
   return (
       additionName.value.trim() !== '' &&
-      parseFloat(additionPrice.value) > 0 &&
-      selectedCategoryId.value !== ''
+      parseFloat(additionPrice.value) > 0
   );
 });
 
@@ -132,7 +127,7 @@ const submitForm = async () => {
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    const response = await fetch('/addition/create', {
+    const response = await fetch(`/addition/${props.addition.id}/edit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -156,12 +151,12 @@ const submitForm = async () => {
           priceError.value = result.validationErrors.price;
         }
       } else {
-        alert(result?.error || 'An error occurred while saving the addition.');
+        alert(result?.error || 'An error occurred while updating the addition.');
       }
     }
   } catch (error) {
     console.error('Error submitting form:', error);
-    alert('An error occurred while saving the addition.');
+    alert('An error occurred while updating the addition.');
   }
 };
 </script>

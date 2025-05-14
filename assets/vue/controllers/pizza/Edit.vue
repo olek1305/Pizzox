@@ -187,7 +187,7 @@ const props = defineProps({
   }
 });
 
-const isAdmin = computed(() => props.userRoles.includes('ROLE_ADMIN'));
+const isAdmin = computed(() => window.isAdmin === true);
 const newTopping = ref('');
 const toppings = ref([...(props.pizza.toppings || [])]);
 

@@ -6,7 +6,6 @@
     <div {{ vue_component('pizza/Index', {
         'initialPizzas': pizzaData,
         'initialAdditions': additionData,
-        'userRoles': app.user ? app.user.roles : [],
         'footerSettings': footerSettings
     }) }}></div>
 {% endblock %}
