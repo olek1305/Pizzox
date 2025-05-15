@@ -176,19 +176,30 @@
               </div>
             </div>
             
+            <div v-if="orderError" class="text-center py-3 bg-red-100 rounded-md mb-4">
+              <p class="text-red-700 font-medium">{{ orderError }}</p>
+            </div>
+            
             <div class="flex justify-end space-x-3 pt-4">
               <button 
                 type="button" 
                 @click="showCheckoutModal = false" 
                 class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100"
+                :disabled="orderSubmitting"
               >
                 {{ $t('action.cancel') }}
               </button>
               <button 
                 type="submit" 
-                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                :disabled="orderSubmitting || cartItems.length === 0"
               >
-                {{ $t('cart.order_now') || 'Order Now' }}
+                <span v-if="orderSubmitting">
+                  {{ $t('order.processing') || 'Processing...' }}
+                </span>
+                <span v-else>
+                  {{ $t('cart.order_now') || 'Order Now' }}
+                </span>
               </button>
             </div>
           </form>
@@ -199,7 +210,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, defineExpose } from 'vue';
 
 const cartItems = ref([]);
 const loading = ref(true);
@@ -209,6 +220,34 @@ const customerInfo = ref({
   email: '',
   address: '',
   phone: ''
+});
+
+// Function to load cart data from a server
+const loadCartData = async () => {
+  loading.value = true;
+  try {
+    const response = await fetch('/cart', {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      cartItems.value = data.items || [];
+    } else {
+      console.error('Failed to load cart data');
+    }
+  } catch (error) {
+    console.error('Error loading cart data:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Expose the loadCartData method to parent components
+defineExpose({
+  loadCartData
 });
 
 // Function to capitalize the first letter
@@ -237,135 +276,87 @@ const totalCost = computed(() => {
   }, 0).toFixed(2);
 });
 
+// Update item quantity asynchronously
+const updateQuantity = async (type, itemId, action) => {
+  try {
+    const response = await fetch(`/cart/update/${type}/${itemId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: `action=${action}`
+    });
+
+    if (response.ok) {
+      // Reload cart data after successful update
+      await loadCartData();
+    } else {
+      console.error('Failed to update item quantity');
+    }
+  } catch (error) {
+    console.error('Error updating quantity:', error);
+  }
+};
+
+// Function to remove item from the cart
+const removeItem = async (type, itemId) => {
+  try {
+    const response = await fetch(`/cart/remove/${type}/${itemId}`, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    if (response.ok) {
+      // Reload cart data after successful removal
+      await loadCartData();
+    } else {
+      console.error('Failed to remove item from cart');
+    }
+  } catch (error) {
+    console.error('Error removing item:', error);
+  }
+};
+
 // Submit an order to the server
+const orderSubmitting = ref(false);
+const orderError = ref('');
+
 const submitOrder = () => {
+  orderSubmitting.value = true;
+  orderError.value = '';
+  
+  // Validate form data
+  if (!customerInfo.value.fullName || !customerInfo.value.address || !customerInfo.value.phone) {
+    orderError.value = 'Please fill in all required fields';
+    orderSubmitting.value = false;
+    return;
+  }
+  
+  // Create a form to submit to the checkout endpoint
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = '/checkout';
   
-  // Add customer info to the form
-  Object.entries(customerInfo.value).forEach(([key, value]) => {
-    if (value) { // Only add non-empty values
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    }
-  });
+  // Add customer info to form
+  for (const [key, value] of Object.entries(customerInfo.value)) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  }
   
+  // Submit the form
   document.body.appendChild(form);
   form.submit();
 };
 
-// Remove item from the cart asynchronously
-const removeItem = async (itemType, itemId) => {
-  try {
-    loading.value = true;
-    
-    // Create a FormData object for the POST request
-    const formData = new FormData();
-    
-    // Send the request to remove the item
-    const response = await fetch(`/cart/remove/${itemType}/${itemId}`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
-
-    if (!response.ok) {
-      console.error(`Failed to remove item: ${response.status}`);
-    }
-    
-    // Remove the item from the local cart data
-    const itemIndex = cartItems.value.findIndex(
-      item => item.type === itemType && item.item_id === itemId
-    );
-    
-    if (itemIndex !== -1) {
-      cartItems.value.splice(itemIndex, 1);
-    }
-    
-    // Refresh cart data
-    await refreshCart();
-    
-  } catch (error) {
-    console.error('Error removing item from cart:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Update item quantity asynchronously
-const updateQuantity = async (itemType, itemId, action) => {
-  try {
-    loading.value = true;
-    
-    // Create a FormData object for the POST request
-    const formData = new FormData();
-    formData.append('action', action);
-    
-    // Send request to update quantity
-    const response = await fetch(`/cart/update/${itemType}/${itemId}`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
-    
-    if (!response.ok) {
-      console.error(`Failed to update quantity: ${response.status}`);
-    }
-    
-    // Update local cart data
-    const itemIndex = cartItems.value.findIndex(
-      item => item.type === itemType && item.item_id === itemId
-    );
-    
-    if (itemIndex !== -1) {
-      if (action === 'increase') {
-        cartItems.value[itemIndex].quantity += 1;
-      } else if (action === 'decrease' && cartItems.value[itemIndex].quantity > 1) {
-        cartItems.value[itemIndex].quantity -= 1;
-      } else if (action === 'decrease' && cartItems.value[itemIndex].quantity <= 1) {
-        // If the quantity goes below 1, remove the item instead
-        await removeItem(itemType, itemId);
-        return;
-      }
-    }
-    
-    // Refresh cart data
-    await refreshCart();
-    
-  } catch (error) {
-    console.error('Error updating quantity:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Refresh cart data from the server
-const refreshCart = async () => {
-  try {
-    if (window.cartData) {
-      cartItems.value = window.cartData;
-    }
-  } catch (error) {
-    console.error('Error refreshing cart:', error);
-  }
-};
 
 onMounted(() => {
-  try {
-    cartItems.value = window.cartData || [];
-  } catch (error) {
-    console.error('Failed to load cart data:', error);
-    cartItems.value = [];
-  } finally {
-    loading.value = false;
-  }
+  // Load cart data when the component mounts
+  loadCartData();
 });
 </script>

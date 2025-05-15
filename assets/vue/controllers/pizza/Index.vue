@@ -6,7 +6,6 @@
     <FiltersPanel
         :pizza-categories="pizzaCategories"
         :filter="filter"
-        :is-loading="isLoading"
     />
 
     <PizzaList
@@ -18,7 +17,6 @@
         :has-visible-pizzas="hasVisiblePizzas"
         :format-price="formatPrice"
         :get-lowest-price="getLowestPrice"
-        :is-loading="isLoading"
         @openModal="openPizzaModal"
         @delete="onDelete"
     />
@@ -31,19 +29,18 @@
         :get-additions-by-category="getAdditionsByCategory"
         :has-visible-additions="hasVisibleAdditions"
         :format-price="formatPrice"
-        :is-loading="isLoading"
         @openModal="openAdditionModal"
         @delete="onDeleteAddition"
     />
 
-    <Cart/>
+    <Cart ref="cartComponent"/>
 
-    <SizeModal
+    <ItemModal
         :show="showModal"
         :item="selectedItem"
         :item-type="selectedItemType"
         @close="closeModal"
-        @add-to-cart="handleAddToCart"
+        @item-added="refreshCart"
     />
 
     <Footer
@@ -58,9 +55,10 @@
 </template>
 
 <script setup>
-import {ref, computed, watch} from 'vue';
-import Cart from "../components/Cart.vue";
-import SizeModal from "../components/SizeModal.vue";
+import {ref, computed } from 'vue';
+
+import Cart from "./components/Cart.vue";
+import ItemModal from "./components/ItemModal.vue";
 import Footer from "../components/Footer.vue";
 import PizzaList from "./components/PizzaList.vue";
 import AdditionList from "./components/AdditionList.vue";
@@ -76,10 +74,6 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  userRoles: {
-    type: Array,
-    required: true
-  },
   footerSettings: {
     type: Object,
     required: true
@@ -88,7 +82,6 @@ const props = defineProps({
 
 const pizzas = ref([...props.initialPizzas]);
 const additions = ref([...props.initialAdditions]);
-const isLoading = ref(false);
 
 const filter = ref({
   category: null,
@@ -179,53 +172,17 @@ const closeModal = () => {
   selectedItem.value = null;
 };
 
-const handleAddToCart = (data) => {
-  const {id, type, quantity, size, formData} = data;
-  const url = type === 'pizza'
-      ? `/cart/add/pizza/${id}`
-      : `/cart/add/addition/${id}`;
+const cartComponent = ref(null);
 
-  // Create a form element and submit it
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = url;
-
-  // Always explicitly add quantity (default to 1 if missing)
-  const quantityInput = document.createElement('input');
-  quantityInput.type = 'hidden';
-  quantityInput.name = 'quantity';
-  quantityInput.value = String(quantity || 1);
-  form.appendChild(quantityInput);
-
-  // For pizza, add the size
-  if (type === 'pizza' && size) {
-    const sizeInput = document.createElement('input');
-    sizeInput.type = 'hidden';
-    sizeInput.name = 'size';
-    sizeInput.value = String(size);
-    form.appendChild(sizeInput);
+// Function to refresh the cart when an item is added
+const refreshCart = () => {
+  if (cartComponent.value) {
+    cartComponent.value.loadCartData();
   }
-
-  // Append any additional form data
-  for (const [key, value] of formData.entries()) {
-    // Skip if we already added these inputs directly
-    if ((key === 'quantity') || (key === 'size' && size)) {
-      continue;
-    }
-
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = value;
-    form.appendChild(input);
-  }
-
-  document.body.appendChild(form);
-  form.submit();
-
-  // Close the modal
-  closeModal();
 };
+
+// Function to handle cart interactions - no longer needed since we're using
+// addToCartWithQuantity directly in ItemModal.vue
 
 const onDelete = (event, pizzaName) => {
   const confirmMessage = `Are you sure you want to delete ${pizzaName}?`;
@@ -270,23 +227,4 @@ function useFiltered(items) {
 const filteredPizzas = useFiltered(pizzas);
 const filteredAdditions = useFiltered(additions);
 /* End filter section */
-
-let filterTimeout = null;
-function handleFilterChange() {
-  isLoading.value = true;
-
-  if (filterTimeout) {
-    clearTimeout(filterTimeout);
-  }
-
-  filterTimeout = setTimeout(() => {
-    isLoading.value = false;
-  }, 500);
-}
-
-watch(filter, () => {
-  handleFilterChange();
-}, { deep: true });
-
-
 </script>

@@ -300,32 +300,40 @@ const calculatePrice = (price, coupon, type) => {
   }
 };
 
-const addToCartWithQuantity = () => {
-  // Make sure quantity is a number and at least 1
-  const quantityNum = parseInt(quantity.value);
-  if (isNaN(quantityNum) || quantityNum < 1) {
-    quantity.value = 1;
+const addToCartWithQuantity = async () => {
+  if (props.itemType === 'pizza' && !selectedSize.value) {
+    return; // Size is required for pizzas
   }
 
+  const formData = new FormData();
+  formData.append('quantity', quantity.value);
+
   if (props.itemType === 'pizza') {
-    const formData = new FormData();
+    formData.append('size', selectedSize.value);
+  }
 
-    emit('add-to-cart', {
-      id: props.item.id,
-      type: props.itemType,
-      size: selectedSize.value,
-      quantity: quantityNum,
-      formData: formData
-    });
-  } else if (props.itemType === 'addition') {
-    const formData = new FormData();
+  try {
+    const url = props.itemType === 'pizza'
+        ? `/cart/add/pizza/${props.item.id}`
+        : `/cart/add/addition/${props.item.id}`;
 
-    emit('add-to-cart', {
-      id: props.item.id,
-      type: props.itemType,
-      quantity: quantityNum,
-      formData: formData
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: formData
     });
+
+    if (response.ok) {
+      // Emit an event that will be caught by parent to refresh cart
+      emit('item-added');
+      closeModal();
+    } else {
+      console.error('Failed to add item to cart');
+    }
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
   }
 };
 

@@ -117,6 +117,12 @@ class CartController extends AbstractController
         }
 
         $this->saveCartToCache($cart);
+        
+        // Check if it's an AJAX request
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['status' => 'success']);
+        }
+        
         return $this->redirectToRoute('pizza_index');
     }
 
@@ -138,8 +144,8 @@ class CartController extends AbstractController
             return new Response(null, Response::HTTP_NOT_FOUND);
         }
 
-        $quantity = (int)$request->get('quantity', 1);
-
+        $quantity = (int)$request->request->get('quantity', 1);
+    
         // Check if this addition already exists in the cart
         $existingItem = null;
         foreach ($cart as $key => $item) {
@@ -148,10 +154,10 @@ class CartController extends AbstractController
                 break;
             }
         }
-
+    
         // Calculate the price taking into account promotions
         $priceInfo = $this->priceCalculator->getAdditionPriceInfo($addition);
-
+    
         if ($existingItem !== null) {
             $cart[$existingItem]['quantity'] += $quantity;
         } else {
@@ -162,15 +168,21 @@ class CartController extends AbstractController
                 'price' => $priceInfo['price'],
                 'quantity' => $quantity
             ];
-
+    
             if ($priceInfo['price'] < $priceInfo['original_price']) {
                 $cartItem['original_price'] = $priceInfo['original_price'];
             }
-
+    
             $cart[] = $cartItem;
         }
-
+    
         $this->saveCartToCache($cart);
+        
+        // Check if it's an AJAX request
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['status' => 'success']);
+        }
+        
         return $this->redirectToRoute('pizza_index');
     }
 
